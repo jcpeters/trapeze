@@ -1,8 +1,33 @@
-# Test Intelligence Platform
+# Test Intelligence Platform (Trapeze)
 
 A self-contained data platform for tracking test results, coverage, flakes, and Jira linkage across Selenium and Playwright CI runs.
 
 **Stack:** Postgres 16 (Docker) · Prisma · TypeScript scripts · Metabase dashboards
+
+**Repo:** `git@github.com:jcpeters/trapeze.git` *(pending transfer to `evite` org — once an org admin creates `evite/trapeze`, update remote with `git remote set-url origin git@github.com:evite/trapeze.git && git push -u origin main`)*
+
+**Local path:** `/Users/joe.peters/Development/results`
+
+---
+
+## Status & known gaps
+
+| Area | Status |
+|------|--------|
+| Schema + migrations | ✅ Complete (6 migrations) |
+| JUnit ingest (Selenium/pytest) | ✅ Complete |
+| Playwright ingest (JSON reporter, sharding, @tag Jira links) | ✅ Complete |
+| Jira sync | ✅ Complete |
+| TestRail sync | ✅ Complete |
+| Jira link inference (text-match) | ✅ Complete |
+| Flake detection | ✅ Complete |
+| Coverage snapshots | ✅ Complete |
+| 20 SQL analytics views | ✅ Complete |
+| Metabase dashboards (3 dashboards, 19 cards) | ✅ Complete |
+| Playwright Jenkins pipeline | ✅ Complete (`evite-playwright/scripts/playwright_pipeline.groovy`) |
+| **Scheduled / cron job wiring** | ❌ Not done — all ETL scripts exist but nothing runs them automatically |
+
+**Next task for a new agent:** Wire up a scheduler so that `etl:sync:jira`, `etl:sync:testrail`, `etl:snapshot:coverage`, and `analyze:flakes` run on a recurring schedule (e.g. daily cron, Jenkins scheduled build, or a simple node-cron wrapper).
 
 ---
 
@@ -31,8 +56,10 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 ## Quick start
 
 ```bash
-# 1. Copy and fill in credentials
-cp .env .env.local          # or edit .env directly
+# 1. Fill in credentials — .env already exists with local defaults;
+#    add your Jira/TestRail API tokens as needed
+#    (do NOT commit .env — it is gitignored)
+#    edit .env directly
 
 # 2. Install dependencies
 npm install
@@ -112,6 +139,13 @@ npm run db:seed
 | Script | Description |
 |--------|-------------|
 | `mb:setup` | Create/update Metabase DB connection, questions, and dashboards via API |
+
+### Code quality
+
+| Script | Description |
+|--------|-------------|
+| `lint` | Run ESLint across all TypeScript scripts |
+| `format` | Run Prettier (write mode) across all files |
 
 ---
 
@@ -390,7 +424,10 @@ METABASE_ADMIN_PASSWORD=TestIntel1!
 
 ## Jenkins pipeline (Playwright)
 
-`evite-playwright/scripts/playwright_pipeline.groovy` — declarative pipeline for running Playwright tests with native sharding and automatic result ingestion.
+**File lives in a separate repo:** `evite-playwright/scripts/playwright_pipeline.groovy`
+(i.e. `/Users/joe.peters/Development/evite-playwright/scripts/playwright_pipeline.groovy`)
+
+Declarative pipeline for running Playwright tests with native sharding and automatic result ingestion into this database.
 
 **Stage flow:**
 1. **Notify Started** — Slack notification
