@@ -1,0 +1,240 @@
+{
+  "config": { "configFile": "playwright.config.ts", "rootDir": "/repo" },
+  "suites": [
+    {
+      "title": "tests/auth/login.spec.ts",
+      "file": "tests/auth/login.spec.ts",
+      "line": 0,
+      "column": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Auth",
+          "file": "",
+          "line": 5,
+          "column": 0,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Login",
+              "file": "",
+              "line": 6,
+              "column": 0,
+              "suites": [],
+              "specs": [
+                {
+                  "title": "should login with valid credentials",
+                  "ok": true,
+                  "tags": ["@smoke", "@QAA-100"],
+                  "id": "spec-001",
+                  "file": "tests/auth/login.spec.ts",
+                  "line": 8,
+                  "column": 3,
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "status": "passed",
+                          "duration": 1340,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-12T08:00:00.000Z",
+                          "attachments": [],
+                          "steps": []
+                        }
+                      ],
+                      "status": "expected"
+                    },
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "status": "passed",
+                          "duration": 1520,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-12T08:00:01.000Z",
+                          "attachments": [],
+                          "steps": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ]
+                },
+                {
+                  "title": "should reject invalid password",
+                  "ok": false,
+                  "tags": ["@smoke", "@QAA-101"],
+                  "id": "spec-002",
+                  "file": "tests/auth/login.spec.ts",
+                  "line": 20,
+                  "column": 3,
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "status": "failed",
+                          "duration": 3200,
+                          "errors": [
+                            {
+                              "message": "Error: expect(received).toContain(expected)\n\nExpected: \"Invalid credentials\"\nReceived: \"\"",
+                              "location": { "file": "tests/auth/login.spec.ts", "line": 25, "column": 5 }
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-12T08:00:02.000Z",
+                          "attachments": [
+                            { "name": "screenshot", "contentType": "image/png", "path": "/tmp/pw/login-fail.png" }
+                          ],
+                          "steps": []
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "tests/rsvp/rsvp.spec.ts",
+      "file": "tests/rsvp/rsvp.spec.ts",
+      "line": 0,
+      "column": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "RSVP",
+          "file": "",
+          "line": 4,
+          "column": 0,
+          "suites": [],
+          "specs": [
+            {
+              "title": "should complete RSVP yes flow",
+              "ok": true,
+              "tags": ["@regression", "QAA-200"],
+              "id": "spec-003",
+              "file": "tests/rsvp/rsvp.spec.ts",
+              "line": 6,
+              "column": 3,
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "failed",
+                      "duration": 2800,
+                      "errors": [
+                        {
+                          "message": "Error: Locator.click: Element is not stable\n  at tests/rsvp/rsvp.spec.ts:15:5",
+                          "location": { "file": "tests/rsvp/rsvp.spec.ts", "line": 15, "column": 5 }
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-12T08:00:05.000Z",
+                      "attachments": [],
+                      "steps": []
+                    },
+                    {
+                      "workerIndex": 2,
+                      "status": "passed",
+                      "duration": 1900,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-03-12T08:00:08.000Z",
+                      "attachments": [
+                        { "name": "trace", "contentType": "application/zip", "path": "/tmp/pw/rsvp-trace.zip" },
+                        { "name": "video", "contentType": "video/webm", "path": "/tmp/pw/rsvp.webm" }
+                      ],
+                      "steps": []
+                    }
+                  ],
+                  "status": "flaky"
+                }
+              ]
+            },
+            {
+              "title": "should skip RSVP when event is full",
+              "ok": true,
+              "tags": ["NOPE-999"],
+              "id": "spec-004",
+              "file": "tests/rsvp/rsvp.spec.ts",
+              "line": 30,
+              "column": 3,
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [{ "type": "skip", "description": "Known issue QAA-200" }],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-12T08:00:10.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "startTime": "2026-03-12T08:00:00.000Z",
+    "duration":  11760,
+    "expected":  3,
+    "skipped":   1,
+    "unexpected": 1,
+    "flaky":     1
+  },
+  "errors": []
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="smoke" tests="2" failures="1" errors="0" skipped="0" time="3.6">
+  <testcase classname="tests.test_invite" name="test_view_invitation" time="1.2"/>
+  <testcase classname="tests.test_rsvp" name="test_rsvp_yes" time="2.4">
+    <failure message="ElementNotInteractableException">stacktrace line 1
+stacktrace line 2</failure>
+  </testcase>
+</testsuite>

@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment — contains credentials, never commit
+.env
+.env.local
+.env.*.local
+
+# Prisma generated client
+node_modules/.prisma/
+prisma/schema.prisma.bak.*
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime / CI artefacts
+incoming/
+pw-results/
+playwright-report/
+test-results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

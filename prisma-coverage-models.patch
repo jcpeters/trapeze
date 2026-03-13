@@ -1,0 +1,112 @@
+diff --git a/prisma/schema.prisma b/prisma/schema.prisma
+index 1111111..2222222 100644
+--- a/prisma/schema.prisma
++++ b/prisma/schema.prisma
+@@
+ enum ExecutionType {
+   AUTOMATED
+   MANUAL
+ }
+ 
+ enum ResultStatus {
+   PASSED
+   FAILED
+   SKIPPED
+   ERROR
+ }
++
++enum LinkProvenance {
++  EXPLICIT
++  INFERRED
++  MANUAL
++}
++
++enum LinkConfidence {
++  HIGH
++  MED
++  LOW
++}
+@@
+ model RawArtifact {
+@@
+ }
++
++model JiraIssue {
++  id         BigInt   @id @default(autoincrement())
++  issueKey   String   @unique @map("issue_key")
++  issueType  String   @map("issue_type")
++  summary    String?
++  status     String?
++  parentKey  String?  @map("parent_key")
++  projectKey String?  @map("project_key")
++  priority   String?
++  labels     String[] @default([]) @map("labels")
++  createdAt  DateTime? @map("created_at")
++  updatedAt  DateTime? @map("updated_at")
++  resolvedAt DateTime? @map("resolved_at")
++  raw        Json?    @map("raw")
++
++  automationLinks JiraAutomationLink[]
++  testrailLinks   JiraTestRailLink[]
++
++  @@map("jira_issue")
++  @@index([projectKey], map: "jira_issue_project_idx")
++  @@index([issueType], map: "jira_issue_type_idx")
++  @@index([status], map: "jira_issue_status_idx")
++}
++
++model TestRailCase {
++  id          BigInt  @id @default(autoincrement())
++  trCaseId    BigInt  @unique @map("tr_case_id")
++  title       String?
++  sectionPath String? @map("section_path")
++  suiteId     BigInt? @map("suite_id")
++  priority    String?
++  refs        String?
++  custom      Json?
++  raw         Json?
++
++  jiraLinks JiraTestRailLink[]
++
++  @@map("testrail_case")
++  @@index([suiteId], map: "testrail_case_suite_idx")
++  @@index([sectionPath], map: "testrail_case_section_idx")
++}
++
++model JiraAutomationLink {
++  id         BigInt         @id @default(autoincrement())
++  issueKey   String         @map("issue_key")
++  testCaseId String         @map("test_case_id")
++  provenance LinkProvenance
++  confidence LinkConfidence
++  evidence   String?
++  source     String?
++  createdAt  DateTime       @default(now()) @map("created_at")
++
++  issue    JiraIssue @relation(fields: [issueKey], references: [issueKey], onDelete: Cascade)
++  testCase TestCase  @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
++
++  @@map("jira_automation_link")
++  @@unique([issueKey, testCaseId, provenance], map: "jira_automation_link_uq")
++  @@index([issueKey], map: "jira_automation_link_issue_idx")
++  @@index([testCaseId], map: "jira_automation_link_test_idx")
++}
++
++model JiraTestRailLink {
++  id         BigInt         @id @default(autoincrement())
++  issueKey   String         @map("issue_key")
++  trCaseId   BigInt         @map("tr_case_id")
++  provenance LinkProvenance
++  confidence LinkConfidence
++  evidence   String?
++  source     String?
++  createdAt  DateTime       @default(now()) @map("created_at")
++
++  issue JiraIssue    @relation(fields: [issueKey], references: [issueKey], onDelete: Cascade)
++  tr    TestRailCase @relation(fields: [trCaseId], references: [trCaseId], onDelete: Cascade)
++
++  @@map("jira_testrail_link")
++  @@unique([issueKey, trCaseId, provenance], map: "jira_testrail_link_uq")
++  @@index([issueKey], map: "jira_testrail_link_issue_idx")
++  @@index([trCaseId], map: "jira_testrail_link_case_idx")
++}

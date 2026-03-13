@@ -1,0 +1,375 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ExecutionType {
+  AUTOMATED
+  MANUAL
+}
+
+enum ResultStatus {
+  PASSED
+  FAILED
+  SKIPPED
+  ERROR
+}
+
+enum LinkProvenance {
+  EXPLICIT
+  INFERRED
+  MANUAL
+}
+
+enum LinkConfidence {
+  HIGH
+  MED
+  LOW
+}
+
+model Build {
+  id          String    @id @default(cuid())
+  ciProvider  String    @default("jenkins")
+  jobName     String
+  buildNumber Int
+  buildUrl    String?
+  gitSha      String?
+  branch      String?
+  environment String?
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  suites    TestSuite[]
+  artifacts RawArtifact[]
+  results   TestCaseResult[]
+  ciRuns    CiRun[]
+
+  @@unique([ciProvider, jobName, buildNumber], name: "build_unique_ci_job_number")
+  @@index([jobName, createdAt])
+}
+
+model TestSuite {
+  id         String   @id @default(cuid())
+  buildId    String
+  build      Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  suiteName  String
+  framework  String?
+  durationMs Int?
+  createdAt  DateTime @default(now())
+
+  results TestCaseResult[]
+
+  @@index([buildId])
+  @@index([suiteName])
+}
+
+model TestCase {
+  id          String   @id @default(cuid())
+  identityKey String   @unique
+  title       String
+  suiteName   String?
+  filePath    String?
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  results        TestCaseResult[]
+  executions     TestExecution[]
+  flakeDecisions FlakeDecision[]
+
+  // Coverage/traceability links
+  jiraLinks JiraAutomationLink[]
+
+  @@index([title])
+}
+
+model TestCaseResult {
+  id         String   @id @default(cuid())
+  testCaseId String
+  testCase   TestCase @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  buildId String
+  build   Build  @relation(fields: [buildId], references: [id], onDelete: Cascade)
+
+  suiteId String?
+  suite   TestSuite? @relation(fields: [suiteId], references: [id], onDelete: SetNull)
+
+  executionType ExecutionType @default(AUTOMATED)
+  status        ResultStatus
+  durationMs    Int?
+  errorMessage  String?
+  stackTrace    String?
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  attempt       Int           @default(1)
+  properties    Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([buildId, status])
+  @@index([testCaseId, createdAt])
+  @@index([executionType, status])
+}
+
+model RawArtifact {
+  id      String @id @default(cuid())
+  buildId String
+  build   Build  @relation(fields: [buildId], references: [id], onDelete: Cascade)
+
+  artifactType String
+  storageUri   String
+  sha256       String?
+  bytes        Int?
+  createdAt    DateTime @default(now())
+
+  @@index([buildId, artifactType])
+}
+
+model JiraIssue {
+  id         BigInt   @id @default(autoincrement())
+  issueKey   String   @unique @map("issue_key") // e.g. QAA-123
+  issueType  String   @map("issue_type") // Story/Bug/Task/Epic
+  summary    String?
+  status     String?
+  parentKey  String?  @map("parent_key") // parent epic key when applicable
+  projectKey String?  @map("project_key") // QAA
+  priority   String?
+  labels     String[] @default([]) @map("labels")
+
+  createdAt  DateTime? @map("created_at")
+  updatedAt  DateTime? @map("updated_at")
+  resolvedAt DateTime? @map("resolved_at")
+
+  raw Json? @map("raw")
+
+  automationLinks JiraAutomationLink[]
+  testrailLinks   JiraTestRailLink[]
+
+  @@index([projectKey], map: "jira_issue_project_idx")
+  @@index([issueType], map: "jira_issue_type_idx")
+  @@index([status], map: "jira_issue_status_idx")
+  @@index([parentKey], map: "jira_issue_parent_idx")
+  @@map("jira_issue")
+}
+
+model TestRailCase {
+  id          BigInt  @id @default(autoincrement())
+  trCaseId    BigInt  @unique @map("tr_case_id") // TestRail case id
+  title       String?
+  sectionPath String? @map("section_path") // optional denormalized path
+  suiteId     BigInt? @map("suite_id")
+  priority    String?
+  refs        String? // raw refs text (often messy)
+  custom      Json?
+  raw         Json?
+
+  jiraLinks JiraTestRailLink[]
+  results   TestRailResult[]
+
+  @@index([suiteId], map: "testrail_case_suite_idx")
+  @@index([sectionPath], map: "testrail_case_section_idx")
+  @@map("testrail_case")
+}
+
+model TestRailResult {
+  id         BigInt    @id @default(autoincrement())
+  trResultId BigInt    @unique @map("tr_result_id") // TestRail result id
+  trRunId    BigInt    @map("tr_run_id")             // TestRail run id
+  trCaseId   BigInt    @map("tr_case_id")            // FK → testrail_case
+  statusId   Int       @map("status_id")             // 1=Passed 2=Blocked 3=Untested 4=Retest 5=Failed
+  testedAt   DateTime? @map("tested_at")             // result.created_on as UTC timestamp
+
+  trCase TestRailCase @relation(fields: [trCaseId], references: [trCaseId], onDelete: Cascade)
+
+  @@index([trRunId], map: "testrail_result_run_idx")
+  @@index([trCaseId, testedAt], map: "testrail_result_case_date_idx")
+  @@map("testrail_result")
+}
+
+model JiraAutomationLink {
+  id         BigInt @id @default(autoincrement())
+  issueKey   String @map("issue_key")
+  testCaseId String @map("test_case_id")
+
+  provenance LinkProvenance
+  confidence LinkConfidence
+
+  evidence  String? // short explanation (tag/mapping line/inference rule)
+  source    String? // e.g. "tags", "mapping-file", "llm-review", "manual"
+  createdAt DateTime @default(now()) @map("created_at")
+
+  issue    JiraIssue @relation(fields: [issueKey], references: [issueKey], onDelete: Cascade)
+  testCase TestCase  @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  @@unique([issueKey, testCaseId, provenance], map: "jira_automation_link_uq")
+  @@index([issueKey], map: "jira_automation_link_issue_idx")
+  @@index([testCaseId], map: "jira_automation_link_test_idx")
+  @@map("jira_automation_link")
+}
+
+model JiraTestRailLink {
+  id       BigInt @id @default(autoincrement())
+  issueKey String @map("issue_key")
+  trCaseId BigInt @map("tr_case_id")
+
+  provenance LinkProvenance
+  confidence LinkConfidence
+
+  evidence  String?
+  source    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  issue JiraIssue    @relation(fields: [issueKey], references: [issueKey], onDelete: Cascade)
+  tr    TestRailCase @relation(fields: [trCaseId], references: [trCaseId], onDelete: Cascade)
+
+  @@unique([issueKey, trCaseId, provenance], map: "jira_testrail_link_uq")
+  @@index([issueKey], map: "jira_testrail_link_issue_idx")
+  @@index([trCaseId], map: "jira_testrail_link_case_idx")
+  @@map("jira_testrail_link")
+}
+
+// ===== New enums =====
+enum ExecutionStatus {
+  PASSED
+  FAILED
+  SKIPPED
+  FLAKY        // final status after retry‑success within same run
+  ERROR        // infrastructure errors
+}
+
+enum AttemptStatus {
+  PASSED
+  FAILED
+  SKIPPED
+}
+
+enum FlakeClassification {
+  INFRA        // environment / infrastructure instability
+  TEST_CODE    // race condition or bad assertion in the test itself
+  PRODUCT_BUG  // intermittent defect in the product under test
+  UNKNOWN      // insufficient signal to classify
+}
+
+// ===== New models =====
+model CiRun {
+  id              String   @id @default(cuid())
+  buildId         String
+  build           Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+
+  // metadata captured from Jenkins/Playwright run
+  branch          String?
+  gitSha          String?
+  jobName         String?
+  buildNumber     Int?
+  prNumber        String?
+  env             Json?      // arbitrary environment map (baseURL, deploy id, etc.)
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  status          ExecutionStatus
+  project         String?    // Playwright project name (browser/device)
+  shardIndex      Int?       // 0‑based shard index
+  shardTotal      Int?       // total number of shards for this run
+  createdAt       DateTime  @default(now())
+
+  executions      TestExecution[]
+
+  @@index([buildId])
+}
+
+model TestExecution {
+  id            String       @id @default(cuid())
+  runId         String
+  run           CiRun        @relation(fields: [runId], references: [id], onDelete: Cascade)
+  testCaseId    String?      // optional: may reuse TestCase from Selenium if ids overlap
+  testCase      TestCase?    @relation(fields: [testCaseId], references: [id], onDelete: SetNull)
+
+  // stable id for Playwright tests: file path + describe path + test name
+  testId        String
+  filePath      String?
+  titlePath     String[]     // describe/it blocks as array of strings
+  tags          String[]     @default([])
+  project       String?      // duplicate of CiRun.project; stored here for convenience
+  shardIndex    Int?         // duplicate of CiRun.shardIndex
+  status        ExecutionStatus
+  durationMs    Int?
+  failureMsg    String?
+  artifactLinks Json?        // JSON map: { trace: path, video: path, screenshot: path }
+  createdAt     DateTime     @default(now())
+
+  attempts      TestAttempt[]
+
+  @@unique([runId, testId, project, shardIndex])
+  @@index([runId])
+}
+
+model TestAttempt {
+  id            String        @id @default(cuid())
+  executionId   String
+  execution     TestExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  attemptNo     Int           // 0 for initial run, 1..n for retries
+  status        AttemptStatus
+  durationMs    Int?
+  errorHash     String?       // sha256 hash of normalized error message and stack
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  createdAt     DateTime      @default(now())
+
+  @@unique([executionId, attemptNo])
+  @@index([executionId])
+}
+
+// ---------------------------------------------------------------------------
+// coverage_snapshot
+// One row per snapshot run (typically nightly).  Each row freezes the KPI
+// values from v_executed_coverage_summary so Metabase can chart trends over
+// time without re-computing from raw data.
+// ---------------------------------------------------------------------------
+model CoverageSnapshot {
+  id   BigInt   @id @default(autoincrement())
+  takenAt DateTime @default(now()) @map("taken_at")
+
+  // Total issue population in the coverage matrix
+  totalIssues          Int   @map("total_issues")
+
+  // Auto-test execution windows
+  autoExecuted30d      Int   @map("auto_executed_30d")
+  autoExecuted30dPct   Float @map("auto_executed_30d_pct")
+  autoExecuted7d       Int   @map("auto_executed_7d")
+  autoExecuted7dPct    Float @map("auto_executed_7d_pct")
+
+  // Coverage gaps
+  linkedButStale30d    Int   @map("linked_but_stale_30d")  // linked test exists but hasn't run in 30 d
+  fullyUncovered       Int   @map("fully_uncovered")       // no link of any kind
+
+  // Manual (TestRail) execution windows
+  manualExecuted30d    Int   @map("manual_executed_30d")
+  manualExecuted30dPct Float @map("manual_executed_30d_pct")
+  manualExecuted7d     Int   @map("manual_executed_7d")
+  manualExecuted7dPct  Float @map("manual_executed_7d_pct")
+
+  @@index([takenAt], map: "coverage_snapshot_taken_at_idx")
+  @@map("coverage_snapshot")
+}
+
+model FlakeDecision {
+  id          String   @id @default(cuid())
+  testCaseId  String
+  testCase    TestCase @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  windowStart DateTime
+  windowEnd   DateTime
+  flakeScore  Float
+  classification FlakeClassification
+  recommendedAction String?    // rerun, quarantine, assign, ignore
+  approvedBy String?           // reviewer id
+  approvedAt DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([testCaseId])
+}
