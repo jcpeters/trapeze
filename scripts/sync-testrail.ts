@@ -585,8 +585,10 @@ async function syncCases(
   for (const projectId of args.projectIds) {
     console.log(`\n── Cases: project ${projectId} ──────────────────────`);
 
-    // get_suites returns a bare array (always, for all project types)
-    const suites = await client.get<TrSuite[]>(`get_suites/${projectId}`);
+    // Older TestRail returns a bare array; newer Cloud returns { suites: [...], offset, limit, size }.
+    // Normalise to a plain array regardless of which shape the API returns.
+    const suitesRaw = await client.get<TrSuite[] | { suites: TrSuite[] }>(`get_suites/${projectId}`);
+    const suites: TrSuite[] = Array.isArray(suitesRaw) ? suitesRaw : (suitesRaw.suites ?? []);
     const filtered = args.suiteIds
       ? suites.filter((s) => args.suiteIds!.includes(s.id))
       : suites;
@@ -804,9 +806,12 @@ async function syncResults(
         args.batchSize,
         args.explain
       )) {
+        // Newer TestRail Cloud omits case_id on some result records — skip those.
+        if (result.case_id == null) continue;
         const caseId = BigInt(result.case_id);
         if (!knownCaseIds.has(caseId)) continue; // skip unknown cases
 
+        if (result.id == null || result.run_id == null) continue;
         buf.push({
           trResultId: BigInt(result.id),
           trRunId: BigInt(result.run_id),

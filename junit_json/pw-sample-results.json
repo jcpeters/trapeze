@@ -1,0 +1,506 @@
+{
+  "config": {
+    "configFile": "/workspace/playwright.config.ts",
+    "rootDir": "/workspace",
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalTimeout": 0,
+    "maxFailures": 0,
+    "metadata": {},
+    "projects": [
+      { "id": "chromium", "name": "chromium", "outputDir": "test-results" }
+    ],
+    "reporter": [["json", { "outputFile": "pw-results.json" }]],
+    "workers": 4
+  },
+  "suites": [
+    {
+      "title": "tests/auth/login.spec.ts",
+      "file": "tests/auth/login.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Authentication",
+          "file": "tests/auth/login.spec.ts",
+          "column": 0,
+          "line": 5,
+          "specs": [
+            {
+              "title": "should login with valid credentials",
+              "ok": true,
+              "tags": ["@QAA-659", "@smoke"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 3241,
+                      "errors": [],
+                      "stdout": [{ "text": "  → navigating to https://www.evite.com/login\n  → filling credentials\n  → asserting dashboard visible\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:00:00.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d3e5f1a2",
+              "file": "tests/auth/login.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "should reject invalid password",
+              "ok": false,
+              "tags": ["@QAA-659"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "status": "failed",
+                      "duration": 8502,
+                      "errors": [
+                        {
+                          "message": "Error: expect(received).toBeVisible()\n\nExpected: visible\nReceived: hidden\n\nCall log:\n  - expect.toBeVisible with timeout 5000ms\n  - waiting for locator('[data-testid=\"error-banner\"]')\n    at tests/auth/login.spec.ts:28:34",
+                          "location": {
+                            "file": "tests/auth/login.spec.ts",
+                            "line": 28,
+                            "column": 34
+                          },
+                          "snippet": "    26 |     await page.fill('[name=\"password\"]', 'wrongpassword');\n    27 |     await page.click('[data-testid=\"login-btn\"]');\n  > 28 |     await expect(page.locator('[data-testid=\"error-banner\"]')).toBeVisible();\n    29 |     expect(await page.title()).toContain('Sign In');\n    30 |   });"
+                        }
+                      ],
+                      "stdout": [{ "text": "  → navigating to https://www.evite.com/login\n  → filling invalid credentials\n" }],
+                      "stderr": [{ "text": "  WARN: login form did not show expected error state after 5000ms\n" }],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:00:05.000Z",
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/test-results/should-reject-invalid-password-chromium/screenshot.png"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/workspace/test-results/should-reject-invalid-password-chromium/trace.zip"
+                        }
+                      ],
+                      "steps": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d3e5f1a3",
+              "file": "tests/auth/login.spec.ts",
+              "line": 20,
+              "column": 3
+            },
+            {
+              "title": "test SSO redirect",
+              "ok": true,
+              "tags": ["@QAA-659", "@C4501"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "status": "passed",
+                      "duration": 4188,
+                      "errors": [],
+                      "stdout": [{ "text": "  → navigating to SSO endpoint\n  → asserting redirect to dashboard\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:00:15.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d3e5f1a4",
+              "file": "tests/auth/login.spec.ts",
+              "line": 33,
+              "column": 3
+            }
+          ],
+          "suites": []
+        }
+      ]
+    },
+    {
+      "title": "tests/rsvp/rsvp.spec.ts",
+      "file": "tests/rsvp/rsvp.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "RSVP flows",
+          "file": "tests/rsvp/rsvp.spec.ts",
+          "column": 0,
+          "line": 5,
+          "specs": [
+            {
+              "title": "should complete RSVP yes flow",
+              "ok": true,
+              "tags": ["@QAA-660", "@C2001", "@regression"],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 7812,
+                      "errors": [],
+                      "stdout": [{ "text": "  → opening event page\n  → clicking RSVP Yes\n  → filling guest name\n  → submitting\n  → asserting confirmation visible\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:01:00.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a1b2c3d4",
+              "file": "tests/rsvp/rsvp.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "should skip RSVP when event is full",
+              "ok": true,
+              "tags": ["@QAA-660"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "status": "passed",
+                      "duration": 5233,
+                      "errors": [],
+                      "stdout": [{ "text": "  → opening full event page\n  → asserting RSVP button disabled\n  → asserting capacity message visible\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:01:10.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a1b2c3d5",
+              "file": "tests/rsvp/rsvp.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "concurrent update",
+              "ok": true,
+              "tags": ["@QAA-660", "@C2045"],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "failed",
+                      "duration": 6100,
+                      "errors": [
+                        {
+                          "message": "Error: expect(received).toBeVisible()\n\nExpected: visible\nReceived: hidden\n\nCall log:\n  - waiting for locator('[data-testid=\"rsvp-confirmed\"]')\n    at tests/rsvp/rsvp.spec.ts:62:5",
+                          "location": {
+                            "file": "tests/rsvp/rsvp.spec.ts",
+                            "line": 62,
+                            "column": 5
+                          },
+                          "snippet": "    60 |   await page.click('[data-testid=\"rsvp-yes\"]');\n    61 |   await page.waitForLoadState('networkidle');\n  > 62 |   await expect(page.locator('[data-testid=\"rsvp-confirmed\"]')).toBeVisible();\n    63 | });"
+                        }
+                      ],
+                      "stdout": [{ "text": "  → first attempt (retry 0) — encountered race condition\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:01:20.000Z",
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/test-results/concurrent-update-chromium-retry0/screenshot.png"
+                        }
+                      ],
+                      "steps": []
+                    },
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 5890,
+                      "errors": [],
+                      "stdout": [{ "text": "  → retry 1 — RSVP confirmed successfully\n" }],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-03-17T18:01:28.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "flaky"
+                }
+              ],
+              "id": "a1b2c3d6",
+              "file": "tests/rsvp/rsvp.spec.ts",
+              "line": 55,
+              "column": 3
+            }
+          ],
+          "suites": []
+        }
+      ]
+    },
+    {
+      "title": "tests/checkout/payment.spec.ts",
+      "file": "tests/checkout/payment.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Checkout",
+          "file": "tests/checkout/payment.spec.ts",
+          "column": 0,
+          "line": 5,
+          "specs": [
+            {
+              "title": "test guest checkout",
+              "ok": false,
+              "tags": ["@QAA-670", "@C3101", "@regression"],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    { "type": "issue", "description": "QAA-670" }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "status": "failed",
+                      "duration": 15447,
+                      "errors": [
+                        {
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nWaiting for locator('[data-testid=\"order-confirmation\"]')\n\n  at tests/checkout/payment.spec.ts:44:12",
+                          "location": {
+                            "file": "tests/checkout/payment.spec.ts",
+                            "line": 44,
+                            "column": 12
+                          },
+                          "snippet": "    42 |   await page.fill('[name=\"card-number\"]', '4111111111111111');\n    43 |   await page.click('[data-testid=\"submit-payment\"]');\n  > 44 |   await page.waitForSelector('[data-testid=\"order-confirmation\"]', { timeout: 10000 });\n    45 | });"
+                        }
+                      ],
+                      "stdout": [{ "text": "  → navigating to premium event\n  → adding to cart\n  → filling guest details\n  → entering payment info\n  → submitting payment\n  ERROR: order-confirmation element never appeared\n" }],
+                      "stderr": [{ "text": "  ERR: Stripe webhook response timed out after 10000ms\n" }],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:02:00.000Z",
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/test-results/test-guest-checkout-chromium/screenshot.png"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/workspace/test-results/test-guest-checkout-chromium/trace.zip"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/test-results/test-guest-checkout-chromium/video.webm"
+                        }
+                      ],
+                      "steps": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "c9d8e7f6",
+              "file": "tests/checkout/payment.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "payment timeout",
+              "ok": true,
+              "tags": ["@QAA-670"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "status": "passed",
+                      "duration": 4920,
+                      "errors": [],
+                      "stdout": [{ "text": "  → simulating payment gateway timeout\n  → asserting friendly error message shown\n  → asserting cart not cleared\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:02:20.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c9d8e7f7",
+              "file": "tests/checkout/payment.spec.ts",
+              "line": 48,
+              "column": 3
+            }
+          ],
+          "suites": []
+        }
+      ]
+    },
+    {
+      "title": "tests/invite/send.spec.ts",
+      "file": "tests/invite/send.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Invitations",
+          "file": "tests/invite/send.spec.ts",
+          "column": 0,
+          "line": 5,
+          "specs": [
+            {
+              "title": "send button click",
+              "ok": true,
+              "tags": ["@QAA-671", "@regression"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "status": "passed",
+                      "duration": 6341,
+                      "errors": [],
+                      "stdout": [{ "text": "  → opening draft event\n  → clicking Send button\n  → confirming recipients modal\n  → asserting sent confirmation\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:03:00.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e1f2a3b4",
+              "file": "tests/invite/send.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "combined invite+rsvp flow",
+              "ok": true,
+              "tags": ["@QAA-671", "@QAA-660", "@regression"],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 12089,
+                      "errors": [],
+                      "stdout": [{ "text": "  → creating new free event\n  → sending invite\n  → following RSVP link as guest\n  → asserting RSVP recorded\n" }],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T18:03:10.000Z",
+                      "attachments": [],
+                      "steps": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e1f2a3b5",
+              "file": "tests/invite/send.spec.ts",
+              "line": 30,
+              "column": 3
+            }
+          ],
+          "suites": []
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-17T18:00:00.000Z",
+    "duration": 213847,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 1
+  }
+}

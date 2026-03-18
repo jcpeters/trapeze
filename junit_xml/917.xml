@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="555.605" timestamp="2026-01-15T14:12:12.168799-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="551.715" /></testsuite></testsuites>

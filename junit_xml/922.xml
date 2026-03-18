@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="4" tests="13" time="591.603" timestamp="2026-01-20T17:36:52.023233-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:23: Egift disabled</skipped></testcase><testcase classname="test_evite_rsvp_invitation_maker_v3.TestEviteRSVPInvitationMakerV3" name="test_evite_rsvp_invitation_maker_v3" time="0.000"><skipped type="pytest.skip" message="Experiment forced control">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_invitation_maker_v3.py:24: Experiment forced control</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:22: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_rsvp_free_1cf.TestEviteRSVPFree1CF" name="test_evite_rsvp_free_1cf" time="0.000"><skipped type="pytest.skip" message="Experiment set to 0%">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_free_1cf.py:25: Experiment set to 0%</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="125.700" /><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="131.394" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="397.931"><failure message="Exception: Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9">self = &lt;tests.evite_acceptance.test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew object at 0x7fec565e1e80&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fec5663d9a0&gt;
+
+    def test_evite_greeting_card_create_new(self, config):
+        """
+        Create Greeting Card as new registered user
+    
+        :param config:
+        :return:
+        """
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        login_modal = config.pages['login_modal']
+        evite_gallery_page = config.pages["evite_gallery_page"]
+        evite_overview = config.pages["evite_overview"]
+        evite_greeting_card = config.pages["evite_greeting_card"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_egift_card = config.pages["step2_egift_card"]
+        step3_grc_messages = config.pages["step3_grc_messages"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["host"] = (f"{self._json_test_data['register']['first_name']} "
+                                                                       f"{self._json_test_data['register']['last_name']}")
+    
+        evite_gallery_page.select_mega_nav(action="greeting_cards", url="cards")
+        evite_gallery_page.select_random_template(greeting_card=True)
+    
+        # step1_template.select_next(url="egift-card")
+        # step2_egift_card.select_egift_card_toggle(toggle=False)
+    
+&gt;       step1_template.select_next(url="recipients")
+
+_test_name = 'test_evite_greeting_card_create_new'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fec5663d9a0&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7fec5663cdd0&gt;
+evite_greeting_card = &lt;commons.pages.evite.evite_greeting_card.EviteGreetingCard object at 0x7fec5663d970&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7fec5663d880&gt;
+logger     = &lt;Logger test_evite_greeting_card_create_new (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fec5663d910&gt;
+page       = &lt;commons.page.Page object at 0x7fec5663c5c0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew object at 0x7fec565e1e80&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+step2_egift_card = &lt;commons.pages.evite.step2_egift_card.Step2EGiftCard object at 0x7fec5663d670&gt;
+step3_grc_messages = &lt;commons.pages.evite.step3_grc_messages.Step3GRCMessages object at 0x7fec5663d760&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fec5663d7c0&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fec5663d820&gt;
+
+test_evite_greeting_card_create_new.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step1_template.py:184: in select_next
+    self.assert_url_contains(search_string=url)
+        config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fec5663d9a0&gt;
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+        url        = 'recipients'
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 0
+        current_url = 'https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fec5663ce60&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 1
+        current_url = 'https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fec5663c7a0&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 2
+        current_url = 'https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fec565f9430&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 3
+        current_url = 'https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fec565f8dd0&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 4
+        current_url = 'https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fec565fad50&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 5
+        current_url = 'https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fec565f8710&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+../../commons/page.py:198: in assert_url_contains
+    self.log_and_raise_exception(msg)
+        count      = 6
+        current_url = 'https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9'
+        msg        = "Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9"
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fec565f9700&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+message = "Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9
+
+message    = "Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/joyous-wishes_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=9"
+self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fec5663d6d0&gt;
+
+../../commons/page.py:1049: Exception</failure></testcase><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="425.747"><failure message="Exception: Can't verify page url contains egift-card, current url: https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11">self = &lt;tests.evite_acceptance.test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent object at 0x7f86d7771340&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f86d77ce630&gt;
+
+    def test_evite_greeting_card_create_from_past_event(self, config):
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        _test_name = inspect.stack()[0][3]
+    
+        evite_homepage = config.pages["evite_home_page"]
+        page = config.pages["page"]
+    
+        login_modal = config.pages["login_modal"]
+        evite_gallery_page = config.pages["evite_gallery_page"]
+        evite_overview = config.pages["evite_overview"]
+        my_events = config.pages["my_events"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_egift_card = config.pages["step2_egift_card"]
+        step3_grc_messages = config.pages["step3_grc_messages"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        logger.info(f"Start {_test_name}")
+    
+        sql_string = (f"SELECT user_email_addr, user_pass, event_title FROM public.evite_events WHERE "
+                      f"user_email_addr != 'automation_events@evitetest.com' AND "
+                      f"env = '{settings.ENV}' AND "
+                      f"event_premium = FALSE AND "
+                      f"event_draft_guests = FALSE AND "
+                      f"event_draft = FALSE AND "
+                      f"event_cancelled = FALSE AND "
+                      f"created_by = 'evite' AND "
+                      # f"event_create_date &gt; now()::DATE AND "
+                      # f"event_sent_date &lt; now()::DATE AND "
+                      f"event_create_date &gt; '2023-04-01' AND "
+                      f"event_sent_date &gt; '2023-04-01' AND "
+                      f"event_date &lt; now()::DATE AND "
+                      f"event_date &gt; now()::DATE-14 ORDER BY random() LIMIT 1;")  # We have Thanks only for 14 days
+    
+        page.get_url(config.environment, "")
+    
+        user_email_addr = None
+        user_pass = None
+        user_first_name = None
+        user_last_name = None
+        event_title = None
+    
+        # DB &amp; API Connections
+        quake_v3_account = QuakeV3Account(inspect.stack()[0][3])
+        quake_v3_user = QuakeV3User(inspect.stack()[0][3])
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+        db_connect = psql_db.connect_db()
+    
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+    
+            # Check result first, if no data then don't fail: Skip
+            if cursor.rowcount:
+                user_email_addr, user_pass, event_title = cursor.fetchone()
+            else:
+                logger.warn(f"DB have no record for sql: {sql_string}")
+                config.test_failed["value"] = False
+                pytest.skip("DB have no record for sql")
+    
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+    
+        # Check email length
+        if len(user_email_addr) &gt; 59:
+            msg = "Email is 60+ characters"
+            logger.error(msg)
+            pytest.skip(msg)
+    
+        # Get user's first and last name
+        cursor = None
+        sql_string = psql_db.get_select_from_table_string(
+            settings.DB_TABLE_USERS, ["user_first_name", "user_last_name"], user_email_addr=user_email_addr
+        )
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+            if cursor.rowcount:
+                user_first_name, user_last_name = cursor.fetchone()
+            else:
+                config.test_failed["value"] = False
+                msg = f"DB have no record for sql: {sql_string}"
+                logger.warn(msg)
+                pytest.skip(msg)
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+        finally:
+            db_connect.close()
+            cursor.close()
+    
+        # Need for payment page
+        self._json_test_data["invitation"]["event_details"]["host"] = f"{user_first_name} {user_last_name}"
+    
+        # LogIn through the API
+        sign_in_response = quake_v3_account.account_session_sign_in(email_address=user_email_addr, password=user_pass)
+    
+        # Get All Past Events
+        past_events_response = quake_v3_user.get_past_events(
+            user_id=sign_in_response.json()["message"]["user_id"],
+            session_id=sign_in_response.json()["message"]["token"],
+        )
+    
+        # Go through the list of events and get one that is not a card or draft event, and hosted by the user
+        past_event = None
+        for event in past_events_response.json()["message"]["events"]:
+            if event["guest_status"] == 1 and event["used_as"] == "invitation":
+                past_event = event
+                logger.info(f"Found a past event: {event['title']}, ID {event['event_id']}")
+                break
+    
+        # Skip the rest of the test if no qualifying event was found
+        if not past_event:
+            msg = "Could not find a past event with this user."
+            logger.info(f"{msg}")
+            pytest.skip(msg)
+    
+        # LogIn
+        login_modal.sign_in(email=user_email_addr, password=user_pass)
+        evite_homepage.select_logged_in_menu(action="events")
+    
+        my_events.select_event_options(event_title=event_title,
+                                       event_option="send_thanks",
+                                       event_status="You hosted",
+                                       url="cards")
+    
+        evite_gallery_page.select_random_template(greeting_card=True)
+    
+&gt;       step1_template.select_next(url="egift-card")
+
+_test_name = 'test_evite_greeting_card_create_from_past_event'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f86d77ce630&gt;
+cursor     = &lt;cursor object at 0x7f86d775eb60; closed: -1&gt;
+db_connect = &lt;connection object at 0x7f86d785e480; dsn: 'user=jenkins password=xxx dbname=qatests host=34.133.6.167 port=5432', closed: 1&gt;
+event      = {'event_id': '02E6UVCLWT4LKYEA2EPQMMZLJ7EOYQ', 'event_is_invite': True, 'guest_id': '02E6UVCLWT4LKYEA2EPQMMZLKUVX4A', 'guest_status': 1, ...}
+event_title = 'testCIYTSQ123test_20250805-164824'
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f86d77cc3e0&gt;
+evite_homepage = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f86d77ccc50&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7f86d77cc9e0&gt;
+logger     = &lt;Logger test_evite_greeting_card_create_from_past_event (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f86d77ce270&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f86d77ccef0&gt;
+page       = &lt;commons.page.Page object at 0x7f86d77cc170&gt;
+past_event = {'event_id': '02E6UVCLWT4LKYEA2EPQMMZLJ7EOYQ', 'event_is_invite': True, 'guest_id': '02E6UVCLWT4LKYEA2EPQMMZLKUVX4A', 'guest_status': 1, ...}
+past_events_response = &lt;Response [200]&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f86d77cc6b0&gt;
+quake_v3_account = &lt;commons.pages.quake_v3.quake_v3_account.QuakeV3Account object at 0x7f86d77ce5d0&gt;
+quake_v3_user = &lt;commons.pages.quake_v3.quake_v3_user.QuakeV3User object at 0x7f86d77cd5e0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent object at 0x7f86d7771340&gt;
+sign_in_response = &lt;Response [200]&gt;
+sql_string = "SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-07172025-102145-15-test@evitetest.com' ORDER BY random();"
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+step2_egift_card = &lt;commons.pages.evite.step2_egift_card.Step2EGiftCard object at 0x7f86d77ce120&gt;
+step3_grc_messages = &lt;commons.pages.evite.step3_grc_messages.Step3GRCMessages object at 0x7f86d77cdfa0&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f86d77ce360&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f86d77ce420&gt;
+user_email_addr = 'evite-07172025-102145-15-test@evitetest.com'
+user_first_name = 'automation'
+user_last_name = 'test'
+user_pass  = 'test1234'
+
+test_evite_greeting_card_create_from_past_event.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step1_template.py:184: in select_next
+    self.assert_url_contains(search_string=url)
+        config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f86d77ce630&gt;
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+        url        = 'egift-card'
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 0
+        current_url = 'https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f86d77d1850&gt;
+        search_string = 'egift-card'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 1
+        current_url = 'https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f86d77d1340&gt;
+        search_string = 'egift-card'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 2
+        current_url = 'https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f86d77d1d30&gt;
+        search_string = 'egift-card'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 3
+        current_url = 'https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f86d77d1ca0&gt;
+        search_string = 'egift-card'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 4
+        current_url = 'https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f86d77d1be0&gt;
+        search_string = 'egift-card'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 5
+        current_url = 'https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f86d77d2210&gt;
+        search_string = 'egift-card'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+../../commons/page.py:198: in assert_url_contains
+    self.log_and_raise_exception(msg)
+        count      = 6
+        current_url = 'https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11'
+        msg        = "Can't verify page url contains egift-card, current url: https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11"
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f86d77d2480&gt;
+        search_string = 'egift-card'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+message = "Can't verify page url contains egift-card, current url: https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't verify page url contains egift-card, current url: https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11
+
+message    = "Can't verify page url contains egift-card, current url: https://test23.evitelabs.com/cards/partyanimalballoons_card/create?v=&amp;c=thankyou_cards&amp;previous=thankyou_cards&amp;page=1&amp;invitation_type=card&amp;category_id=thankyou_cards&amp;pos=11"
+self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f86d77cccb0&gt;
+
+../../commons/page.py:1049: Exception</failure></testcase><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="285.171" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="491.236"><failure message="Exception: Fail verify name, expecting evite-volunteer-20260120-1744-295965-test, got">self = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f0dd7cd0da0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f0dd7d19d00&gt;
+
+    def test_evite_sus_one_day_create(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+        sign_up_sheet_maker = config.pages["sign_up_sheet_maker"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} "
+                f"{self._json_test_data['register']['last_name']}")
+    
+        sign_up_sheet_maker.select_sus_event(sus_event="one_day")
+    
+        sign_up_sheet_maker.enter_details(test_data=self._json_test_data)
+        sign_up_sheet_maker.create_sheet_one_day(test_data=self._json_test_data)
+        sign_up_sheet_maker.verify_sheet_sign_ups(test_data=self._json_test_data)
+    
+        sign_up_sheet_maker.publish_sheet()
+        shareable_link = sign_up_sheet_maker.copy_shareable_link()
+    
+        login_modal.sign_out()
+    
+        # Get Volunteer view to build SUS data
+        config.driver.get(shareable_link)
+        logger.info(f"Going volunteer url - {config.driver.current_url}")
+    
+        sign_up_sheet = sign_up_sheet_maker.get_sign_up_sheet_one_day()
+    
+        volunteers = sign_up_sheet_maker.initialize_volunteers(volunteers=self._json_test_data["volunteers"])
+    
+        for volunteer in volunteers:
+    
+            if volunteer["registered"]:
+                logger.info(f"Registering guest: {volunteer['name']}")
+    
+                # Change register data
+                self._json_test_data["register"]["first_name"] = volunteer["name"]
+                self._json_test_data["register"]["email"] = volunteer["email_addr"]
+    
+                # Register
+                login_modal.register(test_data=self._json_test_data['register'], existing_user=True)
+    
+            sus_row = sign_up_sheet_maker.get_random_sus_row(sus=sign_up_sheet)
+    
+            sign_up_sheet_maker.select_sign_up(sus_row)
+&gt;           sign_up_sheet_maker.volunteer_sign_up(volunteer=volunteer)
+
+_test_name = 'test_evite_sus_one_day_create'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f0dd7d19d00&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f0dd7d19970&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_sus_one_day_create (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f0dd7d19b80&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f0dd7d19e80&gt;
+page       = &lt;commons.page.Page object at 0x7f0dd7d18aa0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f0dd7cd0da0&gt;
+shareable_link = 'https://test23.evite.me/Hvhmcb8cfK'
+sign_up_sheet = [{'row_count': 2, 'row_filled': 0, 'row_title': 'drinks'}, {'row_count': 5, 'row_filled': 0, 'row_title': 'chips'}, {'row_count': 10, 'row_filled': 0, 'row_title': 'food'}]
+sign_up_sheet_maker = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f0dd7d19910&gt;
+sus_row    = {'row_count': 2, 'row_filled': 0, 'row_title': 'drinks'}
+user_email_addr = 'evite-01202026-174224-14-test@evitetest.com'
+user_pass  = 'test1234'
+volunteer  = {'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260120-1744-295965-test@evitetest.com', 'guest_count': 2, 'kids_count': 0, ...}
+volunteers = [{'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260120-1744-295965-test@evitetest.com', '...ENT', 'email_addr': 'evite-volunteer-20260120-1744-296168-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}]
+
+test_evite_sus_one_day_create.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/sign_up_sheet_maker.py:609: in volunteer_sign_up
+    self.log_and_raise_exception(message=msg)
+        msg        = 'Fail verify name, expecting evite-volunteer-20260120-1744-295965-test, got '
+        self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f0dd7d19910&gt;
+        volunteer  = {'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260120-1744-295965-test@evitetest.com', 'guest_count': 2, 'kids_count': 0, ...}
+        web_name   = ''
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f0dd7d19910&gt;
+message = 'Fail verify name, expecting evite-volunteer-20260120-1744-295965-test, got '
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Fail verify name, expecting evite-volunteer-20260120-1744-295965-test, got
+
+message    = 'Fail verify name, expecting evite-volunteer-20260120-1744-295965-test, got '
+self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f0dd7d19910&gt;
+
+../../commons/page.py:1049: Exception</failure></testcase><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="410.766"><failure message="selenium.common.exceptions.JavascriptException: Message: javascript error: Cannot read properties of null (reading 'click')&#10;  (Session info: chrome=133.0.6943.126)&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x00380283+25139]&#10;&#09;(No symbol) [0x0030B234]&#10;&#09;(No symbol) [0x001E04A3]&#10;&#09;(No symbol) [0x001E6EA1]&#10;&#09;(No symbol) [0x001E9203]&#10;&#09;(No symbol) [0x0026F6C5]&#10;&#09;(No symbol) [0x0024CF3C]&#10;&#09;(No symbol) [0x0026E6E1]&#10;&#09;(No symbol) [0x0024CD36]&#10;&#09;(No symbol) [0x0021BD29]&#10;&#09;(No symbol) [0x0021D064]&#10;&#09;GetHandleVerifier [0x0068B143+3215603]&#10;&#09;GetHandleVerifier [0x006A22BA+3310186]&#10;&#09;GetHandleVerifier [0x0069C4D2+3286146]&#10;&#09;GetHandleVerifier [0x00419C80+654384]&#10;&#09;(No symbol) [0x003145BD]&#10;&#09;(No symbol) [0x003114A8]&#10;&#09;(No symbol) [0x00311647]&#10;&#09;(No symbol) [0x00303D20]&#10;&#09;BaseThreadInitThunk [0x75D75D49+25]&#10;&#09;RtlInitializeExceptionChain [0x7706CEBB+107]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x7706CE41+561]">self = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7f2b66f58500&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f2b66fb9190&gt;
+
+    def test_evite_copy_premium_past_event(self, config):
+        """
+        Copy premium past event:
+        Select past event from DB
+        Copy
+        Change title, time, etc
+        Update and Delete guest list, then update total guest list
+        Send event
+        Verify
+    
+        :param config:
+        :return:
+        """
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+    
+        logger.info(f"Start {inspect.stack()[0][3]}")
+    
+        page = config.pages["page"]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        evite_home_page = config.pages["evite_home_page"]
+        evite_event_page = config.pages["evite_event_page"]
+        evite_overview = config.pages["evite_overview"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        page.get_url(config.environment, "")
+    
+        user_email_addr = ""
+        user_pass = ""
+        user_first_name = ""
+        user_last_name = ""
+        event_title = ""
+        cursor = None
+    
+        # Get event with event_date &gt; 2023-04-01 which is fabric
+    
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+        db_connect = psql_db.connect_db()
+    
+        if self._json_test_data["sign_in"]["email"]:
+            user_email_addr = self._json_test_data["sign_in"]["email"]
+            user_pass = self._json_test_data["sign_in_credentials"]["password"]
+        else:
+            sql_string = (
+                "SELECT %s, %s, %s, %s, %s, %s FROM %s WHERE event_create_date &gt; '%s' "
+                "AND event_sent_date &gt; '%s'"
+                "AND env = '%s' "
+                "AND event_cancelled = '%s' "
+                "AND event_premium = '%s' "
+                "AND event_draft = '%s' "
+                "AND event_draft_guests = '%s' "
+                "AND created_by = '%s'"
+                "ORDER BY random() LIMIT %s;"
+                % (
+                    "user_email_addr",
+                    "user_pass",
+                    "event_title",
+                    "event_id",
+                    "event_date",
+                    "event_premium",
+                    settings.DB_TABLE_EVENTS,
+                    "2023-04-01",
+                    "2023-04-01",
+                    settings.ENV,
+                    False,
+                    True,
+                    False,
+                    False,
+                    "evite",
+                    1,
+                )
+            )
+    
+            try:
+                cursor = db_connect.cursor()
+                cursor.execute(sql_string)
+    
+                # Check result first, if no data then don't fail: Skip
+                if cursor.rowcount:
+                    user_email_addr, user_pass, event_title, event_id, event_date, event_premium = cursor.fetchone()
+                else:
+                    msg = f"DB have no record for sql: {sql_string}"
+                    logger.warn(msg)
+                    pytest.skip(msg)
+    
+            except psycopg2.DatabaseError as db_error:
+                logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+            else:
+                logger.info("SQL execute success")
+    
+        # Log in with fetched user
+    
+        # Log in with fetched user
+        login_modal.sign_in(email=user_email_addr, password=user_pass)
+    
+        # Get user's first and last name
+        sql_string = psql_db.get_select_from_table_string(
+            settings.DB_TABLE_USERS, ["user_first_name", "user_last_name"], user_email_addr=user_email_addr
+        )
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+            if cursor.rowcount:
+                user_first_name, user_last_name = cursor.fetchone()
+            else:
+                config.test_failed["value"] = False
+                msg = f"DB have no record for sql: {sql_string}"
+                logger.warn(msg)
+                pytest.skip(msg)
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+        finally:
+            db_connect.close()
+            cursor.close()
+    
+        evite_home_page.select_logged_in_menu(action="events")
+    
+        # First verify event, we have bad data in db
+        if not my_events.find_event(event_title=event_title, fail=False):
+            # There is a mismatch between event and host, delete the row
+            sql_string = "DELETE FROM %s WHERE user_email_addr = '%s';" % (settings.DB_TABLE_EVENTS, user_email_addr)
+            psql_db.db_execute(sql_string)
+    
+            config.test_failed["value"] = False
+            pytest.skip(f"Can't find event {event_title}")
+    
+&gt;       my_events.select_event_options(event_title=event_title,
+                                       event_option="copy_invitation",
+                                       url="preview")
+
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f2b66fb9190&gt;
+cursor     = &lt;cursor object at 0x7f2b66f45f30; closed: -1&gt;
+db_connect = &lt;connection object at 0x7f2b67045f80; dsn: 'user=jenkins password=xxx dbname=qatests host=34.133.6.167 port=5432', closed: 1&gt;
+event_date = datetime.datetime(2025, 3, 14, 7, 0)
+event_id   = '006DNULF5R5SXIBEAEPPXWEOOKH46I'
+event_premium = True
+event_title = 'testCIYTSQ123test_20241218-134124'
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7f2b66fb8b90&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f2b66fb8bc0&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7f2b66fb9040&gt;
+logger     = &lt;Logger test_evite_copy_premium_past_event (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f2b66fb90a0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f2b66fb9070&gt;
+page       = &lt;commons.page.Page object at 0x7f2b66fb8230&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f2b66fb9b50&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f2b66fb93a0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7f2b66f58500&gt;
+sql_string = "SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-12182024-134024-35-test@evitetest.com' ORDER BY random();"
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f2b66fb8e60&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f2b66fb8fe0&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f2b66fb9010&gt;
+user_email_addr = 'evite-12182024-134024-35-test@evitetest.com'
+user_first_name = 'automation'
+user_last_name = 'test'
+user_pass  = 'test1234'
+
+test_evite_copy_premium_past_event.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/my_events.py:153: in select_event_options
+    self.find_element_click(element_locator=self._event_options_copy_invitation)
+        _modal_cancel = ('css selector', '[data-qa-id="modal-cancel"]')
+        _modal_submit = ('css selector', '[data-qa-id="modal-submit"]')
+        event      = &lt;selenium.webdriver.remote.webelement.WebElement (session="cf99a4e25027d36e9f5d10ff893f740d", element="f.5C128B3BE3BBEB2A92B23E4E42A94376.d.D5387001CAF65EC7FDD1C36C9A52EDB9.e.145")&gt;
+        event_option = 'copy_invitation'
+        event_status = None
+        event_title = 'testCIYTSQ123test_20241218-134124'
+        past_event = False
+        self       = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f2b66fb9070&gt;
+        url        = 'preview'
+../../commons/web.py:812: in find_element_click
+    self.selenium.execute_script(f"document.querySelector('{element_locator[1]}').click()")
+        config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f2b66fb9190&gt;
+        element_locator = ('css selector', '[data-qa-id="item_copy"]')
+        js         = False
+        scroll     = False
+        self       = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f2b66fb9070&gt;
+        timeout    = 30
+../../../922/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:555: in execute_script
+    return self.execute(command, {"script": script, "args": converted_args})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        args       = ()
+        command    = 'w3cExecuteScript'
+        converted_args = []
+        script     = 'document.querySelector(\'[data-qa-id="item_copy"]\').click()'
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="cf99a4e25027d36e9f5d10ff893f740d")&gt;
+../../../922/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'w3cExecuteScript'
+        params     = {'args': [], 'script': 'document.querySelector(\'[data-qa-id="item_copy"]\').click()'}
+        response   = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x7706CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7706CE41+561]\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="cf99a4e25027d36e9f5d10ff893f740d")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f2b66fb95e0&gt;
+response = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x7706CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7706CE41+561]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.JavascriptException: Message: javascript error: Cannot read properties of null (reading 'click')
+E         (Session info: chrome=133.0.6943.126)
+E       Stacktrace:
+E       	GetHandleVerifier [0x00380283+25139]
+E       	(No symbol) [0x0030B234]
+E       	(No symbol) [0x001E04A3]
+E       	(No symbol) [0x001E6EA1]
+E       	(No symbol) [0x001E9203]
+E       	(No symbol) [0x0026F6C5]
+E       	(No symbol) [0x0024CF3C]
+E       	(No symbol) [0x0026E6E1]
+E       	(No symbol) [0x0024CD36]
+E       	(No symbol) [0x0021BD29]
+E       	(No symbol) [0x0021D064]
+E       	GetHandleVerifier [0x0068B143+3215603]
+E       	GetHandleVerifier [0x006A22BA+3310186]
+E       	GetHandleVerifier [0x0069C4D2+3286146]
+E       	GetHandleVerifier [0x00419C80+654384]
+E       	(No symbol) [0x003145BD]
+E       	(No symbol) [0x003114A8]
+E       	(No symbol) [0x00311647]
+E       	(No symbol) [0x00303D20]
+E       	BaseThreadInitThunk [0x75D75D49+25]
+E       	RtlInitializeExceptionChain [0x7706CEBB+107]
+E       	RtlGetAppContainerNamedObjectPath [0x7706CE41+561]
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7f2b66fbb590&gt;
+error_code = 'JAVASCRIPT_ERROR'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [17, 'javascript error']
+exception_class = &lt;class 'selenium.common.exceptions.JavascriptException'&gt;
+message    = "javascript error: Cannot read properties of null (reading 'click')\n  (Session info: chrome=133.0.6943.126)"
+response   = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x7706CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7706CE41+561]\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f2b66fb95e0&gt;
+st_value   = '\tGetHandleVerifier [0x00380283+25139]\n\t(No symbol) [0x0030B234]\n\t(No symbol) [0x001E04A3]\n\t(No symbol) [0x001E...0x75D75D49+25]\n\tRtlInitializeExceptionChain [0x7706CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7706CE41+561]\n'
+stacktrace = ['\tGetHandleVerifier [0x00380283+25139]', '\t(No symbol) [0x0030B234]', '\t(No symbol) [0x001E04A3]', '\t(No symbol) [0x001E6EA1]', '\t(No symbol) [0x001E9203]', '\t(No symbol) [0x0026F6C5]', ...]
+status     = 'javascript error'
+value      = {'error': 'javascript error', 'message': "javascript error: Cannot read properties of null (reading 'click')\n  (Sessi...x75D75D49+25]\n\tRtlInitializeExceptionChain [0x7706CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7706CE41+561]\n'}
+value_json = '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of null (reading \'click\')\...49+25]\\n\\tRtlInitializeExceptionChain [0x7706CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7706CE41+561]\\n"}}'
+
+../../../922/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: JavascriptException</failure></testcase><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="525.822" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="587.776" /></testsuite></testsuites>

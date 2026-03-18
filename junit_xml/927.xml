@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="4" tests="13" time="992.347" timestamp="2026-01-26T09:46:05.819252-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_rsvp_free_1cf.TestEviteRSVPFree1CF" name="test_evite_rsvp_free_1cf" time="0.000"><skipped type="pytest.skip" message="Experiment set to 0%">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_free_1cf.py:25: Experiment set to 0%</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:23: Egift disabled</skipped></testcase><testcase classname="test_evite_rsvp_invitation_maker_v3.TestEviteRSVPInvitationMakerV3" name="test_evite_rsvp_invitation_maker_v3" time="0.000"><skipped type="pytest.skip" message="Experiment forced control">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_invitation_maker_v3.py:24: Experiment forced control</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:22: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="231.629" /><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="244.258" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="432.503"><failure message="Exception: Except: Can't find element ('css selector', '[data-qa-id=&quot;add-guest&quot;]')">self = &lt;tests.evite_acceptance.test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew object at 0x7f6f82ff2f00&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f6f83059b80&gt;
+
+    def test_evite_greeting_card_create_new(self, config):
+        """
+        Create Greeting Card as new registered user
+    
+        :param config:
+        :return:
+        """
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        login_modal = config.pages['login_modal']
+        evite_gallery_page = config.pages["evite_gallery_page"]
+        evite_overview = config.pages["evite_overview"]
+        evite_greeting_card = config.pages["evite_greeting_card"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_egift_card = config.pages["step2_egift_card"]
+        step3_grc_messages = config.pages["step3_grc_messages"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["host"] = (f"{self._json_test_data['register']['first_name']} "
+                                                                       f"{self._json_test_data['register']['last_name']}")
+    
+        evite_gallery_page.select_mega_nav(action="greeting_cards", url="cards")
+        evite_gallery_page.select_random_template(greeting_card=True)
+    
+        # step1_template.select_next(url="egift-card")
+        # step2_egift_card.select_egift_card_toggle(toggle=False)
+    
+        step1_template.select_next(url="recipients")
+&gt;       step5_guests.add_guests(test_data=self._json_test_data["recipients"], for_greeting_card=True)
+
+_test_name = 'test_evite_greeting_card_create_new'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f6f83059b80&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f6f83059400&gt;
+evite_greeting_card = &lt;commons.pages.evite.evite_greeting_card.EviteGreetingCard object at 0x7f6f83059b50&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7f6f83058ec0&gt;
+logger     = &lt;Logger test_evite_greeting_card_create_new (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f6f83059af0&gt;
+page       = &lt;commons.page.Page object at 0x7f6f830582c0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew object at 0x7f6f82ff2f00&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f6f83059730&gt;
+step2_egift_card = &lt;commons.pages.evite.step2_egift_card.Step2EGiftCard object at 0x7f6f83059130&gt;
+step3_grc_messages = &lt;commons.pages.evite.step3_grc_messages.Step3GRCMessages object at 0x7f6f830597c0&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f6f83059a00&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f6f830598b0&gt;
+
+test_evite_greeting_card_create_new.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step5_guests.py:126: in add_guests
+    self.add_guest(guest, for_greeting_card=for_greeting_card)
+        for_greeting_card = True
+        guest      = {'email_addr': 'evite-guest-52471814-O-test@evitetest.com', 'name': 'evite-guest-52471814-O-test', 'phone': ''}
+        initialized_guests = [{'email_addr': 'evite-guest-52471814-O-test@evitetest.com', 'name': 'evite-guest-52471814-O-test', 'phone': ''}, {'em...195'}, {'email_addr': 'evite-guest-52472136-X-test@evitetest.com', 'name': 'evite-guest-52472136-X-test', 'phone': ''}]
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f6f83059a00&gt;
+        test_data  = [{'email_addr': 'evite-guest-52471814-O-test@evitetest.com', 'name': 'evite-guest-52471814-O-test', 'phone': ''}, {'em...195'}, {'email_addr': 'evite-guest-52472136-X-test@evitetest.com', 'name': 'evite-guest-52472136-X-test', 'phone': ''}]
+../../commons/pages/evite/step5_guests.py:206: in add_guest
+    add_guest_button_text = self.get_element_text(self._add_guest)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        _          = 0
+        for_greeting_card = True
+        guest      = {'email_addr': 'evite-guest-52471814-O-test@evitetest.com', 'name': 'evite-guest-52471814-O-test', 'phone': ''}
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f6f83059a00&gt;
+../../commons/web.py:222: in get_element_text
+    if self.wait_until_element_is_visible(settings.DEFAULT_TIMEOUT, locator):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        element_text = ''
+        locator    = ('css selector', '[data-qa-id="add-guest"]')
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f6f83059a00&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f6f83059a00&gt;
+timeout = 30, locator = ('css selector', '[data-qa-id="add-guest"]')
+fail = True
+
+    def wait_until_element_is_visible(self, timeout=settings.DEFAULT_TIMEOUT, locator=None, fail=True):
+        """
+        This function wait the time given until an element is visible in one page
+    
+        @return: True if element is visible. False if element is not visible or timeout expired
+        """
+        time.sleep(1)
+    
+        try:
+            WebDriverWait(self.selenium, timeout).until(
+                ec.visibility_of_element_located(locator), f"WebDriverWait: Can't find element {locator.__str__()}"
+            )
+            # If found, return True
+            return True
+        except (TimeoutException, NoSuchElementException):
+            self.logger.warning(f"Except: Can't find element {locator.__str__()}")
+            time.sleep(1)
+    
+        # Log and Raise exception if fail is True
+        if fail:
+            msg = f"Except: Can't find element {locator.__str__()}"
+            self.logger.exception(msg)
+&gt;           raise Exception(msg)
+E           Exception: Except: Can't find element ('css selector', '[data-qa-id="add-guest"]')
+
+fail       = True
+locator    = ('css selector', '[data-qa-id="add-guest"]')
+msg        = 'Except: Can\'t find element (\'css selector\', \'[data-qa-id="add-guest"]\')'
+self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f6f83059a00&gt;
+timeout    = 30
+
+../../commons/web.py:350: Exception</failure></testcase><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="431.426"><failure message="Exception: Except: Can't find element ('css selector', '[data-qa-id=&quot;step1-texteditor-input&quot;]')">self = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fc83adf4bf0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fc83adff230&gt;
+
+    def test_evite_rsvp_premium(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        quake_v3_event = QuakeV3Event(_test_name)
+        psql_db = PostgreSQL(_test_name)
+    
+        # Logger
+        logger = LoggingConfig().initialize_logger(_test_name)
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav("create_invitation")
+        evite_gallery_page.select_filter_by(["premium"])
+    
+        # Pick up a random template from the template page
+        evite_gallery_page.select_random_template(premium=True)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(test_name=_test_name)
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time(premium=True)
+        self._json_test_data["invitation"]["event_details"]["host"] = (f"{self._json_test_data['register']['first_name']} "
+                                                                       f"{self._json_test_data['register']['last_name']}")
+    
+        # Step 1: Card Editor
+&gt;       step1_template.fill_text_editors(test_data=self._json_test_data)
+
+_test_name = 'test_evite_rsvp_premium'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fc83adff230&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7fc83adfe900&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7fc83ae4e360&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fc83adfe840&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_premium (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fc83adfed80&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fc83adfdfd0&gt;
+page       = &lt;commons.page.Page object at 0x7fc83adfd8e0&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7fc83b113800&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7fc83c98d8e0&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fc83adfeb10&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fc83adf4bf0&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fc83adfeb70&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7fc83adfeab0&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fc83adfe270&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc83adfe5a0&gt;
+user_email_addr = 'evite-01262026-095205-80-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7fc83adfe6c0&gt;
+
+test_evite_rsvp_premium.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step1_template.py:307: in fill_text_editors
+    self.enter_text_editor(test_data=test_data["invitation"]["event_details"]["event_title"] +
+        number_of_text_editors = 1
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fc83adfeb70&gt;
+        test_data  = {'RSVP_NOTE': 'Guests', 'action': {'create_invitation': True, 'party_ideas': False, 'thank_you_card': False}, 'cohost'... 'cohost_email': 'test@evitetest.com', 'cohost_name': 'THIS WILL BE REPLACED RUNTIME'}, 'create_invitation': True, ...}
+../../commons/pages/evite/step1_template.py:145: in enter_text_editor
+    if self.wait_until_element_is_visible(timeout=self.timeout, locator=self._text_editor):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fc83adfeb70&gt;
+        test_data  = 'testCIYTSQ123test_20260126-095251\nFebruary 22, 2026 12:00 PM\nTest Location Name8800 Sunset Blvd\nWest Hollywood, 90067'
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fc83adfeb70&gt;
+timeout = 30
+locator = ('css selector', '[data-qa-id="step1-texteditor-input"]'), fail = True
+
+    def wait_until_element_is_visible(self, timeout=settings.DEFAULT_TIMEOUT, locator=None, fail=True):
+        """
+        This function wait the time given until an element is visible in one page
+    
+        @return: True if element is visible. False if element is not visible or timeout expired
+        """
+        time.sleep(1)
+    
+        try:
+            WebDriverWait(self.selenium, timeout).until(
+                ec.visibility_of_element_located(locator), f"WebDriverWait: Can't find element {locator.__str__()}"
+            )
+            # If found, return True
+            return True
+        except (TimeoutException, NoSuchElementException):
+            self.logger.warning(f"Except: Can't find element {locator.__str__()}")
+            time.sleep(1)
+    
+        # Log and Raise exception if fail is True
+        if fail:
+            msg = f"Except: Can't find element {locator.__str__()}"
+            self.logger.exception(msg)
+&gt;           raise Exception(msg)
+E           Exception: Except: Can't find element ('css selector', '[data-qa-id="step1-texteditor-input"]')
+
+fail       = True
+locator    = ('css selector', '[data-qa-id="step1-texteditor-input"]')
+msg        = 'Except: Can\'t find element (\'css selector\', \'[data-qa-id="step1-texteditor-input"]\')'
+self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fc83adfeb70&gt;
+timeout    = 30
+
+../../commons/web.py:350: Exception</failure></testcase><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="434.889"><failure message="Exception: Except: Can't find element ('css selector', '[data-qa-id=&quot;step1-texteditor-input&quot;]')">self = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f5e84b5f9e0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f5e84bc4f80&gt;
+
+    def test_evite_rsvp_free(self, config):
+        """
+        New Creation Flow with Fabric Templates
+    
+        Create Event, RSVP guests, Yes, No. Email and/or Phone.
+    
+        Verify guest in Guest List
+        Verify RSVP in Manage Invitation Dashboard
+    
+        :param config:
+        :return:
+        """
+    
+        _test_name = inspect.stack()[0][3]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+         # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav(action="create_invitation")
+        evite_gallery_page.select_filter_by(actions=["free"])
+        evite_event_page = evite_gallery_page.select_random_template()
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+    
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} "
+                f"{self._json_test_data['register']['last_name']}")
+    
+        # Step 1: Card Editor
+&gt;       step1_template.fill_text_editors(test_data=self._json_test_data)
+
+_test_name = 'test_evite_rsvp_free'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f5e84bc4f80&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7f5e84bc4710&gt;
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7f5e84b87740&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f5e84bc79e0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f5e84bc5bb0&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_free (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f5e84bc4b90&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f5e84bc4c50&gt;
+page       = &lt;commons.page.Page object at 0x7f5e84bc51f0&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f5e84ca6c30&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f5e84ca7170&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7f5e84bc49b0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f5e84b5f9e0&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5e84bc5d60&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7f5e84bc7800&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f5e84bc45f0&gt;
+user_email_addr = 'evite-01262026-095206-55-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7f5e84bc4830&gt;
+
+test_evite_rsvp_free.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step1_template.py:307: in fill_text_editors
+    self.enter_text_editor(test_data=test_data["invitation"]["event_details"]["event_title"] +
+        number_of_text_editors = 1
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5e84bc5d60&gt;
+        test_data  = {'RSVP_NOTE': 'Guests', 'guests': [{'comment': 'THIS IS A YES RSVP GUEST COMMENT', 'email_addr': 'THIS WILL BE REPLACE...ne': '-test@evitetest.com', 'keep_me_logged_in': False, 'password': 'test1234'}, 'first_name': 'automation', ...}, ...}
+../../commons/pages/evite/step1_template.py:145: in enter_text_editor
+    if self.wait_until_element_is_visible(timeout=self.timeout, locator=self._text_editor):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5e84bc5d60&gt;
+        test_data  = 'testCIYTSQ123test_20260126-095254\nFebruary 17, 2026 4:00 PM\nTest Location Name8800 Sunset Blvd\nWest Hollywood, 90067'
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5e84bc5d60&gt;
+timeout = 30
+locator = ('css selector', '[data-qa-id="step1-texteditor-input"]'), fail = True
+
+    def wait_until_element_is_visible(self, timeout=settings.DEFAULT_TIMEOUT, locator=None, fail=True):
+        """
+        This function wait the time given until an element is visible in one page
+    
+        @return: True if element is visible. False if element is not visible or timeout expired
+        """
+        time.sleep(1)
+    
+        try:
+            WebDriverWait(self.selenium, timeout).until(
+                ec.visibility_of_element_located(locator), f"WebDriverWait: Can't find element {locator.__str__()}"
+            )
+            # If found, return True
+            return True
+        except (TimeoutException, NoSuchElementException):
+            self.logger.warning(f"Except: Can't find element {locator.__str__()}")
+            time.sleep(1)
+    
+        # Log and Raise exception if fail is True
+        if fail:
+            msg = f"Except: Can't find element {locator.__str__()}"
+            self.logger.exception(msg)
+&gt;           raise Exception(msg)
+E           Exception: Except: Can't find element ('css selector', '[data-qa-id="step1-texteditor-input"]')
+
+fail       = True
+locator    = ('css selector', '[data-qa-id="step1-texteditor-input"]')
+msg        = 'Except: Can\'t find element (\'css selector\', \'[data-qa-id="step1-texteditor-input"]\')'
+self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5e84bc5d60&gt;
+timeout    = 30
+
+../../commons/web.py:350: Exception</failure></testcase><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="476.724"><failure message="Exception: Except: Can't find element ('css selector', '[data-qa-id=&quot;event-guest-lists&quot;]')">self = &lt;tests.evite_acceptance.test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent object at 0x7f1230081df0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f12300e9670&gt;
+
+    def test_evite_greeting_card_create_from_past_event(self, config):
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        _test_name = inspect.stack()[0][3]
+    
+        evite_homepage = config.pages["evite_home_page"]
+        page = config.pages["page"]
+    
+        login_modal = config.pages["login_modal"]
+        evite_gallery_page = config.pages["evite_gallery_page"]
+        evite_overview = config.pages["evite_overview"]
+        my_events = config.pages["my_events"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_egift_card = config.pages["step2_egift_card"]
+        step3_grc_messages = config.pages["step3_grc_messages"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        logger.info(f"Start {_test_name}")
+    
+        sql_string = (f"SELECT user_email_addr, user_pass, event_title FROM public.evite_events WHERE "
+                      f"user_email_addr != 'automation_events@evitetest.com' AND "
+                      f"env = '{settings.ENV}' AND "
+                      f"event_premium = FALSE AND "
+                      f"event_draft_guests = FALSE AND "
+                      f"event_draft = FALSE AND "
+                      f"event_cancelled = FALSE AND "
+                      f"created_by = 'evite' AND "
+                      # f"event_create_date &gt; now()::DATE AND "
+                      # f"event_sent_date &lt; now()::DATE AND "
+                      f"event_create_date &gt; '2023-04-01' AND "
+                      f"event_sent_date &gt; '2023-04-01' AND "
+                      f"event_date &lt; now()::DATE AND "
+                      f"event_date &gt; now()::DATE-14 ORDER BY random() LIMIT 1;")  # We have Thanks only for 14 days
+    
+        page.get_url(config.environment, "")
+    
+        user_email_addr = None
+        user_pass = None
+        user_first_name = None
+        user_last_name = None
+        event_title = None
+    
+        # DB &amp; API Connections
+        quake_v3_account = QuakeV3Account(inspect.stack()[0][3])
+        quake_v3_user = QuakeV3User(inspect.stack()[0][3])
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+        db_connect = psql_db.connect_db()
+    
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+    
+            # Check result first, if no data then don't fail: Skip
+            if cursor.rowcount:
+                user_email_addr, user_pass, event_title = cursor.fetchone()
+            else:
+                logger.warn(f"DB have no record for sql: {sql_string}")
+                config.test_failed["value"] = False
+                pytest.skip("DB have no record for sql")
+    
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+    
+        # Check email length
+        if len(user_email_addr) &gt; 59:
+            msg = "Email is 60+ characters"
+            logger.error(msg)
+            pytest.skip(msg)
+    
+        # Get user's first and last name
+        cursor = None
+        sql_string = psql_db.get_select_from_table_string(
+            settings.DB_TABLE_USERS, ["user_first_name", "user_last_name"], user_email_addr=user_email_addr
+        )
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+            if cursor.rowcount:
+                user_first_name, user_last_name = cursor.fetchone()
+            else:
+                config.test_failed["value"] = False
+                msg = f"DB have no record for sql: {sql_string}"
+                logger.warn(msg)
+                pytest.skip(msg)
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+        finally:
+            db_connect.close()
+            cursor.close()
+    
+        # Need for payment page
+        self._json_test_data["invitation"]["event_details"]["host"] = f"{user_first_name} {user_last_name}"
+    
+        # LogIn through the API
+        sign_in_response = quake_v3_account.account_session_sign_in(email_address=user_email_addr, password=user_pass)
+    
+        # Get All Past Events
+        past_events_response = quake_v3_user.get_past_events(
+            user_id=sign_in_response.json()["message"]["user_id"],
+            session_id=sign_in_response.json()["message"]["token"],
+        )
+    
+        # Go through the list of events and get one that is not a card or draft event, and hosted by the user
+        past_event = None
+        for event in past_events_response.json()["message"]["events"]:
+            if event["guest_status"] == 1 and event["used_as"] == "invitation":
+                past_event = event
+                logger.info(f"Found a past event: {event['title']}, ID {event['event_id']}")
+                break
+    
+        # Skip the rest of the test if no qualifying event was found
+        if not past_event:
+            msg = "Could not find a past event with this user."
+            logger.info(f"{msg}")
+            pytest.skip(msg)
+    
+        # LogIn
+        login_modal.sign_in(email=user_email_addr, password=user_pass)
+        evite_homepage.select_logged_in_menu(action="events")
+    
+        my_events.select_event_options(event_title=event_title,
+                                       event_option="send_thanks",
+                                       event_status="You hosted",
+                                       url="cards")
+    
+        evite_gallery_page.select_random_template(greeting_card=True)
+    
+        step1_template.select_next(url="egift-card")
+        # step2_egift_card.select_egift_card_toggle(toggle=False)
+    
+        step1_template.select_next(url="recipients")
+        # Add past event guests
+&gt;       step5_guests.select_guest_content_options(action="event_guest_lists")
+
+_test_name = 'test_evite_greeting_card_create_from_past_event'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f12300e9670&gt;
+cursor     = &lt;cursor object at 0x7f1230071f30; closed: -1&gt;
+db_connect = &lt;connection object at 0x7f12301960c0; dsn: 'user=jenkins password=xxx dbname=qatests host=34.133.6.167 port=5432', closed: 1&gt;
+event      = {'event_id': '01C46P4VDBDQJUTBIEPQSPYI37GZLQ', 'event_is_invite': True, 'guest_id': '01C46P4VDBDQJUTBIEPQSPYI44NYRI', 'guest_status': 1, ...}
+event_title = 'testCIYTSQ123test_20250917-110230'
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f12300e80b0&gt;
+evite_homepage = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f12300e9070&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7f12300e9160&gt;
+logger     = &lt;Logger test_evite_greeting_card_create_from_past_event (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f12300ea900&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f12300e9700&gt;
+page       = &lt;commons.page.Page object at 0x7f12300e89e0&gt;
+past_event = {'event_id': '01C46P4VDBDQJUTBIEPQSPYI37GZLQ', 'event_is_invite': True, 'guest_id': '01C46P4VDBDQJUTBIEPQSPYI44NYRI', 'guest_status': 1, ...}
+past_events_response = &lt;Response [200]&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f12300e9760&gt;
+quake_v3_account = &lt;commons.pages.quake_v3.quake_v3_account.QuakeV3Account object at 0x7f12300e9610&gt;
+quake_v3_user = &lt;commons.pages.quake_v3.quake_v3_user.QuakeV3User object at 0x7f12300eaa20&gt;
+self       = &lt;tests.evite_acceptance.test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent object at 0x7f1230081df0&gt;
+sign_in_response = &lt;Response [200]&gt;
+sql_string = "SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-09172025-110120-46-test@evitetest.com' ORDER BY random();"
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f12300e90d0&gt;
+step2_egift_card = &lt;commons.pages.evite.step2_egift_card.Step2EGiftCard object at 0x7f12300e9220&gt;
+step3_grc_messages = &lt;commons.pages.evite.step3_grc_messages.Step3GRCMessages object at 0x7f12300e9190&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f12300e9310&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f12300e95b0&gt;
+user_email_addr = 'evite-09172025-110120-46-test@evitetest.com'
+user_first_name = 'evite-guest-05416561-u-test'
+user_last_name = 'test'
+user_pass  = 'test1234'
+
+test_evite_greeting_card_create_from_past_event.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step5_guests.py:261: in select_guest_content_options
+    if self.wait_until_element_is_visible(timeout=self.timeout, locator=self._event_guest_lists):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        action     = 'event_guest_lists'
+        locator    = None
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f12300e9310&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f12300e9310&gt;
+timeout = 30, locator = ('css selector', '[data-qa-id="event-guest-lists"]')
+fail = True
+
+    def wait_until_element_is_visible(self, timeout=settings.DEFAULT_TIMEOUT, locator=None, fail=True):
+        """
+        This function wait the time given until an element is visible in one page
+    
+        @return: True if element is visible. False if element is not visible or timeout expired
+        """
+        time.sleep(1)
+    
+        try:
+            WebDriverWait(self.selenium, timeout).until(
+                ec.visibility_of_element_located(locator), f"WebDriverWait: Can't find element {locator.__str__()}"
+            )
+            # If found, return True
+            return True
+        except (TimeoutException, NoSuchElementException):
+            self.logger.warning(f"Except: Can't find element {locator.__str__()}")
+            time.sleep(1)
+    
+        # Log and Raise exception if fail is True
+        if fail:
+            msg = f"Except: Can't find element {locator.__str__()}"
+            self.logger.exception(msg)
+&gt;           raise Exception(msg)
+E           Exception: Except: Can't find element ('css selector', '[data-qa-id="event-guest-lists"]')
+
+fail       = True
+locator    = ('css selector', '[data-qa-id="event-guest-lists"]')
+msg        = 'Except: Can\'t find element (\'css selector\', \'[data-qa-id="event-guest-lists"]\')'
+self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f12300e9310&gt;
+timeout    = 30
+
+../../commons/web.py:350: Exception</failure></testcase><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="366.899" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="428.722" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="975.325" /></testsuite></testsuites>

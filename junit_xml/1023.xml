@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="2" tests="11" time="632.382" timestamp="2026-03-10T13:57:37.988007-07:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="215.001" /><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="253.733" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="305.046" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="305.256" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="614.987" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="340.034" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="345.952" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="353.566" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="511.609"><failure message="utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '[data-qa-id=&quot;addGuestsButton&quot;]') at URL: https://test4.evitelabs.com/invitation/0307IIAE4SKDAANGEEPRDTCMEFJIXA/send?template=vintage-jello-jenna-obrien&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=14">self = &lt;commons.pages.evite.evite_event_confirmation.EviteEventConfirmationPage object at 0x7f9816918ce0&gt;
+locator = ('css selector', '[data-qa-id="addGuestsButton"]'), timeout = 15
+
+    def click(self, locator, timeout=15):
+        """
+        Waits for an element to be clickable and then clicks it. Also retries the click if the element becomes stale.
+        """
+        retries = 3
+    
+        for i in range(retries):
+            try:
+&gt;               elem = WebDriverWait(self.selenium, timeout).until(ec.element_to_be_clickable(locator))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+current_url = 'https://test4.evitelabs.com/invitation/0307IIAE4SKDAANGEEPRDTCMEFJIXA/send?template=vintage-jello-jenna-obrien&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=14'
+exception_msg = 'Message: \nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0xde6663\n\t0xde66a4\n\t0xc11d20\n\t0...5\n\t0x1086550\n\t0xe00358\n\t0xe07e5d\n\t0xdef128\n\t0xdef2f2\n\t0xdd892a\n\t0x76815d49\n\t0x7744cebb\n\t0x7744ce41\n'
+i          = 0
+locator    = ('css selector', '[data-qa-id="addGuestsButton"]')
+msg        = 'Timed out waiting for element: (\'css selector\', \'[data-qa-id="addGuestsButton"]\') at URL: https://test4.evitelabs...IXA/send?template=vintage-jello-jenna-obrien&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=14'
+retries    = 3
+self       = &lt;commons.pages.evite.evite_event_confirmation.EviteEventConfirmationPage object at 0x7f9816918ce0&gt;
+timeout    = 15
+
+../../commons/web.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="0cad31b2ed904342d2014d8aaf88ffff")&gt;
+method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x7f98165316c0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       Symbols not available. Dumping unresolved backtrace:
+E       	0xde6663
+E       	0xde66a4
+E       	0xc11d20
+E       	0xc5c19a
+E       	0xc5c43b
+E       	0xc9de72
+E       	0xc7ea84
+E       	0xc9b661
+E       	0xc7e7d6
+E       	0xc4ffd9
+E       	0xc50d94
+E       	0x106e6d4
+E       	0x10699a5
+E       	0x1086550
+E       	0xe00358
+E       	0xe07e5d
+E       	0xdef128
+E       	0xdef2f2
+E       	0xdd892a
+E       	0x76815d49
+E       	0x7744cebb
+E       	0x7744ce41
+
+end_time   = 63933038.821838945
+message    = ''
+method     = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x7f98165316c0&gt;
+screen     = None
+self       = &lt;selenium.webdriver.support.wait.WebDriverWait (session="0cad31b2ed904342d2014d8aaf88ffff")&gt;
+stacktrace = ['Symbols not available. Dumping unresolved backtrace:', '\t0xde6663', '\t0xde66a4', '\t0xc11d20', '\t0xc5c19a', '\t0xc5c43b', ...]
+
+../../../1023/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: TimeoutException
+
+The above exception was the direct cause of the following exception:
+
+self = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f9816decc80&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f981691a5d0&gt;
+
+    def test_evite_rsvp_free(self, config):
+        """
+        New Creation Flow with Fabric Templates
+    
+        Create Event, RSVP guests, Yes, No. Email and/or Phone.
+    
+        Verify guest in Guest List
+        Verify RSVP in Manage Invitation Dashboard
+    
+        :param config:
+        :return:
+        """
+    
+        _test_name = inspect.stack()[0][3]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+        invitation_page = config.pages["evite_view_invitation"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav(action="create_invitation")
+        evite_gallery_page.select_filter_by(actions=["free"])
+        evite_event_page = evite_gallery_page.select_random_template()
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+    
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+            )
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+        step1_template.select_next(url="preview")
+        step1_template.select_next(url="send")
+        evite_event_page.skip_ads()
+    
+&gt;       config.pages["evite_event_confirmation"].select_confirmation_button(action="add_guests")
+
+_test_name = 'test_evite_rsvp_free'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f981691a5d0&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7f981691a750&gt;
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7f98169186e0&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f9816df87d0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f9816919130&gt;
+host       = 'automation test'
+invitation_page = &lt;commons.pages.evite.evite_view_invitation.EviteViewInvitation object at 0x7f98169184a0&gt;
+logger     = &lt;Logger test_evite_rsvp_free (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f981691aa50&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f981691b800&gt;
+page       = &lt;commons.page.Page object at 0x7f9816918fe0&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f98182fb500&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f9816dbfe60&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7f9816919df0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f9816decc80&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f9816918bc0&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7f9816918770&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f981691b830&gt;
+user_email_addr = 'evite-03102026-140405-71-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7f98169181d0&gt;
+
+test_evite_rsvp_free.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/evite_event_confirmation.py:47: in select_confirmation_button
+    self.click(self._add_guests)
+        action     = 'add_guests'
+        self       = &lt;commons.pages.evite.evite_event_confirmation.EviteEventConfirmationPage object at 0x7f9816918ce0&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.evite_event_confirmation.EviteEventConfirmationPage object at 0x7f9816918ce0&gt;
+locator = ('css selector', '[data-qa-id="addGuestsButton"]'), timeout = 15
+
+    def click(self, locator, timeout=15):
+        """
+        Waits for an element to be clickable and then clicks it. Also retries the click if the element becomes stale.
+        """
+        retries = 3
+    
+        for i in range(retries):
+            try:
+                elem = WebDriverWait(self.selenium, timeout).until(ec.element_to_be_clickable(locator))
+                try:
+                    elem.click()
+                    self.logger.info("Clicked: %s", locator)
+                    return
+                except ElementClickInterceptedException:
+                    self.logger.warning("ElementClickInterceptedException: %s. Trying .click() again...", locator)
+                    if i == retries - 1:
+                        raise
+            except StaleElementReferenceException:
+                self.logger.warning("StaleElementReferenceException: %s. Trying .click() again...", locator)
+                if i == retries - 1:
+                    raise
+            except TimeoutException as e:
+                current_url = self.selenium.current_url
+                exception_msg = str(e)
+    
+                if "Timed out receiving message from renderer" in exception_msg:
+                    msg = f"RENDERER ISSUE DETECTED: Browser hung at {current_url} after clicking {locator}"
+                    self.logger.error(msg)
+                    raise TimeoutException(msg) from e
+                else:
+                    msg = f"Timed out waiting for element: {locator} at URL: {current_url}"
+                    self.logger.error(msg)
+&gt;                   raise ElementNotFoundError(msg) from e
+E                   utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '[data-qa-id="addGuestsButton"]') at URL: https://test4.evitelabs.com/invitation/0307IIAE4SKDAANGEEPRDTCMEFJIXA/send?template=vintage-jello-jenna-obrien&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=14
+
+current_url = 'https://test4.evitelabs.com/invitation/0307IIAE4SKDAANGEEPRDTCMEFJIXA/send?template=vintage-jello-jenna-obrien&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=14'
+exception_msg = 'Message: \nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0xde6663\n\t0xde66a4\n\t0xc11d20\n\t0...5\n\t0x1086550\n\t0xe00358\n\t0xe07e5d\n\t0xdef128\n\t0xdef2f2\n\t0xdd892a\n\t0x76815d49\n\t0x7744cebb\n\t0x7744ce41\n'
+i          = 0
+locator    = ('css selector', '[data-qa-id="addGuestsButton"]')
+msg        = 'Timed out waiting for element: (\'css selector\', \'[data-qa-id="addGuestsButton"]\') at URL: https://test4.evitelabs...IXA/send?template=vintage-jello-jenna-obrien&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=14'
+retries    = 3
+self       = &lt;commons.pages.evite.evite_event_confirmation.EviteEventConfirmationPage object at 0x7f9816918ce0&gt;
+timeout    = 15
+
+../../commons/web.py:77: ElementNotFoundError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="5" tests="13" time="725.486" timestamp="2026-01-27T14:36:59.253958-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_rsvp_free_1cf.TestEviteRSVPFree1CF" name="test_evite_rsvp_free_1cf" time="0.000"><skipped type="pytest.skip" message="Experiment set to 0%">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_free_1cf.py:25: Experiment set to 0%</skipped></testcase><testcase classname="test_evite_rsvp_invitation_maker_v3.TestEviteRSVPInvitationMakerV3" name="test_evite_rsvp_invitation_maker_v3" time="0.000"><skipped type="pytest.skip" message="Experiment forced control">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_invitation_maker_v3.py:24: Experiment forced control</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:22: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:23: Egift disabled</skipped></testcase><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="111.075"><skipped type="pytest.skip" message="DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-11232025-183431-43-test@evitetest.com' ORDER BY random();">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_greeting_card_create_from_past_event.py:113: DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-11232025-183431-43-test@evitetest.com' ORDER BY random();</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="116.944" /><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="130.588" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="365.023" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="708.769" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="533.026"><failure message="Exception: Can't verify page url contains confirm, current url: https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA">self = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7fea7d3f8f50&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fea7d41f6e0&gt;
+
+    def test_evite_copy_premium_past_event(self, config):
+        """
+        Copy premium past event:
+        Select past event from DB
+        Copy
+        Change title, time, etc
+        Update and Delete guest list, then update total guest list
+        Send event
+        Verify
+    
+        :param config:
+        :return:
+        """
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+    
+        logger.info(f"Start {inspect.stack()[0][3]}")
+    
+        page = config.pages["page"]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        evite_home_page = config.pages["evite_home_page"]
+        evite_event_page = config.pages["evite_event_page"]
+        evite_overview = config.pages["evite_overview"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        page.get_url(config.environment, "")
+    
+        user_email_addr = ""
+        user_pass = ""
+        user_first_name = ""
+        user_last_name = ""
+        event_title = ""
+        cursor = None
+    
+        # Get event with event_date &gt; 2023-04-01 which is fabric
+    
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+        db_connect = psql_db.connect_db()
+    
+        if self._json_test_data["sign_in"]["email"]:
+            user_email_addr = self._json_test_data["sign_in"]["email"]
+            user_pass = self._json_test_data["sign_in_credentials"]["password"]
+        else:
+            sql_string = (
+                "SELECT %s, %s, %s, %s, %s, %s FROM %s WHERE event_create_date &gt; '%s' "
+                "AND event_sent_date &gt; '%s'"
+                "AND env = '%s' "
+                "AND event_cancelled = '%s' "
+                "AND event_premium = '%s' "
+                "AND event_draft = '%s' "
+                "AND event_draft_guests = '%s' "
+                "AND created_by = '%s'"
+                "ORDER BY random() LIMIT %s;"
+                % (
+                    "user_email_addr",
+                    "user_pass",
+                    "event_title",
+                    "event_id",
+                    "event_date",
+                    "event_premium",
+                    settings.DB_TABLE_EVENTS,
+                    "2023-04-01",
+                    "2023-04-01",
+                    settings.ENV,
+                    False,
+                    True,
+                    False,
+                    False,
+                    "evite",
+                    1,
+                )
+            )
+    
+            try:
+                cursor = db_connect.cursor()
+                cursor.execute(sql_string)
+    
+                # Check result first, if no data then don't fail: Skip
+                if cursor.rowcount:
+                    user_email_addr, user_pass, event_title, event_id, event_date, event_premium = cursor.fetchone()
+                else:
+                    msg = f"DB have no record for sql: {sql_string}"
+                    logger.warn(msg)
+                    pytest.skip(msg)
+    
+            except psycopg2.DatabaseError as db_error:
+                logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+            else:
+                logger.info("SQL execute success")
+    
+        # Log in with fetched user
+    
+        # Log in with fetched user
+        login_modal.sign_in(email=user_email_addr, password=user_pass)
+    
+        # Get user's first and last name
+        sql_string = psql_db.get_select_from_table_string(
+            settings.DB_TABLE_USERS, ["user_first_name", "user_last_name"], user_email_addr=user_email_addr
+        )
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+            if cursor.rowcount:
+                user_first_name, user_last_name = cursor.fetchone()
+            else:
+                config.test_failed["value"] = False
+                msg = f"DB have no record for sql: {sql_string}"
+                logger.warn(msg)
+                pytest.skip(msg)
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+        finally:
+            db_connect.close()
+            cursor.close()
+    
+        evite_home_page.select_logged_in_menu(action="events")
+    
+        # First verify event, we have bad data in db
+        if not my_events.find_event(event_title=event_title, fail=False):
+            # There is a mismatch between event and host, delete the row
+            sql_string = "DELETE FROM %s WHERE user_email_addr = '%s';" % (settings.DB_TABLE_EVENTS, user_email_addr)
+            psql_db.db_execute(sql_string)
+    
+            config.test_failed["value"] = False
+            pytest.skip(f"Can't find event {event_title}")
+    
+        my_events.select_event_options(event_title=event_title,
+                                       event_option="copy_invitation",
+                                       url="preview")
+        # Update title
+        self._json_test_data["invitation"]["event_details"]["event_title"] = f"{event_title}-copy"
+        # Get random date between today and range specified in settings
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        # Get random time between 1-12, random :00 or :30, random AM or PM
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        # Update host
+        # NOTE: We might enter different host name here, so can check if JSON data there then don't do update
+        self._json_test_data["invitation"]["event_details"]["host"] = f"{user_first_name} {user_last_name}"
+    
+        # Step 5: Add Guests
+        step1_template.select_next(url="guests")
+        guest_list = step5_guests.fetch_all_guests_upload_file()
+        guests_to_delete = [guest_list.pop()]
+        step5_guests.delete_guests(guests_to_delete=guests_to_delete)
+    
+        step5_guests.add_guests(test_data=self._json_test_data["guests"])
+        step1_template.select_next(url="review")
+    
+&gt;       step6_review_send.enter_checkout_page(test_data=self._json_test_data, url="confirm")
+
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fea7d41f6e0&gt;
+cursor     = &lt;cursor object at 0x7fea7d3ee2f0; closed: -1&gt;
+db_connect = &lt;connection object at 0x7fea7d509d00; dsn: 'user=jenkins password=xxx dbname=qatests host=34.133.6.167 port=5432', closed: 1&gt;
+event_date = datetime.datetime(2025, 6, 16, 0, 0)
+event_id   = '025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+event_premium = True
+event_title = 'testCIYTSQ123test_20240305-001656'
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7fea7d41eb40&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fea7d41ea80&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7fea7d41f290&gt;
+guest_list = [{'contact': 'evite-guest-18143511-i-test@evitetest.com', 'name': 'evite-guest-18143511-i-test'}, {'contact': '(555) 8...9161626-K-test'}, {'contact': 'evite-guest-51477400-l-test@evitetest.com', 'name': 'evite-guest-51477400-L-test'}, ...]
+guests_to_delete = [{'contact': 'evite-guest-11042018-y-test@evitetest.com', 'name': 'evite-guest-11042018-Y-test'}]
+logger     = &lt;Logger test_evite_copy_premium_past_event (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fea7d41f350&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fea7d41f230&gt;
+page       = &lt;commons.page.Page object at 0x7fea7d41e1b0&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7fea7d41ffe0&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7fea7d41f950&gt;
+self       = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7fea7d3f8f50&gt;
+sql_string = "SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-03052024-001557-54-test@evitetest.com' ORDER BY random();"
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fea7d41f320&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fea7d41f110&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+user_email_addr = 'evite-03052024-001557-54-test@evitetest.com'
+user_first_name = 'automation'
+user_last_name = 'test'
+user_pass  = 'test1234'
+
+test_evite_copy_premium_past_event.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step6_review_send.py:216: in enter_checkout_page
+    self.assert_url_contains(search_string=url)
+        promo_code = None
+        select_next = True
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+        test_data  = {'action': {'create_invitation': True, 'party_ideas': False, 'thank_you_card': False}, 'cohost': {'add_cohost': False,...': [{'link': 'https://www.babylist.com/'}, {'link': 'https://www.walmart.com/'}, {'link': 'http://amazon.com/'}]}, ...}
+        url        = 'confirm'
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 0
+        current_url = 'https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fea7d4601a0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 1
+        current_url = 'https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fea7d460470&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 2
+        current_url = 'https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fea7d460920&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 3
+        current_url = 'https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fea7d4608f0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 4
+        current_url = 'https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fea7d460140&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 5
+        current_url = 'https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fea7d461040&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+../../commons/page.py:198: in assert_url_contains
+    self.log_and_raise_exception(msg)
+        count      = 6
+        current_url = 'https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA'
+        msg        = "Can't verify page url contains confirm, current url: https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA"
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fea7d4616a0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+message = "Can't verify page url contains confirm, current url: https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't verify page url contains confirm, current url: https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA
+
+message    = "Can't verify page url contains confirm, current url: https://test4.evitelabs.com/invitation/025EIIAE4SKDAASO6EPQ7PIZRQSRJA/review?previous=copy_my_events&amp;source_event=025ER7EK5IFIVAUBMEPQH7KGZUKWHA"
+self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fea7d41f590&gt;
+
+../../commons/page.py:1049: Exception</failure></testcase><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="321.622" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="548.103" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="582.050" /></testsuite></testsuites>

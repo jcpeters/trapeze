@@ -92,12 +92,9 @@ async function main() {
       suiteName:   "combined-suite",
       // Expected: links to BOTH QAA-100 and QAA-101
     },
-    {
-      identityKey: "tests.unknown::test_references_NOPE-1_key",
-      title:       "test with unknown Jira ref",
-      suiteName:   "misc-suite",
-      // Expected: NOPE-1 NOT in jira_issue → skipped
-    },
+    // Case (g) — key NOT in jira_issue — is verified by the linksSkipped=1
+    // counter in the inference output, not by a persistent test_case row.
+    // The row is created transiently below and deleted in the teardown.
     {
       identityKey: "tests.nokeys::test_plain_assertion",
       title:       "plain assertion test",
@@ -114,9 +111,30 @@ async function main() {
     });
   }
   console.log(`  ✓ ${testCases.length} test_case rows`);
+
+  // ── 3. Transient negative case (g): key NOT in jira_issue ──────────────
+  //   Insert, verify it gets skipped by the inference scan, then remove it
+  //   so it doesn't pollute the real test_case table with a fake identity key.
+  const negativeKey = "tests.unknown::test_references_NOPE-1_key";
+  await prisma.testCase.upsert({
+    where:  { identityKey: negativeKey },
+    update: { title: "test with unknown Jira ref", suiteName: "misc-suite" },
+    create: { identityKey: negativeKey, title: "test with unknown Jira ref", suiteName: "misc-suite" },
+  });
+  console.log("  ✓ transient negative test case inserted (will be removed after scan)");
   console.log("\nFixture ready. Now run:");
   console.log("  npm run etl:infer:jira -- --dry-run --explain");
   console.log("  npm run etl:infer:jira -- --explain");
+  console.log("\nThen clean up the transient negative case:");
+  console.log("  tsx ./scripts/fixtures/jira-inference-fixture.ts --teardown");
+
+  // ── 4. Teardown (--teardown flag) ────────────────────────────────────────
+  if (process.argv.includes("--teardown")) {
+    const deleted = await prisma.testCase.deleteMany({
+      where: { identityKey: negativeKey },
+    });
+    console.log(`\n[teardown] Deleted ${deleted.count} transient negative test case(s)`);
+  }
 }
 
 main()

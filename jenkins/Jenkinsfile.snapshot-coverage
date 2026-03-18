@@ -1,0 +1,81 @@
+/**
+ * trapeze-snapshot-coverage
+ *
+ * Reads v_executed_coverage_summary and inserts one row into
+ * coverage_snapshot, building the time-series Metabase uses for trend
+ * charts.  Runs after the nightly syncs finish.
+ *
+ * Jenkins configuration:
+ *   Pipeline → "Pipeline script from SCM"
+ *   Script Path: jenkins/Jenkinsfile.snapshot-coverage
+ *
+ * Required Jenkins credentials:
+ *   trapeze-db-url   Secret text — full DATABASE_URL connection string
+ *
+ * Dependency: schedule this ~1 hour after sync-jira / sync-testrail so
+ * the coverage view reflects fresh data (e.g. H 7 * * * vs H 6 * * *).
+ */
+
+pipeline {
+  agent { label 'trapeze' }
+
+  triggers {
+    // ~7 AM nightly — after the 6 AM sync jobs have finished.
+    cron('H 7 * * *')
+  }
+
+  parameters {
+    booleanParam(
+      name: 'FORCE',
+      defaultValue: false,
+      description: 'Insert a second snapshot even if one already exists for today'
+    )
+    booleanParam(
+      name: 'DRY_RUN',
+      defaultValue: false,
+      description: 'Compute the snapshot values without writing to the database'
+    )
+  }
+
+  environment {
+    DATABASE_URL = credentials('trapeze-db-url')
+    NODE_ENV     = 'production'
+  }
+
+  options {
+    timeout(time: 10, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '60'))
+    disableConcurrentBuilds()
+    timestamps()
+  }
+
+  stages {
+    stage('Install') {
+      steps {
+        sh 'npm ci --prefer-offline'
+      }
+    }
+
+    stage('Snapshot Coverage') {
+      steps {
+        script {
+          def extraFlags = ''
+          if (params.FORCE)   extraFlags += ' --force'
+          if (params.DRY_RUN) extraFlags += ' --dry-run'
+          sh "npm run etl:snapshot:coverage --${extraFlags}"
+        }
+      }
+    }
+  }
+
+  post {
+    failure {
+      echo "trapeze-snapshot-coverage FAILED — check logs above"
+      // slackSend channel: '#qa-alerts', color: 'danger',
+      //   message: "trapeze-snapshot-coverage failed — ${env.BUILD_URL}"
+    }
+    success {
+      echo "trapeze-snapshot-coverage completed successfully"
+    }
+  }
+}

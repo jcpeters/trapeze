@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="1" skipped="5" tests="13" time="910.782" timestamp="2026-01-08T16:46:36.373209-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_rsvp_free_1cf.TestEviteRSVPFree1CF" name="test_evite_rsvp_free_1cf" time="0.000"><skipped type="pytest.skip" message="Experiment set to 0%">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_free_1cf.py:25: Experiment set to 0%</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:23: Egift disabled</skipped></testcase><testcase classname="test_evite_rsvp_invitation_maker_v3.TestEviteRSVPInvitationMakerV3" name="test_evite_rsvp_invitation_maker_v3" time="0.000"><skipped type="pytest.skip" message="Experiment forced control">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_invitation_maker_v3.py:24: Experiment forced control</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:22: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="110.930" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="113.504"><skipped type="pytest.skip" message="DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-08012025-141813-31-test@evitetest.com' ORDER BY random();">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_greeting_card_create_from_past_event.py:113: DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-08012025-141813-31-test@evitetest.com' ORDER BY random();</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="147.432" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="406.571" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="492.199" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="334.946" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="750.218"><failure message="selenium.common.exceptions.WebDriverException: Message: Unable to execute request for an existing session: java.io.IOException: HTTP/1.1 header parser received no bytes&#10;Stacktrace:&#10;java.lang.RuntimeException: Unable to execute request for an existing session: java.io.IOException: HTTP/1.1 header parser received no bytes&#10;&#09;at org.openqa.selenium.grid.router.HandleSession.execute(HandleSession.java:216)&#10;&#09;at org.openqa.selenium.remote.http.Route$PredicatedRoute.handle(Route.java:398)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.grid.router.Router.execute(Router.java:89)&#10;&#09;at org.openqa.selenium.grid.web.CheckOriginHeader.lambda$apply$0(CheckOriginHeader.java:69)&#10;&#09;at org.openqa.selenium.grid.web.CheckContentTypeHeader.lambda$apply$0(CheckContentTypeHeader.java:75)&#10;&#09;at org.openqa.selenium.grid.web.EnsureSpecCompliantResponseHeaders.lambda$apply$0(EnsureSpecCompliantResponseHeaders.java:34)&#10;&#09;at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)&#10;&#09;at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.http.Route$NestedRoute.handle(Route.java:271)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.AddWebDriverSpecHeaders.lambda$apply$0(AddWebDriverSpecHeaders.java:35)&#10;&#09;at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)&#10;&#09;at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)&#10;&#09;at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)&#10;&#09;at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)&#10;&#09;at org.openqa.selenium.netty.server.SeleniumHandler.lambda$channelRead0$0(SeleniumHandler.java:49)&#10;&#09;at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)&#10;&#09;at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)&#10;&#09;at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)&#10;&#09;at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)&#10;&#09;at java.base/java.lang.Thread.run(Thread.java:833)&#10;Caused by: java.io.IOException: HTTP/1.1 header parser received no bytes&#10;&#09;at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:586)&#10;&#09;at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:123)&#10;&#09;at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute0(JdkHttpClient.java:462)&#10;&#09;at org.openqa.selenium.remote.http.RetryRequest.lambda$apply$0(RetryRequest.java:46)&#10;&#09;at org.openqa.selenium.remote.http.AddSeleniumUserAgent.lambda$apply$0(AddSeleniumUserAgent.java:44)&#10;&#09;at org.openqa.selenium.remote.http.Filter.lambda$andFinally$1(Filter.java:55)&#10;&#09;at org.openqa.selenium.remote.http.jdk.JdkHttpClient.lambda$executeAsync$2(JdkHttpClient.java:388)&#10;&#09;... 5 more&#10;Caused by: java.io.IOException: HTTP/1.1 header parser received no bytes&#10;&#09;at java.net.http/jdk.internal.net.http.common.Utils.wrapWithExtraDetail(Utils.java:348)&#10;&#09;at java.net.http/jdk.internal.net.http.Http1Response$HeadersReader.onReadError(Http1Response.java:675)&#10;&#09;at java.net.http/jdk.internal.net.http.Http1AsyncReceiver.checkForErrors(Http1AsyncReceiver.java:302)&#10;&#09;at java.net.http/jdk.internal.net.http.Http1AsyncReceiver.flush(Http1AsyncReceiver.java:268)&#10;&#09;at java.net.http/jdk.internal.net.http.common.SequentialScheduler$LockingRestartableTask.run(SequentialScheduler.java:205)&#10;&#09;at java.net.http/jdk.internal.net.http.common.SequentialScheduler$CompleteRestartableTask.run(SequentialScheduler.java:149)&#10;&#09;at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230)&#10;&#09;... 3 more&#10;Caused by: java.net.SocketException: Connection reset&#10;&#09;at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394)&#10;&#09;at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426)&#10;&#09;at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170)&#10;&#09;at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833)&#10;&#09;at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181)&#10;&#09;at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230)&#10;&#09;at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303)&#10;&#09;at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256)&#10;&#09;at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774)&#10;&#09;at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957)&#10;&#09;at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253)&#10;&#09;at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979)&#10;&#09;at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934)&#10;&#09;at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)&#10;&#09;at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934)">self = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fe08b0028a0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fe08aff5070&gt;
+
+    def test_evite_rsvp_premium(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        quake_v3_event = QuakeV3Event(_test_name)
+        psql_db = PostgreSQL(_test_name)
+    
+        # Logger
+        logger = LoggingConfig().initialize_logger(_test_name)
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav("create_invitation")
+        evite_gallery_page.select_filter_by(["premium"])
+    
+        # Pick up a random template from the template page
+        evite_gallery_page.select_random_template(premium=True)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(test_name=_test_name)
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time(premium=True)
+        self._json_test_data["invitation"]["event_details"]["host"] = (f"{self._json_test_data['register']['first_name']} "
+                                                                       f"{self._json_test_data['register']['last_name']}")
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+        step1_template.select_next(url="preview")
+    
+        step1_template.select_next(url="guests")
+        step5_guests.add_guests(test_data=self._json_test_data["guests"])
+        step1_template.select_next(url="review")
+    
+        step6_review_send.enter_checkout_page(test_data=self._json_test_data, url="confirm")
+    
+        event_id = Utils.get_event_id_from_url(config.driver.current_url)
+    
+        get_event_data = quake_v3_event.get_event_information(
+            user_email_addr=user_email_addr, user_pass=user_pass, event_id=event_id
+        )
+    
+        login_modal.sign_out()
+    
+        guest_list = step5_guests.initialize_guest_list(
+            test_data=self._json_test_data["guests"],
+            get_event_data=get_event_data["guests"])
+    
+        # RSVP for each guest
+        for guest in guest_list:
+    
+            if (guest["guest_type"] == "host" or
+                    guest["test_data"]["rsvp"] == "undecided" or
+                    not guest["test_data"]["rsvp"]):
+                continue
+    
+            logger.info("Going guest view URL")
+            page.get_url(environment=config.environment,
+                         sub_page_url=f"event/{get_event_data['event']['id']}?gid={guest['guest_id']}",
+                         add_cookie=False)
+    
+            # Check if guest have to be registered
+            if guest["test_data"]["registered"]:
+                # Change register data
+                self._json_test_data["register"]["first_name"] = guest["name"]
+                self._json_test_data["register"]["email"] = guest["email"]
+                # Register
+&gt;               login_modal.register(test_data=self._json_test_data['register'], existing_user=True)
+
+_test_name = 'test_evite_rsvp_premium'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fe08aff5070&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7fe08aff5b20&gt;
+event_id   = '0343IIAE4SKDAAYPQEPQ5T3AHBNLCQ'
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7fe08a5fc0b0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fe08aff59d0&gt;
+get_event_data = {'current_user_rsvp': {'address': None, 'avatar_url': None, 'checked_in': True, 'comments': None, ...}, 'event': {'ama...ium_assets/fabric_gallery_asset/1767748279/composed_thumbnail_6493837643513856_default_800x600.webp', ...}}, ...}, ...}
+guest      = {'avatar_url': None, 'checked_in': False, 'comments': None, 'date_created': '2026-01-09T00:59:11', ...}
+guest_list = [{'avatar_url': None, 'checked_in': True, 'comments': None, 'date_created': '2026-01-09T00:56:21', ...}, {'avatar_url'...:59:11', ...}, {'avatar_url': None, 'checked_in': False, 'comments': None, 'date_created': '2026-01-09T00:59:11', ...}]
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_premium (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fe08aff6270&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fe08aff5d30&gt;
+page       = &lt;commons.page.Page object at 0x7fe08aff4590&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7fe08aff6960&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7fe0a8c00680&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fe08aff5520&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fe08b0028a0&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fe08aff5850&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7fe08aff5c40&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fe08aff56a0&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fe08aff5d60&gt;
+user_email_addr = 'evite-01082026-165509-06-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7fe08aff5010&gt;
+
+test_evite_rsvp_premium.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/login_modal.py:143: in register
+    self.select_sign_in()
+        create_flow = False
+        existing_user = True
+        self       = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fe08aff6270&gt;
+        test_data  = {'country': 'United States', 'email': 'evite-guest-57016409-h-test@evitetest.com', 'facebook': {'email_or_phone': '-test@evitetest.com', 'keep_me_logged_in': False, 'password': 'test1234'}, 'first_name': 'evite-guest-57016409-H-test', ...}
+../../commons/pages/evite/login_modal.py:78: in select_sign_in
+    self.scroll_elem_to_middle_of_page(elem=sign_in_element)
+        self       = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fe08aff6270&gt;
+        sign_in_element = &lt;selenium.webdriver.remote.webelement.WebElement (session="eef916df59778f795bbafae91250f8a4", element="f.8AA18B4D5CC2F095619AAB584DA10EF9.d.3FFE38E77BA7AA2396A059B68022055C.e.1083")&gt;
+../../commons/page.py:1120: in scroll_elem_to_middle_of_page
+    self.selenium.execute_script(script, elem)
+        elem       = &lt;selenium.webdriver.remote.webelement.WebElement (session="eef916df59778f795bbafae91250f8a4", element="f.8AA18B4D5CC2F095619AAB584DA10EF9.d.3FFE38E77BA7AA2396A059B68022055C.e.1083")&gt;
+        script     = "arguments[0].scrollIntoView({block: 'center'});"
+        self       = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fe08aff6270&gt;
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:555: in execute_script
+    return self.execute(command, {"script": script, "args": converted_args})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        args       = (&lt;selenium.webdriver.remote.webelement.WebElement (session="eef916df59778f795bbafae91250f8a4", element="f.8AA18B4D5CC2F095619AAB584DA10EF9.d.3FFE38E77BA7AA2396A059B68022055C.e.1083")&gt;,)
+        command    = 'w3cExecuteScript'
+        converted_args = [&lt;selenium.webdriver.remote.webelement.WebElement (session="eef916df59778f795bbafae91250f8a4", element="f.8AA18B4D5CC2F095619AAB584DA10EF9.d.3FFE38E77BA7AA2396A059B68022055C.e.1083")&gt;]
+        script     = "arguments[0].scrollIntoView({block: 'center'});"
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'w3cExecuteScript'
+        params     = {'args': [{'element-6066-11e4-a52e-4f735466cecf': 'f.8AA18B4D5CC2F095619AAB584DA10EF9.d.3FFE38E77BA7AA2396A059B68022055C.e.1083'}], 'script': "arguments[0].scrollIntoView({block: 'center'});"}
+        response   = {'status': 500, 'value': '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request fo...execute request for an existing session: java.io.IOException: HTTP\\u002f1.1 header parser received no bytes"\n  }\n}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fe0a190d910&gt;
+response = {'status': 500, 'value': '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request fo...execute request for an existing session: java.io.IOException: HTTP\\u002f1.1 header parser received no bytes"\n  }\n}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.WebDriverException: Message: Unable to execute request for an existing session: java.io.IOException: HTTP/1.1 header parser received no bytes
+E       Stacktrace:
+E       java.lang.RuntimeException: Unable to execute request for an existing session: java.io.IOException: HTTP/1.1 header parser received no bytes
+E       	at org.openqa.selenium.grid.router.HandleSession.execute(HandleSession.java:216)
+E       	at org.openqa.selenium.remote.http.Route$PredicatedRoute.handle(Route.java:398)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.grid.router.Router.execute(Router.java:89)
+E       	at org.openqa.selenium.grid.web.CheckOriginHeader.lambda$apply$0(CheckOriginHeader.java:69)
+E       	at org.openqa.selenium.grid.web.CheckContentTypeHeader.lambda$apply$0(CheckContentTypeHeader.java:75)
+E       	at org.openqa.selenium.grid.web.EnsureSpecCompliantResponseHeaders.lambda$apply$0(EnsureSpecCompliantResponseHeaders.java:34)
+E       	at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)
+E       	at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.http.Route$NestedRoute.handle(Route.java:271)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.AddWebDriverSpecHeaders.lambda$apply$0(AddWebDriverSpecHeaders.java:35)
+E       	at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)
+E       	at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)
+E       	at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)
+E       	at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)
+E       	at org.openqa.selenium.netty.server.SeleniumHandler.lambda$channelRead0$0(SeleniumHandler.java:49)
+E       	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+E       	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+E       	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+E       	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+E       	at java.base/java.lang.Thread.run(Thread.java:833)
+E       Caused by: java.io.IOException: HTTP/1.1 header parser received no bytes
+E       	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:586)
+E       	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:123)
+E       	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute0(JdkHttpClient.java:462)
+E       	at org.openqa.selenium.remote.http.RetryRequest.lambda$apply$0(RetryRequest.java:46)
+E       	at org.openqa.selenium.remote.http.AddSeleniumUserAgent.lambda$apply$0(AddSeleniumUserAgent.java:44)
+E       	at org.openqa.selenium.remote.http.Filter.lambda$andFinally$1(Filter.java:55)
+E       	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.lambda$executeAsync$2(JdkHttpClient.java:388)
+E       	... 5 more
+E       Caused by: java.io.IOException: HTTP/1.1 header parser received no bytes
+E       	at java.net.http/jdk.internal.net.http.common.Utils.wrapWithExtraDetail(Utils.java:348)
+E       	at java.net.http/jdk.internal.net.http.Http1Response$HeadersReader.onReadError(Http1Response.java:675)
+E       	at java.net.http/jdk.internal.net.http.Http1AsyncReceiver.checkForErrors(Http1AsyncReceiver.java:302)
+E       	at java.net.http/jdk.internal.net.http.Http1AsyncReceiver.flush(Http1AsyncReceiver.java:268)
+E       	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$LockingRestartableTask.run(SequentialScheduler.java:205)
+E       	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$CompleteRestartableTask.run(SequentialScheduler.java:149)
+E       	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230)
+E       	... 3 more
+E       Caused by: java.net.SocketException: Connection reset
+E       	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394)
+E       	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426)
+E       	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170)
+E       	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833)
+E       	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181)
+E       	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230)
+E       	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303)
+E       	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256)
+E       	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774)
+E       	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957)
+E       	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253)
+E       	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979)
+E       	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934)
+E       	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+E       	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934)
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7fe08a10fd70&gt;
+error_code = 'UNKNOWN_ERROR'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [13, 'unknown error']
+exception_class = &lt;class 'selenium.common.exceptions.WebDriverException'&gt;
+message    = 'Unable to execute request for an existing session: java.io.IOException: HTTP/1.1 header parser received no bytes'
+response   = {'status': 500, 'value': '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request fo...execute request for an existing session: java.io.IOException: HTTP\\u002f1.1 header parser received no bytes"\n  }\n}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fe0a190d910&gt;
+st_value   = 'java.lang.RuntimeException: Unable to execute request for an existing session: java.io.IOException: HTTP/1.1 header p...ist.java:1511)\n\tat java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934)\n'
+stacktrace = ['java.lang.RuntimeException: Unable to execute request for an existing session: java.io.IOException: HTTP/1.1 header ....Route$CombinedRoute.handle(Route.java:361)', '\tat org.openqa.selenium.remote.http.Route.execute(Route.java:69)', ...]
+status     = 'unknown error'
+value      = {'error': 'unknown error', 'message': 'Unable to execute request for an existing session: java.io.IOException: HTTP/1....st.java:1511)\n\tat java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934)\n'}
+value_json = '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request for an existing session: ja... execute request for an existing session: java.io.IOException: HTTP\\u002f1.1 header parser received no bytes"\n  }\n}'
+
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: WebDriverException</failure></testcase><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="885.783" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="562.083" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="10.040"><error message="failed on teardown with &quot;selenium.common.exceptions.WebDriverException: Message: Unable to execute request for an existing session: java.net.http.HttpConnectTimeoutException: HTTP connect timed out&#10;Build info: version: '4.39.0', revision: '126f156*'&#10;System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.19.0-1024-aws', java.version: '17.0.8.1'&#10;Driver info: driver.version: unknown&#10;Stacktrace:&#10;java.lang.RuntimeException: Unable to execute request for an existing session: java.net.http.HttpConnectTimeoutException: HTTP connect timed out&#10;Build info: version: '4.39.0', revision: '126f156*'&#10;System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.19.0-1024-aws', java.version: '17.0.8.1'&#10;Driver info: driver.version: unknown&#10;&#09;at org.openqa.selenium.grid.router.HandleSession.execute(HandleSession.java:216)&#10;&#09;at org.openqa.selenium.remote.http.Route$PredicatedRoute.handle(Route.java:398)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.grid.router.Router.execute(Router.java:89)&#10;&#09;at org.openqa.selenium.grid.web.CheckOriginHeader.lambda$apply$0(CheckOriginHeader.java:69)&#10;&#09;at org.openqa.selenium.grid.web.CheckContentTypeHeader.lambda$apply$0(CheckContentTypeHeader.java:75)&#10;&#09;at org.openqa.selenium.grid.web.EnsureSpecCompliantResponseHeaders.lambda$apply$0(EnsureSpecCompliantResponseHeaders.java:34)&#10;&#09;at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)&#10;&#09;at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.http.Route$NestedRoute.handle(Route.java:271)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)&#10;&#09;at org.openqa.selenium.remote.http.Route.execute(Route.java:69)&#10;&#09;at org.openqa.selenium.remote.AddWebDriverSpecHeaders.lambda$apply$0(AddWebDriverSpecHeaders.java:35)&#10;&#09;at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)&#10;&#09;at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)&#10;&#09;at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)&#10;&#09;at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)&#10;&#09;at org.openqa.selenium.netty.server.SeleniumHandler.lambda$channelRead0$0(SeleniumHandler.java:49)&#10;&#09;at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)&#10;&#09;at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)&#10;&#09;at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)&#10;&#09;at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)&#10;&#09;at java.base/java.lang.Thread.run(Thread.java:833)&#10;Caused by: java.net.http.HttpConnectTimeoutException: HTTP connect timed out&#10;&#09;at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:567)&#10;&#09;at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:123)&#10;&#09;at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute0(JdkHttpClient.java:462)&#10;&#09;at org.openqa.selenium.remote.http.RetryRequest.lambda$apply$0(RetryRequest.java:46)&#10;&#09;at org.openqa.selenium.remote.http.AddSeleniumUserAgent.lambda$apply$0(AddSeleniumUserAgent.java:44)&#10;&#09;at org.openqa.selenium.remote.http.Filter.lambda$andFinally$1(Filter.java:55)&#10;&#09;at org.openqa.selenium.remote.http.jdk.JdkHttpClient.lambda$executeAsync$2(JdkHttpClient.java:388)&#10;&#09;... 5 more&#10;Caused by: java.net.http.HttpConnectTimeoutException: HTTP connect timed out&#10;&#09;at java.net.http/jdk.internal.net.http.MultiExchange.toTimeoutException(MultiExchange.java:580)&#10;&#09;at java.net.http/jdk.internal.net.http.MultiExchange.getExceptionalCF(MultiExchange.java:527)&#10;&#09;at java.net.http/jdk.internal.net.http.MultiExchange.lambda$responseAsyncImpl$7(MultiExchange.java:447)&#10;&#09;at java.base/java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:934)&#10;&#09;at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:911)&#10;&#09;at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)&#10;&#09;at java.base/java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2162)&#10;&#09;at java.net.http/jdk.internal.net.http.PlainHttpConnection$ConnectTimerEvent.lambda$handle$0(PlainHttpConnection.java:103)&#10;&#09;... 3 more&#10;Caused by: java.net.ConnectException: HTTP connect timed out&#10;&#09;at java.net.http/jdk.internal.net.http.MultiExchange.toTimeoutException(MultiExchange.java:581)&#10;&#09;... 10 more&quot;">def tear_down():
+        logger.info(f"Start {inspect.stack()[0][3]}")
+    
+        if test_failed["value"]:
+&gt;           ScreenShotHelper(test_name).take_screen_shot(driver)
+
+_selenium_hub_url = 'https://srPxQAUK9ol2T4yuRbKYw7UBhXZ2qYkI:gZ6XqQxp5JhODG9kHJ83GTuOGkGX8Rvf@eu839yns-hub.gridlastic.com/wd/hub'
+driver     = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+logger     = &lt;Logger test_evite_rsvp_premium (INFO)&gt;
+test_config = &lt;commons.test_configuration.TestConfiguration object at 0x7fe08aff5070&gt;
+test_failed = {'value': True}
+test_name  = 'test_evite_rsvp_premium'
+
+conftest.py:319: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../lib/screenshot.py:36: in take_screen_shot
+    if selenium.save_screenshot(screenshot_filename):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        file_name  = 'test_evite_rsvp_premium_20260108_165930.png'
+        screenshot_filename = '../../logs/test_evite_rsvp_premium_20260108_165930.png'
+        selenium   = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+        self       = &lt;lib.screenshot.ScreenShotHelper object at 0x7fe08b03a6c0&gt;
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:1025: in save_screenshot
+    return self.get_screenshot_as_file(filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        filename   = '../../logs/test_evite_rsvp_premium_20260108_165930.png'
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:1000: in get_screenshot_as_file
+    png = self.get_screenshot_as_png()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        filename   = '../../logs/test_evite_rsvp_premium_20260108_165930.png'
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:1034: in get_screenshot_as_png
+    return b64decode(self.get_screenshot_as_base64().encode("ascii"))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:1044: in get_screenshot_as_base64
+    return self.execute(Command.SCREENSHOT)["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'screenshot'
+        params     = {}
+        response   = {'status': 500, 'value': '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request fo...'amd64\', os.version: \'5.19.0-1024-aws\', java.version: \'17.0.8.1\'\\nDriver info: driver.version: unknown"\n  }\n}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="eef916df59778f795bbafae91250f8a4")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fe0a190d910&gt;
+response = {'status': 500, 'value': '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request fo...'amd64\', os.version: \'5.19.0-1024-aws\', java.version: \'17.0.8.1\'\\nDriver info: driver.version: unknown"\n  }\n}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.WebDriverException: Message: Unable to execute request for an existing session: java.net.http.HttpConnectTimeoutException: HTTP connect timed out
+E       Build info: version: '4.39.0', revision: '126f156*'
+E       System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.19.0-1024-aws', java.version: '17.0.8.1'
+E       Driver info: driver.version: unknown
+E       Stacktrace:
+E       java.lang.RuntimeException: Unable to execute request for an existing session: java.net.http.HttpConnectTimeoutException: HTTP connect timed out
+E       Build info: version: '4.39.0', revision: '126f156*'
+E       System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.19.0-1024-aws', java.version: '17.0.8.1'
+E       Driver info: driver.version: unknown
+E       	at org.openqa.selenium.grid.router.HandleSession.execute(HandleSession.java:216)
+E       	at org.openqa.selenium.remote.http.Route$PredicatedRoute.handle(Route.java:398)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.grid.router.Router.execute(Router.java:89)
+E       	at org.openqa.selenium.grid.web.CheckOriginHeader.lambda$apply$0(CheckOriginHeader.java:69)
+E       	at org.openqa.selenium.grid.web.CheckContentTypeHeader.lambda$apply$0(CheckContentTypeHeader.java:75)
+E       	at org.openqa.selenium.grid.web.EnsureSpecCompliantResponseHeaders.lambda$apply$0(EnsureSpecCompliantResponseHeaders.java:34)
+E       	at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)
+E       	at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.http.Route$NestedRoute.handle(Route.java:271)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.http.Route$CombinedRoute.handle(Route.java:361)
+E       	at org.openqa.selenium.remote.http.Route.execute(Route.java:69)
+E       	at org.openqa.selenium.remote.AddWebDriverSpecHeaders.lambda$apply$0(AddWebDriverSpecHeaders.java:35)
+E       	at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)
+E       	at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)
+E       	at org.openqa.selenium.remote.ErrorFilter.lambda$apply$0(ErrorFilter.java:44)
+E       	at org.openqa.selenium.remote.http.Filter$1.execute(Filter.java:63)
+E       	at org.openqa.selenium.netty.server.SeleniumHandler.lambda$channelRead0$0(SeleniumHandler.java:49)
+E       	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+E       	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+E       	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+E       	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+E       	at java.base/java.lang.Thread.run(Thread.java:833)
+E       Caused by: java.net.http.HttpConnectTimeoutException: HTTP connect timed out
+E       	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:567)
+E       	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:123)
+E       	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute0(JdkHttpClient.java:462)
+E       	at org.openqa.selenium.remote.http.RetryRequest.lambda$apply$0(RetryRequest.java:46)
+E       	at org.openqa.selenium.remote.http.AddSeleniumUserAgent.lambda$apply$0(AddSeleniumUserAgent.java:44)
+E       	at org.openqa.selenium.remote.http.Filter.lambda$andFinally$1(Filter.java:55)
+E       	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.lambda$executeAsync$2(JdkHttpClient.java:388)
+E       	... 5 more
+E       Caused by: java.net.http.HttpConnectTimeoutException: HTTP connect timed out
+E       	at java.net.http/jdk.internal.net.http.MultiExchange.toTimeoutException(MultiExchange.java:580)
+E       	at java.net.http/jdk.internal.net.http.MultiExchange.getExceptionalCF(MultiExchange.java:527)
+E       	at java.net.http/jdk.internal.net.http.MultiExchange.lambda$responseAsyncImpl$7(MultiExchange.java:447)
+E       	at java.base/java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:934)
+E       	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:911)
+E       	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+E       	at java.base/java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2162)
+E       	at java.net.http/jdk.internal.net.http.PlainHttpConnection$ConnectTimerEvent.lambda$handle$0(PlainHttpConnection.java:103)
+E       	... 3 more
+E       Caused by: java.net.ConnectException: HTTP connect timed out
+E       	at java.net.http/jdk.internal.net.http.MultiExchange.toTimeoutException(MultiExchange.java:581)
+E       	... 10 more
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7fe08a10cb60&gt;
+error_code = 'UNKNOWN_ERROR'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [13, 'unknown error']
+exception_class = &lt;class 'selenium.common.exceptions.WebDriverException'&gt;
+message    = "Unable to execute request for an existing session: java.net.http.HttpConnectTimeoutException: HTTP connect timed out\...inux', os.arch: 'amd64', os.version: '5.19.0-1024-aws', java.version: '17.0.8.1'\nDriver info: driver.version: unknown"
+response   = {'status': 500, 'value': '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request fo...'amd64\', os.version: \'5.19.0-1024-aws\', java.version: \'17.0.8.1\'\\nDriver info: driver.version: unknown"\n  }\n}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fe0a190d910&gt;
+st_value   = 'java.lang.RuntimeException: Unable to execute request for an existing session: java.net.http.HttpConnectTimeoutExcept...ut\n\tat java.net.http/jdk.internal.net.http.MultiExchange.toTimeoutException(MultiExchange.java:581)\n\t... 10 more\n'
+stacktrace = ['java.lang.RuntimeException: Unable to execute request for an existing session: java.net.http.HttpConnectTimeoutExcep...ute(HandleSession.java:216)', '\tat org.openqa.selenium.remote.http.Route$PredicatedRoute.handle(Route.java:398)', ...]
+status     = 'unknown error'
+value      = {'error': 'unknown error', 'message': "Unable to execute request for an existing session: java.net.http.HttpConnectTim...t\n\tat java.net.http/jdk.internal.net.http.MultiExchange.toTimeoutException(MultiExchange.java:581)\n\t... 10 more\n'}
+value_json = '{\n  "value": {\n    "stacktrace": "java.lang.RuntimeException: Unable to execute request for an existing session: ja...\'amd64\', os.version: \'5.19.0-1024-aws\', java.version: \'17.0.8.1\'\\nDriver info: driver.version: unknown"\n  }\n}'
+
+../../../911/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: WebDriverException</error></testcase></testsuite></testsuites>

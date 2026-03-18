@@ -2,7 +2,7 @@
 
 A self-contained data platform for tracking test results, coverage, flakes, and Jira linkage across Selenium and Playwright CI runs.
 
-**Stack:** Postgres 16 (Docker) · Prisma · TypeScript scripts · Metabase dashboards
+**Stack:** Postgres 16 (Docker) · Prisma · TypeScript scripts · Metabase dashboards · Google Cloud Storage (GCS)
 
 **Repo:** `git@github.com:jcpeters/trapeze.git` *(pending transfer to `evite` org — once an org admin creates `evite/trapeze`, update remote with `git remote set-url origin git@github.com:evite/trapeze.git && git push -u origin main`)*
 
@@ -14,7 +14,7 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 
 | Area | Status |
 |------|--------|
-| Schema + migrations | ✅ Complete (6 migrations) |
+| Schema + migrations | ✅ Complete (9 migrations) |
 | JUnit ingest (Selenium/pytest) | ✅ Complete |
 | Playwright ingest (JSON reporter, sharding, @tag Jira links) | ✅ Complete |
 | Jira sync | ✅ Complete |
@@ -25,9 +25,14 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 | 20 SQL analytics views | ✅ Complete |
 | Metabase dashboards (3 dashboards, 19 cards) | ✅ Complete |
 | Playwright Jenkins pipeline | ✅ Complete (`evite-playwright/scripts/playwright_pipeline.groovy`) |
+| **GCS artifact storage** | ✅ Complete — source files, attachments, and stdout/stderr uploaded to GCS; local dev uses `fake-gcs-server` |
+| **Automated → TestRail mapping** | ✅ Complete — `automation_testrail_link` table, title-inference script, `@C1234` tag extraction in Playwright, `<property name="testrail.case">` extraction in JUnit |
+| **Feature-area coverage epics** | ✅ Complete — 14 Jira epics (QAA-659–QAA-672) created as coverage anchors; 29 MANUAL/HIGH `jira_automation_link` rows map all 29 regression tests to their feature area |
+| **GCS Drop Zone (CI → Trapeze bridge)** | ✅ Complete — `upload-to-drop-zone.ts` (Jenkins step, DB-free), `ingest-from-gcs.ts` (drainer), `simulate-build.sh` (local test harness), `jenkins/Jenkinsfile.trapeze-ingest` (reusable Groovy). Jenkins uploads result files to GCS; drainer runs on any host with `DATABASE_URL`. |
+| **Local Jenkins (dev/test)** | ✅ Complete — `docker compose --profile jenkins up` starts Jenkins LTS + Node.js 20 on the Docker network; reaches `postgres:5432` and `fake-gcs:4443` directly. |
 | **Scheduled / cron job wiring** | ❌ Not done — all ETL scripts exist but nothing runs them automatically |
 
-**Next task for a new agent:** Wire up a scheduler so that `etl:sync:jira`, `etl:sync:testrail`, `etl:snapshot:coverage`, and `analyze:flakes` run on a recurring schedule (e.g. daily cron, Jenkins scheduled build, or a simple node-cron wrapper).
+**Next task for a new agent:** Wire up a scheduler so that `etl:sync:jira`, `etl:sync:testrail`, `etl:snapshot:coverage`, `analyze:flakes`, and `etl:ingest:from-gcs` run on a recurring schedule (e.g. daily cron, Jenkins "drain" pipeline, or a node-cron wrapper).
 
 ---
 
@@ -36,13 +41,78 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 ```
   Jira Cloud ──── sync-jira.ts ──────────────────────────┐
   TestRail ─────── sync-testrail.ts ─────────────────────┤
-  JUnit XML ──── ingest-junit.ts ─────────────────────────┤
-  Playwright JSON ─ ingest-playwright.ts ─────────────────┤──► Postgres ──► SQL views ──► Metabase
+  JUnit XML ──── ingest-junit.ts ─────────────────────────┤──► GCS (source files,
+  Playwright JSON ─ ingest-playwright.ts ─────────────────┤    attachments, logs)
+                                                           │         │
+                                                           ├──► Postgres (metadata + gs:// URIs) ──► SQL views ──► Metabase
                                                            │
   infer-jira-links.ts ── (text-match links) ─────────────┤
   detect-flakes.ts ────── (rolling-window flake math) ────┤
   snapshot-coverage.ts ── (KPI time-series row) ──────────┘
 ```
+
+**Storage design principle:** GCS holds the bytes (raw XML/JSON source files, screenshots, videos, Playwright traces, stdout/stderr logs). Postgres holds queryable metadata and permanent `gs://` URIs. Stack traces and error messages stay in the DB as they are short, queryable text. Nothing is stored twice.
+
+---
+
+## CI Pipeline → Trapeze: GCS Drop Zone
+
+The ingest scripts require `DATABASE_URL`, but the Jenkins farm cannot reach a developer's local Postgres. The **drop zone** pattern decouples the two sides:
+
+```
+Jenkins agent (no DB access needed)
+  └─ upload-to-drop-zone.ts ──► gs://bucket/incoming/{job}/{build}/manifest.json
+                                                                   /results.xml
+
+Any host with DATABASE_URL (dev machine, Cloud Run job, Jenkins drain pipeline)
+  └─ ingest-from-gcs.ts ──► downloads from incoming/
+                          ──► calls ingest-junit.ts or ingest-playwright.ts
+                          ──► moves batch to processed/ or failed/
+```
+
+### Jenkins pipeline step (add to existing Jenkinsfile)
+
+```groovy
+post {
+  always {
+    // Groovy helper defined in jenkins/Jenkinsfile.trapeze-ingest
+    trapezePushResults(
+      framework:   'pytest',
+      resultFile:  "${WORKSPACE}/test-output/results.xml",
+      environment: 'acceptance'
+    )
+  }
+}
+```
+
+Required Jenkins credentials: `trapeze-gcs-bucket`, `trapeze-gcs-project`, `trapeze-gcs-sa-key`.
+
+### Test the drop zone locally (no Jenkins needed)
+
+```bash
+# 1. Upload a result file to the local fake-gcs drop zone
+./scripts/simulate-build.sh junit_xml/my-results.xml \
+    --job qa-evite-test-tests-acceptance --build 9999 \
+    --framework pytest --environment acceptance
+
+# 2. Drain the drop zone into Postgres
+npm run etl:ingest:from-gcs -- --explain
+```
+
+### Local Jenkins (optional — for validating Groovy pipeline syntax)
+
+```bash
+# Start Jenkins + its dependencies on the Docker network
+docker compose --profile jenkins up -d
+
+# Open Jenkins UI
+open http://localhost:8080   # admin / trapeze-local
+```
+
+Jenkins can reach `postgres:5432` and `fake-gcs:4443` directly via Docker networking.
+The production Jenkins farm points at the same GCS bucket — swap credentials only.
+
+**Local development:** `docker-compose.yml` includes a `fake-gcs-server` container at `localhost:4443` that is fully compatible with the `@google-cloud/storage` SDK. Set `GCS_EMULATOR_HOST=localhost:4443` in `.env` to redirect all GCS calls to it. Remove the variable entirely to use real GCS.
 
 ---
 
@@ -50,6 +120,7 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 
 - Docker
 - Node.js 18+
+- Google Cloud SDK (`gcloud`) — **only required for production**; local dev uses the `fake-gcs-server` container instead
 
 ---
 
@@ -57,31 +128,39 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 
 ```bash
 # 1. Fill in credentials — .env already exists with local defaults;
-#    add your Jira/TestRail API tokens as needed
+#    add your Jira/TestRail API tokens as needed.
+#    GCS vars are pre-filled for local dev (fake-gcs-server).
 #    (do NOT commit .env — it is gitignored)
-#    edit .env directly
 
 # 2. Install dependencies
 npm install
 
-# 3. Start Postgres + Metabase
+# 3. Start Postgres + Metabase + fake-gcs-server
 npm run db:up
 
 # 4. Run migrations
 npm run db:migrate
 
-# 5. Apply SQL analytics views
+# 5. Create the GCS bucket in fake-gcs-server
+npm run storage:bucket
+
+# 6. Apply SQL analytics views
 npm run db:views
 
-# 6. (Optional) seed sample data
+# 7. (Optional) seed sample data
 npm run db:seed
 
-# 7. (Optional) set up Metabase dashboards
+# 8. (Optional) set up Metabase dashboards
 npm run mb:setup
 ```
 
-Postgres is available at `postgresql://test_intel:test_intel@localhost:5432/test_intel`.
-Metabase UI is at http://localhost:3000 (credentials configured in `.env`).
+| Service | URL |
+|---------|-----|
+| Postgres | `postgresql://test_intel:test_intel@localhost:5432/test_intel` |
+| Metabase | http://localhost:3000 |
+| GCS emulator (dev) | http://localhost:4443 |
+
+> **Note:** `npm run storage:bucket` creates the `test-intel-artifacts` bucket inside the local `fake-gcs-server` container. This is a one-time step per fresh Docker volume; it is a no-op if the bucket already exists.
 
 ---
 
@@ -89,12 +168,15 @@ Metabase UI is at http://localhost:3000 (credentials configured in `.env`).
 
 ```bash
 npm run db:down       # stop containers
-npm run db:reset      # drop + recreate volume
+npm run db:reset      # drop + recreate Postgres volume (destructive)
 npm run db:up
 npm run db:migrate
+npm run storage:bucket   # re-create the GCS bucket (new volume = empty emulator)
 npm run db:views
 npm run db:seed
 ```
+
+> **GCS emulator note:** `db:reset` only resets the Postgres volume. The `gcsdata_test_intel` Docker volume persists independently. To also wipe GCS artifacts: `docker volume rm results_gcsdata_test_intel` before `db:up`.
 
 ---
 
@@ -116,8 +198,10 @@ npm run db:seed
 
 | Script | Description |
 |--------|-------------|
-| `etl:ingest:junit` | Ingest a JUnit XML file (Selenium / pytest runs) |
-| `etl:ingest:playwright` | Ingest a Playwright JSON reporter output file |
+| `etl:ingest:junit` | Ingest a JUnit XML file (Selenium / pytest runs) — direct, requires `DATABASE_URL` |
+| `etl:ingest:playwright` | Ingest a Playwright JSON reporter output file — direct, requires `DATABASE_URL` |
+| `etl:ingest:from-gcs` | **Drop zone drainer** — scan `incoming/` in GCS, download result files, call the appropriate ingest script per batch, archive to `processed/` or `failed/`. Run on any host with `DATABASE_URL` access (developer machine, Cloud Run, Jenkins drain pipeline). |
+| `etl:upload:drop-zone` | **Drop zone uploader** — upload one result file + a manifest.json to `gs://bucket/incoming/{job}/{build}/`. Database-free; suitable for Jenkins pipeline steps. |
 
 ### ETL — Sync
 
@@ -126,6 +210,8 @@ npm run db:seed
 | `etl:sync:jira` | Pull Jira issues into `jira_issue` table |
 | `etl:sync:testrail` | Pull TestRail test cases and results |
 | `etl:infer:jira` | Text-match test titles against Jira issues to create `jira_automation_link` rows |
+| `etl:infer:testrail` | Keyword-overlap match automated test titles against TestRail case titles to create `automation_testrail_link` rows |
+| `etl:seed:coverage-epics` | Create 14 feature-area Jira epics (QAA-659–QAA-672) as coverage anchors and link all regression tests to them via MANUAL/HIGH `jira_automation_link` rows. Idempotent — reuses epics that already exist. |
 | `etl:snapshot:coverage` | Write one `coverage_snapshot` row from current `v_executed_coverage_summary` values |
 
 ### Analysis
@@ -133,6 +219,14 @@ npm run db:seed
 | Script | Description |
 |--------|-------------|
 | `analyze:flakes` | Run rolling-window flake detection; write `flake_decision` rows |
+
+### Artifact storage (GCS)
+
+| Script | Description |
+|--------|-------------|
+| `storage:bucket` | Create the GCS bucket (idempotent). Required once after `db:up` in dev; no-op in prod |
+| `storage:migrate:dry` | Dry-run: show which `file://` DB records would be uploaded to GCS — no changes made |
+| `storage:migrate` | Upload any remaining `file://` artifact records to GCS and update their URIs to `gs://` |
 
 ### Metabase
 
@@ -358,6 +452,27 @@ npm run analyze:flakes -- --window-days 30 --resolve
 
 ---
 
+## Artifact storage
+
+See [`docs/artifact-storage.md`](docs/artifact-storage.md) for the full reference including GCS key layout, local dev setup, production GCP configuration, and the migration script.
+
+### Quick summary
+
+Every ingest run uploads artifacts to GCS before writing their URIs to Postgres:
+
+| What | Where stored | DB field |
+|------|-------------|----------|
+| Raw JUnit XML source | `gs://bucket/builds/{id}/source/junit-xml/` | `RawArtifact.storageUri` |
+| Raw Playwright JSON source | `gs://bucket/builds/{id}/source/playwright-json/` | `RawArtifact.storageUri` |
+| Screenshots / videos / traces | `gs://bucket/builds/{id}/attachments/{executionId}/` | `TestExecution.artifactLinks` (JSON) |
+| Per-attempt stdout / stderr | `gs://bucket/builds/{id}/attachments/{executionId}/` | `BuildLog.storageUri` + `TestAttempt.logUri` |
+
+**Local dev:** all calls hit `fake-gcs-server` at `http://localhost:4443` — same SDK, different endpoint.
+
+**Production:** remove `GCS_EMULATOR_HOST` from the environment. The SDK uses Application Default Credentials / Workload Identity automatically.
+
+---
+
 ## SQL views reference
 
 Applied via `npm run db:views`. All views are defined in `scripts/sql/coverage-views.sql`.
@@ -442,8 +557,12 @@ Declarative pipeline for running Playwright tests with native sharding and autom
 | What | Where |
 |------|-------|
 | `TEST_INTEL_DATABASE_URL` | Jenkins → Credentials (Secret text) |
+| `GCS_BUCKET` | Jenkins → Global env vars (e.g. `evite-test-intel-artifacts`) |
+| `GCS_PROJECT` | Jenkins → Global env vars (e.g. `evite-production`) |
 | `SLACK_VERSION_AUTOMATION_WORKFLOW_URL` | Jenkins → Credentials (already used by Selenium pipeline) |
 | `RESULTS_REPO_URL` | Manage Jenkins → System → Global env vars |
+
+`GCS_EMULATOR_HOST` must **not** be set in Jenkins. When absent, the GCS SDK uses the GCP service account attached to the Jenkins agent (Workload Identity or a JSON key credential). See [`docs/artifact-storage.md`](docs/artifact-storage.md) for full production GCP setup.
 
 ---
 
@@ -452,24 +571,32 @@ Declarative pipeline for running Playwright tests with native sharding and autom
 All vars live in `.env`. Sensitive credentials are commented out by default.
 
 ```bash
-# Database (required)
+# ── Database (required) ───────────────────────────────────────────────────────
 DATABASE_URL="postgresql://test_intel:test_intel@localhost:5432/test_intel?schema=public"
 
-# Jira sync (optional — only needed for etl:sync:jira)
+# ── Google Cloud Storage (required for all ingest scripts) ───────────────────
+GCS_BUCKET="test-intel-artifacts"          # bucket name
+GCS_PROJECT="test-intel-local"             # GCP project ID (any string works for dev)
+GCS_EMULATOR_HOST="localhost:4443"         # local dev only — remove in production
+                                           # when absent: SDK uses ADC / Workload Identity
+
+# ── Jira sync (optional — only needed for etl:sync:jira) ─────────────────────
 JIRA_BASE_URL="https://yourorg.atlassian.net"
 JIRA_EMAIL="service-account@yourorg.com"
 JIRA_API_TOKEN="your-atlassian-api-token"
-JIRA_PROJECTS="QAA,PROJ"           # default project list
+JIRA_PROJECTS="QAA,PROJ"                  # default project list
 
-# TestRail sync (optional — only needed for etl:sync:testrail)
+# ── TestRail sync (optional — only needed for etl:sync:testrail) ─────────────
 TESTRAIL_BASE_URL="https://yourorg.testrail.io"
 TESTRAIL_EMAIL="service-account@yourorg.com"
 TESTRAIL_API_TOKEN="your-testrail-api-key"
-TESTRAIL_PROJECT_IDS="1,2"         # default project IDs
+TESTRAIL_PROJECT_IDS="1,2"                # default project IDs
 
-# Metabase (only needed for mb:setup)
+# ── Metabase (only needed for mb:setup) ──────────────────────────────────────
 METABASE_URL="http://localhost:3000"
 METABASE_ADMIN_EMAIL="admin@test-intel.local"
 METABASE_ADMIN_PASSWORD="TestIntel1!"
 METABASE_SITE_NAME="Test Intelligence"
 ```
+
+`GCS_BUCKET` and `GCS_PROJECT` are **required** by all ingest scripts — they will fail fast at startup if either is missing. `GCS_EMULATOR_HOST` is optional and only meaningful in local development.

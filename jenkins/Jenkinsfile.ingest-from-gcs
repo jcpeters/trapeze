@@ -1,0 +1,93 @@
+/**
+ * trapeze-ingest-from-gcs
+ *
+ * Drains the GCS drop zone: downloads manifests from incoming/**, runs
+ * the appropriate ingest script (JUnit or Playwright) for each batch,
+ * and archives the batch to processed/**.
+ *
+ * Runs every 15 minutes so test results appear in Metabase within one
+ * polling interval of a CI build completing.
+ *
+ * Jenkins configuration:
+ *   Pipeline → "Pipeline script from SCM"
+ *   Script Path: jenkins/Jenkinsfile.ingest-from-gcs
+ *
+ * Required Jenkins credentials:
+ *   trapeze-db-url              Secret text  — full DATABASE_URL
+ *   trapeze-gcs-bucket          Secret text  — GCS bucket name (no gs:// prefix)
+ *   trapeze-gcs-credentials     Secret file  — GCP service account JSON key
+ *
+ * Note: GOOGLE_APPLICATION_CREDENTIALS must point to a JSON key that has
+ * roles/storage.objectAdmin on the drop zone bucket.
+ */
+
+pipeline {
+  agent { label 'trapeze' }
+
+  triggers {
+    // Every 15 minutes around the clock.
+    cron('H/15 * * * *')
+  }
+
+  parameters {
+    booleanParam(
+      name: 'DRY_RUN',
+      defaultValue: false,
+      description: 'Download and parse manifests without writing to the database or archiving'
+    )
+    booleanParam(
+      name: 'EXPLAIN',
+      defaultValue: false,
+      description: 'Print what would be ingested without executing'
+    )
+    booleanParam(
+      name: 'SKIP_ARTIFACTS',
+      defaultValue: false,
+      description: 'Skip downloading and uploading test artifact files (screenshots, videos, traces)'
+    )
+  }
+
+  environment {
+    DATABASE_URL                  = credentials('trapeze-db-url')
+    GCS_BUCKET                    = credentials('trapeze-gcs-bucket')
+    GOOGLE_APPLICATION_CREDENTIALS = credentials('trapeze-gcs-credentials')
+    NODE_ENV                      = 'production'
+  }
+
+  options {
+    timeout(time: 20, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '96'))  // ~24 hours of 15-min runs
+    // Allow concurrent runs so a slow drain doesn't block the next poll.
+    // Remove this if you see duplicate-ingest races.
+    timestamps()
+  }
+
+  stages {
+    stage('Install') {
+      steps {
+        sh 'npm ci --prefer-offline'
+      }
+    }
+
+    stage('Drain Drop Zone') {
+      steps {
+        script {
+          def extraFlags = "--bucket ${env.GCS_BUCKET}"
+          if (params.DRY_RUN)        extraFlags += ' --dry-run'
+          if (params.EXPLAIN)        extraFlags += ' --explain'
+          if (params.SKIP_ARTIFACTS) extraFlags += ' --skip-artifacts'
+          sh "npm run etl:ingest:from-gcs -- ${extraFlags}"
+        }
+      }
+    }
+  }
+
+  post {
+    failure {
+      echo "trapeze-ingest-from-gcs FAILED — check logs above"
+      // slackSend channel: '#qa-alerts', color: 'danger',
+      //   message: "trapeze-ingest-from-gcs failed — ${env.BUILD_URL}"
+    }
+    // Don't notify on every success — this runs 96x/day.
+  }
+}

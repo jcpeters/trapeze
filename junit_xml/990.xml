@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="2" tests="11" time="298.564" timestamp="2026-02-23T16:01:38.055797-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="27.467" /><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="30.099" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="125.996"><failure message="utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '.cur-year') at URL: https://version.evite.com/signup-sheet-maker/standalone-event/create">self = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+locator = ('css selector', '.cur-year'), timeout = 30
+
+    def wait_for(self, locator, timeout=None):
+        """
+        Waits for an element to be visible using the passed in locator.
+    
+        :param locator: Locator tuple for the element
+        :param timeout: (Int) Number of seconds to wait for an element
+        :return: WebElement if it is visible
+        """
+        timeout = timeout or settings.DEFAULT_TIMEOUT
+    
+        try:
+&gt;           return WebDriverWait(self.selenium, timeout).until(ec.visibility_of_element_located(locator))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+locator    = ('css selector', '.cur-year')
+msg        = "Timed out waiting for element: ('css selector', '.cur-year') at URL: https://version.evite.com/signup-sheet-maker/standalone-event/create"
+self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+timeout    = 30
+
+../../commons/web.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="c187efd0dcf8aa78c0acf325d4da93c5")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x7fbb94d57d80&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Parameters:
+        -----------
+        method: callable(WebDriver)
+            - A callable object that takes a WebDriver instance as an argument.
+    
+        message: str
+            - Optional message for :exc:`TimeoutException`
+    
+        Return:
+        -------
+        object: T
+            - The result of the last call to `method`
+    
+        Raises:
+        -------
+        TimeoutException
+            - If 'method' does not return a truthy value within the WebDriverWait
+            object's timeout
+    
+        Example:
+        --------
+        &gt;&gt;&gt; from selenium.webdriver.common.by import By
+        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait
+        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+    
+        # Wait until an element is visible on the page
+        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+        &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+end_time   = 62647693.11193739
+message    = ''
+method     = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x7fbb94d57d80&gt;
+screen     = None
+self       = &lt;selenium.webdriver.support.wait.WebDriverWait (session="c187efd0dcf8aa78c0acf325d4da93c5")&gt;
+stacktrace = None
+value      = False
+
+../../../990/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException
+
+The above exception was the direct cause of the following exception:
+
+self = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7fbb9571af30&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fbb9511dee0&gt;
+
+    def test_evite_sus_one_day_create(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+        sign_up_sheet_maker = config.pages["sign_up_sheet_maker"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info("Start %s", _test_name)
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+            )
+    
+        sign_up_sheet_maker.select_sus_event_from_meganav(sus_event="one_day")
+    
+&gt;       sign_up_sheet_maker.enter_details(test_data=self._json_test_data)
+
+_test_name = 'test_evite_sus_one_day_create'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fbb9511dee0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fbb9511d940&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_sus_one_day_create (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fbb9511de80&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fbb9511ddc0&gt;
+page       = &lt;commons.page.Page object at 0x7fbb9511d070&gt;
+self       = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7fbb9571af30&gt;
+sign_up_sheet_maker = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+user_email_addr = 'evite-02232026-160316-53-test@evitetest.com'
+user_pass  = 'test1234'
+
+test_evite_sus_one_day_create.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/sign_up_sheet_maker.py:143: in enter_details
+    self.add_date_time(test_data=test_data)
+        edit       = False
+        self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+        test_data  = {'RSVP_NOTE': 'Guests', 'invitation': {'date_format_style': 'Formal (ceremonial)', 'event_details': {'add_end_time': F..., 'whats_needed': 'chips'}, {'description': 'food description', 'volunteers_needed': 10, 'whats_needed': 'food'}], ...}
+../../commons/pages/evite/sign_up_sheet_maker.py:168: in add_date_time
+    self.add_date(test_data=test_data)
+        self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+        test_data  = {'RSVP_NOTE': 'Guests', 'invitation': {'date_format_style': 'Formal (ceremonial)', 'event_details': {'add_end_time': F..., 'whats_needed': 'chips'}, {'description': 'food description', 'volunteers_needed': 10, 'whats_needed': 'food'}], ...}
+../../commons/pages/evite/sign_up_sheet_maker.py:202: in add_date
+    current_view_year = self.find(self._calendar_year_header).get_attribute("value")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        current_view_month = 'February'
+        date_to_select = 'March 14, 2026'
+        date_to_select_object = datetime.datetime(2026, 3, 14, 0, 0)
+        max_months_to_search = 6
+        months_checked = 0
+        self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+        test_data  = {'RSVP_NOTE': 'Guests', 'invitation': {'date_format_style': 'Formal (ceremonial)', 'event_details': {'add_end_time': F..., 'whats_needed': 'chips'}, {'description': 'food description', 'volunteers_needed': 10, 'whats_needed': 'food'}], ...}
+../../commons/web.py:77: in find
+    return self.wait_for(locator)
+           ^^^^^^^^^^^^^^^^^^^^^^
+        locator    = ('css selector', '.cur-year')
+        self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+locator = ('css selector', '.cur-year'), timeout = 30
+
+    def wait_for(self, locator, timeout=None):
+        """
+        Waits for an element to be visible using the passed in locator.
+    
+        :param locator: Locator tuple for the element
+        :param timeout: (Int) Number of seconds to wait for an element
+        :return: WebElement if it is visible
+        """
+        timeout = timeout or settings.DEFAULT_TIMEOUT
+    
+        try:
+            return WebDriverWait(self.selenium, timeout).until(ec.visibility_of_element_located(locator))
+        except TimeoutException as e:
+            msg = f"Timed out waiting for element: {locator} at URL: {self.selenium.current_url}"
+            self.logger.warning(msg)
+&gt;           raise ElementNotFoundError(msg) from e
+E           utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '.cur-year') at URL: https://version.evite.com/signup-sheet-maker/standalone-event/create
+
+locator    = ('css selector', '.cur-year')
+msg        = "Timed out waiting for element: ('css selector', '.cur-year') at URL: https://version.evite.com/signup-sheet-maker/standalone-event/create"
+self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fbb9511de50&gt;
+timeout    = 30
+
+../../commons/web.py:213: ElementNotFoundError</failure></testcase><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="225.008" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="111.430" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="115.337" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="118.071" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="279.844" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="293.779" /></testsuite></testsuites>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="4" tests="11" time="515.015" timestamp="2026-03-13T11:29:35.776862-07:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="31.293"><skipped type="pytest.skip" message="DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-11132025-185813-04-test@evitetest.com' ORDER BY random();">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_greeting_card_create_from_past_event.py:116: DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-11132025-185813-04-test@evitetest.com' ORDER BY random();</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="89.407" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="216.164" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="264.534"><skipped type="pytest.skip" message="DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-05232025-100528-29-test@evitetest.com' ORDER BY random();">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_copy_free_past_event.py:138: DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-05232025-100528-29-test@evitetest.com' ORDER BY random();</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="264.916" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="475.458" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="497.439"><failure message="utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test40.evitelabs.com/invitation/0349IIAE4SKDAAWMUEPRD4FZOIUJFQ/guests?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=9">self = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f0bc1d17530&gt;
+locator = ('css selector', '.new-guest-page'), timeout = 30
+
+    def wait_for(self, locator, timeout=None):
+        """
+        Waits for an element to be visible using the passed in locator.
+    
+        :param locator: Locator tuple for the element
+        :param timeout: (Int) Number of seconds to wait for an element
+        :return: WebElement if it is visible
+        """
+        timeout = timeout or settings.DEFAULT_TIMEOUT
+    
+        try:
+&gt;           return WebDriverWait(self.selenium, timeout).until(ec.visibility_of_element_located(locator))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+locator    = ('css selector', '.new-guest-page')
+msg        = "Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test40.evitelabs.com/invitation/0349IIAE4SKDAAWMUEPRD4FZOIUJFQ/guests?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=9"
+self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f0bc1d17530&gt;
+timeout    = 30
+
+../../commons/web.py:219: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="f9c03461645b27de4bb4f81662271ac3")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x7f0be1d7a8e0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       Symbols not available. Dumping unresolved backtrace:
+E       	0x1226663
+E       	0x12266a4
+E       	0x1051d20
+E       	0x109c19a
+E       	0x109c43b
+E       	0x10dde72
+E       	0x10bea84
+E       	0x10db661
+E       	0x10be7d6
+E       	0x108ffd9
+E       	0x1090d94
+E       	0x14ae6d4
+E       	0x14a99a5
+E       	0x14c6550
+E       	0x1240358
+E       	0x1247e5d
+E       	0x122f128
+E       	0x122f2f2
+E       	0x121892a
+E       	0x76c05d49
+E       	0x76f5cebb
+E       	0x76f5ce41
+
+end_time   = 64183340.08547746
+message    = ''
+method     = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x7f0be1d7a8e0&gt;
+screen     = None
+self       = &lt;selenium.webdriver.support.wait.WebDriverWait (session="f9c03461645b27de4bb4f81662271ac3")&gt;
+stacktrace = ['Symbols not available. Dumping unresolved backtrace:', '\t0x1226663', '\t0x12266a4', '\t0x1051d20', '\t0x109c19a', '\t0x109c43b', ...]
+
+../../../1033/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: TimeoutException
+
+The above exception was the direct cause of the following exception:
+
+self = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7f0bc21ec3e0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f0bc1d15370&gt;
+
+    def test_evite_rsvp_premium(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+        invitation_page = config.pages["evite_view_invitation"]
+    
+        quake_v3_event = QuakeV3Event(_test_name)
+        psql_db = PostgreSQL(_test_name)
+    
+        # Logger
+        logger = LoggingConfig().initialize_logger(_test_name)
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav("create_invitation")
+        evite_gallery_page.select_filter_by(["premium"])
+    
+        # Pick up a random template from the template page
+        evite_gallery_page.select_random_template(template_type="premium")
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(test_name=_test_name)
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time(premium=True)
+        self._json_test_data["invitation"]["event_details"]["host"] = (
+            f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+        )
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+        step1_template.select_next(url="preview")
+    
+        step1_template.select_next(url="guests")
+&gt;       step5_guests.add_guests(test_data=self._json_test_data["guests"])
+
+_test_name = 'test_evite_rsvp_premium'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f0bc1d15370&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7f0bc1d14170&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f0bc1d13a70&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f0bc1d15460&gt;
+host       = 'automation test'
+invitation_page = &lt;commons.pages.evite.evite_view_invitation.EviteViewInvitation object at 0x7f0bc1d148c0&gt;
+logger     = &lt;Logger test_evite_rsvp_premium (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f0bc1d16d50&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f0bc1d16bd0&gt;
+page       = &lt;commons.page.Page object at 0x7f0bc1d14f80&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f0bc1d17d10&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f0bc1d16690&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7f0bc1d153d0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7f0bc21ec3e0&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0bc1d14950&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7f0bc1d151c0&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f0bc1d17530&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f0bc1d175f0&gt;
+user_email_addr = 'evite-03132026-113611-69-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7f0bc1d16120&gt;
+
+test_evite_rsvp_premium.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step5_guests.py:101: in add_guests
+    self.wait_for(self.ADD_GUESTS_PAGE)
+        for_greeting_card = False
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f0bc1d17530&gt;
+        test_data  = [{'comment': 'THIS IS A YES RSVP GUEST COMMENT', 'email_addr': 'THIS WILL BE REPLACED RUNTIME', 'guest_count': 2, 'kid...ount': 0, ...}, {'comment': '', 'email_addr': 'THIS WILL BE REPLACED RUNTIME', 'guest_count': 1, 'kids_count': 0, ...}]
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f0bc1d17530&gt;
+locator = ('css selector', '.new-guest-page'), timeout = 30
+
+    def wait_for(self, locator, timeout=None):
+        """
+        Waits for an element to be visible using the passed in locator.
+    
+        :param locator: Locator tuple for the element
+        :param timeout: (Int) Number of seconds to wait for an element
+        :return: WebElement if it is visible
+        """
+        timeout = timeout or settings.DEFAULT_TIMEOUT
+    
+        try:
+            return WebDriverWait(self.selenium, timeout).until(ec.visibility_of_element_located(locator))
+        except TimeoutException as e:
+            msg = f"Timed out waiting for element: {locator} at URL: {self.selenium.current_url}"
+            self.logger.info(msg)
+&gt;           raise ElementNotFoundError(msg) from e
+E           utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test40.evitelabs.com/invitation/0349IIAE4SKDAAWMUEPRD4FZOIUJFQ/guests?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=9
+
+locator    = ('css selector', '.new-guest-page')
+msg        = "Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test40.evitelabs.com/invitation/0349IIAE4SKDAAWMUEPRD4FZOIUJFQ/guests?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;=undefined&amp;pos=9"
+self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f0bc1d17530&gt;
+timeout    = 30
+
+../../commons/web.py:223: ElementNotFoundError</failure></testcase><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="399.953" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="478.993" /></testsuite></testsuites>

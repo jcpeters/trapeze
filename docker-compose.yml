@@ -36,5 +36,69 @@ services:
       postgres:
         condition: service_healthy
 
+  fake-gcs:
+    image: fsouza/fake-gcs-server:latest
+    container_name: test-intel-fake-gcs
+    command: ["-scheme", "http", "-port", "4443", "-public-host", "localhost:4443"]
+    ports:
+      - "4443:4443"
+    volumes:
+      - gcsdata_test_intel:/data
+
+  # ── Local Jenkins (optional — only starts with: docker compose --profile jenkins up) ──
+  # Provides a self-contained Jenkins instance for testing the Trapeze ingest
+  # pipeline locally before deploying to the production Jenkins farm.
+  #
+  # Key advantages over running scripts directly:
+  #   • Validates Groovy pipeline DSL syntax and Jenkins credential configuration
+  #   • Jenkins container reaches Postgres at postgres:5432 (Docker service name)
+  #     and fake-gcs at fake-gcs:4443 — DB access problem solved in dev
+  #   • Mirrors the production environment: same Node.js version, same tool paths
+  #
+  # Usage:
+  #   docker compose --profile jenkins up -d
+  #   open http://localhost:8080   (admin / trapeze-local)
+  #
+  # First run: Jenkins will need the Pipeline and NodeJS plugins installed.
+  # These are pre-installed by Dockerfile.jenkins.
+  #
+  # Production path: when Postgres moves to Cloud SQL, point prod Jenkins at the
+  # cloud DATABASE_URL credential; this local service becomes a validation harness only.
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: test-intel-jenkins
+    profiles: ["jenkins"]
+    ports:
+      - "8080:8080"     # Jenkins UI
+      - "50000:50000"   # Jenkins agent JNLP port
+    environment:
+      # ── Trapeze env vars — inherited by pipeline steps ──────────────────
+      # Postgres is reachable via the service name on the Docker network
+      DATABASE_URL: "postgresql://test_intel:test_intel@postgres:5432/test_intel?schema=public"
+      # GCS emulator: use service name, not localhost, inside Docker
+      GCS_EMULATOR_HOST:  "fake-gcs:4443"
+      GCS_BUCKET:         "test-intel-artifacts"
+      GCS_PROJECT:        "test-intel-local"
+      # Jira / TestRail — loaded from host .env at container start via env_file
+      # ── Jenkins initial admin password shortcut ──────────────────────────
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    env_file:
+      # Loads JIRA_*, TESTRAIL_* from the host .env into the container.
+      # The DATABASE_URL and GCS_* above override any values in .env.
+      - .env
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # Mount the repo read-only so pipeline steps can call npm scripts
+      - .:/workspace/trapeze:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      fake-gcs:
+        condition: service_started
+
 volumes:
   pgdata_test_intel:
+  gcsdata_test_intel:
+  jenkins_home:

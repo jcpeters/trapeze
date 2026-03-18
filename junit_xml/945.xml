@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="3" tests="11" time="913.568" timestamp="2026-02-04T10:15:32.496960-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="0.000"><skipped type="pytest.skip" message="Skipping pending updatesto SUS test">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_sus_one_day_create.py:23: Skipping pending updatesto SUS test</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="133.141" /><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="161.268" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="257.777" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="260.625" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="353.323"><failure message="selenium.common.exceptions.JavascriptException: Message: javascript error: Cannot read properties of null (reading 'click')&#10;  (Session info: chrome=133.0.6943.126)&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x009C0283+25139]&#10;&#09;(No symbol) [0x0094B234]&#10;&#09;(No symbol) [0x008204A3]&#10;&#09;(No symbol) [0x00826EA1]&#10;&#09;(No symbol) [0x00829203]&#10;&#09;(No symbol) [0x008AF6C5]&#10;&#09;(No symbol) [0x0088CF3C]&#10;&#09;(No symbol) [0x008AE6E1]&#10;&#09;(No symbol) [0x0088CD36]&#10;&#09;(No symbol) [0x0085BD29]&#10;&#09;(No symbol) [0x0085D064]&#10;&#09;GetHandleVerifier [0x00CCB143+3215603]&#10;&#09;GetHandleVerifier [0x00CE22BA+3310186]&#10;&#09;GetHandleVerifier [0x00CDC4D2+3286146]&#10;&#09;GetHandleVerifier [0x00A59C80+654384]&#10;&#09;(No symbol) [0x009545BD]&#10;&#09;(No symbol) [0x009514A8]&#10;&#09;(No symbol) [0x00951647]&#10;&#09;(No symbol) [0x00943D20]&#10;&#09;BaseThreadInitThunk [0x76335D49+25]&#10;&#09;RtlInitializeExceptionChain [0x777BCEBB+107]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x777BCE41+561]">self = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7f96baee7050&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f96ba8b0440&gt;
+
+    def test_evite_copy_premium_past_event(self, config):
+        """
+        Copy premium past event:
+        Select past event from DB
+        Copy
+        Change title, time, etc
+        Update and Delete guest list, then update total guest list
+        Send event
+        Verify
+    
+        :param config:
+        :return:
+        """
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+    
+        logger.info(f"Start {inspect.stack()[0][3]}")
+    
+        page = config.pages["page"]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        evite_home_page = config.pages["evite_home_page"]
+        evite_event_page = config.pages["evite_event_page"]
+        evite_overview = config.pages["evite_overview"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        page.get_url(config.environment, "")
+    
+        user_email_addr = ""
+        user_pass = ""
+        user_first_name = ""
+        user_last_name = ""
+        event_title = ""
+        cursor = None
+    
+        # Get event with event_date &gt; 2023-04-01 which is fabric
+    
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+        db_connect = psql_db.connect_db()
+    
+        if self._json_test_data["sign_in"]["email"]:
+            user_email_addr = self._json_test_data["sign_in"]["email"]
+            user_pass = self._json_test_data["sign_in_credentials"]["password"]
+        else:
+            sql_string = (
+                "SELECT %s, %s, %s, %s, %s, %s FROM %s WHERE event_create_date &gt; '%s' "
+                "AND event_sent_date &gt; '%s'"
+                "AND env = '%s' "
+                "AND event_cancelled = '%s' "
+                "AND event_premium = '%s' "
+                "AND event_draft = '%s' "
+                "AND event_draft_guests = '%s' "
+                "AND created_by = '%s'"
+                "ORDER BY random() LIMIT %s;"
+                % (
+                    "user_email_addr",
+                    "user_pass",
+                    "event_title",
+                    "event_id",
+                    "event_date",
+                    "event_premium",
+                    settings.DB_TABLE_EVENTS,
+                    "2023-04-01",
+                    "2023-04-01",
+                    settings.ENV,
+                    False,
+                    True,
+                    False,
+                    False,
+                    "evite",
+                    1,
+                )
+            )
+    
+            try:
+                cursor = db_connect.cursor()
+                cursor.execute(sql_string)
+    
+                # Check result first, if no data then don't fail: Skip
+                if cursor.rowcount:
+                    user_email_addr, user_pass, event_title, event_id, event_date, event_premium = cursor.fetchone()
+                else:
+                    msg = f"DB have no record for sql: {sql_string}"
+                    logger.warning(msg)
+                    pytest.skip(msg)
+    
+            except psycopg2.DatabaseError as db_error:
+                logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+            else:
+                logger.info("SQL execute success")
+    
+        # Log in with fetched user
+    
+        # Log in with fetched user
+        login_modal.sign_in(email=user_email_addr, password=user_pass)
+    
+        # Get user's first and last name
+        sql_string = psql_db.get_select_from_table_string(
+            settings.DB_TABLE_USERS, ["user_first_name", "user_last_name"], user_email_addr=user_email_addr
+        )
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+            if cursor.rowcount:
+                user_first_name, user_last_name = cursor.fetchone()
+            else:
+                config.test_failed["value"] = False
+                msg = f"DB have no record for sql: {sql_string}"
+                logger.warning(msg)
+                pytest.skip(msg)
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+        finally:
+            db_connect.close()
+            cursor.close()
+    
+        evite_home_page.select_logged_in_menu(action="events")
+    
+        # First verify event, we have bad data in db
+        if not my_events.find_event(event_title=event_title, fail=False):
+            # There is a mismatch between event and host, delete the row
+            sql_string = "DELETE FROM %s WHERE user_email_addr = '%s';" % (settings.DB_TABLE_EVENTS, user_email_addr)
+            psql_db.db_execute(sql_string)
+    
+            config.test_failed["value"] = False
+            pytest.skip(f"Can't find event {event_title}")
+    
+&gt;       my_events.select_event_options(event_title=event_title, event_option="copy_invitation", url="preview")
+
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f96ba8b0440&gt;
+cursor     = &lt;cursor object at 0x7f96bae5f6a0; closed: -1&gt;
+db_connect = &lt;connection object at 0x7f96ba558040; dsn: 'user=jenkins password=xxx dbname=qatests host=34.133.6.167 port=5432', closed: 1&gt;
+event_date = datetime.datetime(2024, 2, 21, 11, 30)
+event_id   = '025FYP4ZBFQGTAMPOEPOW4EQ2OZRNQ'
+event_premium = True
+event_title = 'testCIYTSQ123test_20240119-122615'
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7f96ba8b0fe0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f96ba8b0f50&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7f96ba8b14f0&gt;
+logger     = &lt;Logger test_evite_copy_premium_past_event (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f96ba8b15b0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f96ba8b1850&gt;
+page       = &lt;commons.page.Page object at 0x7f96ba8b0800&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f96ba8b1f10&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f96ba8b0d70&gt;
+self       = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7f96baee7050&gt;
+sql_string = "SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-01192024-122514-42-test@evitetest.com' ORDER BY random();"
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f96ba8b0140&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f96ba8b12b0&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f96ba8b1490&gt;
+user_email_addr = 'evite-01192024-122514-42-test@evitetest.com'
+user_first_name = 'automation'
+user_last_name = 'test'
+user_pass  = 'test1234'
+
+test_evite_copy_premium_past_event.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/my_events.py:141: in select_event_options
+    self.find_element_click(element_locator=self._event_options_copy_invitation)
+        _modal_cancel = ('css selector', '[data-qa-id="modal-cancel"]')
+        _modal_submit = ('css selector', '[data-qa-id="modal-submit"]')
+        event      = &lt;selenium.webdriver.remote.webelement.WebElement (session="8b00ad44665f99fd65103151eac86857", element="f.C30694ECA91B619E8425AA82A1DD8D4F.d.2E0D2D9BB54A2BD90EEB8FFFEBF2E108.e.153")&gt;
+        event_option = 'copy_invitation'
+        event_status = None
+        event_title = 'testCIYTSQ123test_20240119-122615'
+        past_event = False
+        self       = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f96ba8b1850&gt;
+        url        = 'preview'
+../../commons/web.py:435: in find_element_click
+    self.selenium.execute_script(f"document.querySelector('{element_locator[1]}').click()")
+        config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f96ba8b0440&gt;
+        element_locator = ('css selector', '[data-qa-id="item_copy"]')
+        js         = False
+        scroll     = False
+        self       = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f96ba8b1850&gt;
+        timeout    = 30
+../../../945/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:555: in execute_script
+    return self.execute(command, {"script": script, "args": converted_args})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        args       = ()
+        command    = 'w3cExecuteScript'
+        converted_args = []
+        script     = 'document.querySelector(\'[data-qa-id="item_copy"]\').click()'
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="8b00ad44665f99fd65103151eac86857")&gt;
+../../../945/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'w3cExecuteScript'
+        params     = {'args': [], 'script': 'document.querySelector(\'[data-qa-id="item_copy"]\').click()'}
+        response   = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x777BCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x777BCE41+561]\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="8b00ad44665f99fd65103151eac86857")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f96d8996120&gt;
+response = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x777BCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x777BCE41+561]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.JavascriptException: Message: javascript error: Cannot read properties of null (reading 'click')
+E         (Session info: chrome=133.0.6943.126)
+E       Stacktrace:
+E       	GetHandleVerifier [0x009C0283+25139]
+E       	(No symbol) [0x0094B234]
+E       	(No symbol) [0x008204A3]
+E       	(No symbol) [0x00826EA1]
+E       	(No symbol) [0x00829203]
+E       	(No symbol) [0x008AF6C5]
+E       	(No symbol) [0x0088CF3C]
+E       	(No symbol) [0x008AE6E1]
+E       	(No symbol) [0x0088CD36]
+E       	(No symbol) [0x0085BD29]
+E       	(No symbol) [0x0085D064]
+E       	GetHandleVerifier [0x00CCB143+3215603]
+E       	GetHandleVerifier [0x00CE22BA+3310186]
+E       	GetHandleVerifier [0x00CDC4D2+3286146]
+E       	GetHandleVerifier [0x00A59C80+654384]
+E       	(No symbol) [0x009545BD]
+E       	(No symbol) [0x009514A8]
+E       	(No symbol) [0x00951647]
+E       	(No symbol) [0x00943D20]
+E       	BaseThreadInitThunk [0x76335D49+25]
+E       	RtlInitializeExceptionChain [0x777BCEBB+107]
+E       	RtlGetAppContainerNamedObjectPath [0x777BCE41+561]
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7f96ba8b3470&gt;
+error_code = 'JAVASCRIPT_ERROR'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [17, 'javascript error']
+exception_class = &lt;class 'selenium.common.exceptions.JavascriptException'&gt;
+message    = "javascript error: Cannot read properties of null (reading 'click')\n  (Session info: chrome=133.0.6943.126)"
+response   = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x777BCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x777BCE41+561]\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f96d8996120&gt;
+st_value   = '\tGetHandleVerifier [0x009C0283+25139]\n\t(No symbol) [0x0094B234]\n\t(No symbol) [0x008204A3]\n\t(No symbol) [0x0082...0x76335D49+25]\n\tRtlInitializeExceptionChain [0x777BCEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x777BCE41+561]\n'
+stacktrace = ['\tGetHandleVerifier [0x009C0283+25139]', '\t(No symbol) [0x0094B234]', '\t(No symbol) [0x008204A3]', '\t(No symbol) [0x00826EA1]', '\t(No symbol) [0x00829203]', '\t(No symbol) [0x008AF6C5]', ...]
+status     = 'javascript error'
+value      = {'error': 'javascript error', 'message': "javascript error: Cannot read properties of null (reading 'click')\n  (Sessi...x76335D49+25]\n\tRtlInitializeExceptionChain [0x777BCEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x777BCE41+561]\n'}
+value_json = '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of null (reading \'click\')\...49+25]\\n\\tRtlInitializeExceptionChain [0x777BCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x777BCE41+561]\\n"}}'
+
+../../../945/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: JavascriptException</failure></testcase><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="286.767" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="438.495" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="895.649" /></testsuite></testsuites>

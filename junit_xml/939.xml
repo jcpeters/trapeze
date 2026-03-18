@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="4" tests="13" time="633.346" timestamp="2026-02-02T10:01:43.904500-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:23: Egift disabled</skipped></testcase><testcase classname="test_evite_rsvp_free_1cf.TestEviteRSVPFree1CF" name="test_evite_rsvp_free_1cf" time="0.000"><skipped type="pytest.skip" message="Experiment set to 0%">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_free_1cf.py:25: Experiment set to 0%</skipped></testcase><testcase classname="test_evite_rsvp_invitation_maker_v3.TestEviteRSVPInvitationMakerV3" name="test_evite_rsvp_invitation_maker_v3" time="0.000"><skipped type="pytest.skip" message="Experiment forced control">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_invitation_maker_v3.py:24: Experiment forced control</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:22: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="152.699" /><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="181.106" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="260.940" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="290.919" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="306.348" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="314.453" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="614.226"><failure message="selenium.common.exceptions.StaleElementReferenceException: Message: stale element reference: stale element not found in the current frame&#10;  (Session info: chrome=133.0.6943.126); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x00A70283+25139]&#10;&#09;(No symbol) [0x009FB234]&#10;&#09;(No symbol) [0x008D04A3]&#10;&#09;(No symbol) [0x008D6EA1]&#10;&#09;(No symbol) [0x008D8F9A]&#10;&#09;(No symbol) [0x008D9017]&#10;&#09;(No symbol) [0x00917BC1]&#10;&#09;(No symbol) [0x0091868B]&#10;&#09;(No symbol) [0x0090DD71]&#10;&#09;(No symbol) [0x0093CF84]&#10;&#09;(No symbol) [0x0090D8E4]&#10;&#09;(No symbol) [0x0093D1B4]&#10;&#09;(No symbol) [0x0095E6E1]&#10;&#09;(No symbol) [0x0093CD36]&#10;&#09;(No symbol) [0x0090BD29]&#10;&#09;(No symbol) [0x0090D064]&#10;&#09;GetHandleVerifier [0x00D7B143+3215603]&#10;&#09;GetHandleVerifier [0x00D922BA+3310186]&#10;&#09;GetHandleVerifier [0x00D8C4D2+3286146]&#10;&#09;GetHandleVerifier [0x00B09C80+654384]&#10;&#09;(No symbol) [0x00A045BD]&#10;&#09;(No symbol) [0x00A014A8]&#10;&#09;(No symbol) [0x00A01647]&#10;&#09;(No symbol) [0x009F3D20]&#10;&#09;BaseThreadInitThunk [0x758B5D49+25]&#10;&#09;RtlInitializeExceptionChain [0x779FCEBB+107]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x779FCE41+561]">self = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7fa3adfa2660&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fa3adff9850&gt;
+
+    def test_evite_sus_one_day_create(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+        sign_up_sheet_maker = config.pages["sign_up_sheet_maker"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} "
+                f"{self._json_test_data['register']['last_name']}")
+    
+        sign_up_sheet_maker.select_sus_event(sus_event="one_day")
+    
+        sign_up_sheet_maker.enter_details(test_data=self._json_test_data)
+        sign_up_sheet_maker.create_sheet_one_day(test_data=self._json_test_data)
+        sign_up_sheet_maker.verify_sheet_sign_ups(test_data=self._json_test_data)
+    
+        sign_up_sheet_maker.publish_sheet()
+        shareable_link = sign_up_sheet_maker.copy_shareable_link()
+    
+        login_modal.sign_out()
+    
+        # Get Volunteer view to build SUS data
+        config.driver.get(shareable_link)
+        logger.info(f"Going volunteer url - {config.driver.current_url}")
+    
+        sign_up_sheet = sign_up_sheet_maker.get_sign_up_sheet_one_day()
+    
+        volunteers = sign_up_sheet_maker.initialize_volunteers(volunteers=self._json_test_data["volunteers"])
+    
+        for volunteer in volunteers:
+    
+            if volunteer["registered"]:
+                logger.info(f"Registering guest: {volunteer['name']}")
+    
+                # Change register data
+                self._json_test_data["register"]["first_name"] = volunteer["name"]
+                self._json_test_data["register"]["email"] = volunteer["email_addr"]
+    
+                # Register
+                login_modal.register(test_data=self._json_test_data['register'], existing_user=True)
+    
+            sus_row = sign_up_sheet_maker.get_random_sus_row(sus=sign_up_sheet)
+    
+&gt;           sign_up_sheet_maker.select_sign_up(sus_row)
+
+_test_name = 'test_evite_sus_one_day_create'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fa3adff9850&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fa3adff94c0&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_sus_one_day_create (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fa3adff86e0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fa3adff9a60&gt;
+page       = &lt;commons.page.Page object at 0x7fa3adff88f0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7fa3adfa2660&gt;
+shareable_link = 'https://test4.evite.me/5guxegHxFx'
+sign_up_sheet = [{'row_count': 2, 'row_filled': 2, 'row_title': 'drinks'}, {'row_count': 5, 'row_filled': 0, 'row_title': 'chips'}, {'row_count': 10, 'row_filled': 0, 'row_title': 'food'}]
+sign_up_sheet_maker = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fa3adff9af0&gt;
+sus_row    = {'row_count': 5, 'row_filled': 0, 'row_title': 'chips'}
+user_email_addr = 'evite-02022026-100824-20-test@evitetest.com'
+user_pass  = 'test1234'
+volunteer  = {'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260202-1009-507838-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}
+volunteers = [{'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260202-1009-507651-test@evitetest.com', '...ENT', 'email_addr': 'evite-volunteer-20260202-1009-507838-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}]
+
+test_evite_sus_one_day_create.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/sign_up_sheet_maker.py:573: in select_sign_up
+    sus_rows = sus_options.find_elements(*self._sign_up_rows)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fa3adff9af0&gt;
+        sus_options = &lt;selenium.webdriver.remote.webelement.WebElement (session="1e452b137e47f927a5e93951670e3397", element="f.1E54CFD0D83723F335013B8816543EC5.d.110D07BCD25E2D843B9FB72C36B106DB.e.1020")&gt;
+        sus_row    = {'row_count': 5, 'row_filled': 0, 'row_title': 'chips'}
+../../../939/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:631: in find_elements
+    return self._execute(Command.FIND_CHILD_ELEMENTS, {"using": by, "value": value})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        by         = 'css selector'
+        self       = &lt;selenium.webdriver.remote.webelement.WebElement (session="1e452b137e47f927a5e93951670e3397", element="f.1E54CFD0D83723F335013B8816543EC5.d.110D07BCD25E2D843B9FB72C36B106DB.e.1020")&gt;
+        value      = '[class="page-section__row volunteer"]'
+../../../939/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:573: in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        command    = 'findChildElements'
+        params     = {'id': 'f.1E54CFD0D83723F335013B8816543EC5.d.110D07BCD25E2D843B9FB72C36B106DB.e.1020', 'using': 'css selector', 'value': '[class="page-section__row volunteer"]'}
+        self       = &lt;selenium.webdriver.remote.webelement.WebElement (session="1e452b137e47f927a5e93951670e3397", element="f.1E54CFD0D83723F335013B8816543EC5.d.110D07BCD25E2D843B9FB72C36B106DB.e.1020")&gt;
+../../../939/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'findChildElements'
+        params     = {'using': 'css selector', 'value': '[class="page-section__row volunteer"]'}
+        response   = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"stale element reference: stale elemen...9+25]\\n\\tRtlInitializeExceptionChain [0x779FCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x779FCE41+561]\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="1e452b137e47f927a5e93951670e3397")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fa3ae3d7bc0&gt;
+response = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"stale element reference: stale elemen...9+25]\\n\\tRtlInitializeExceptionChain [0x779FCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x779FCE41+561]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.StaleElementReferenceException: Message: stale element reference: stale element not found in the current frame
+E         (Session info: chrome=133.0.6943.126); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception
+E       Stacktrace:
+E       	GetHandleVerifier [0x00A70283+25139]
+E       	(No symbol) [0x009FB234]
+E       	(No symbol) [0x008D04A3]
+E       	(No symbol) [0x008D6EA1]
+E       	(No symbol) [0x008D8F9A]
+E       	(No symbol) [0x008D9017]
+E       	(No symbol) [0x00917BC1]
+E       	(No symbol) [0x0091868B]
+E       	(No symbol) [0x0090DD71]
+E       	(No symbol) [0x0093CF84]
+E       	(No symbol) [0x0090D8E4]
+E       	(No symbol) [0x0093D1B4]
+E       	(No symbol) [0x0095E6E1]
+E       	(No symbol) [0x0093CD36]
+E       	(No symbol) [0x0090BD29]
+E       	(No symbol) [0x0090D064]
+E       	GetHandleVerifier [0x00D7B143+3215603]
+E       	GetHandleVerifier [0x00D922BA+3310186]
+E       	GetHandleVerifier [0x00D8C4D2+3286146]
+E       	GetHandleVerifier [0x00B09C80+654384]
+E       	(No symbol) [0x00A045BD]
+E       	(No symbol) [0x00A014A8]
+E       	(No symbol) [0x00A01647]
+E       	(No symbol) [0x009F3D20]
+E       	BaseThreadInitThunk [0x758B5D49+25]
+E       	RtlInitializeExceptionChain [0x779FCEBB+107]
+E       	RtlGetAppContainerNamedObjectPath [0x779FCE41+561]
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7fa3ad587470&gt;
+error_code = 'STALE_ELEMENT_REFERENCE'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [10, 'stale element reference']
+exception_class = &lt;class 'selenium.common.exceptions.StaleElementReferenceException'&gt;
+message    = 'stale element reference: stale element not found in the current frame\n  (Session info: chrome=133.0.6943.126)'
+response   = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"stale element reference: stale elemen...9+25]\\n\\tRtlInitializeExceptionChain [0x779FCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x779FCE41+561]\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fa3ae3d7bc0&gt;
+st_value   = '\tGetHandleVerifier [0x00A70283+25139]\n\t(No symbol) [0x009FB234]\n\t(No symbol) [0x008D04A3]\n\t(No symbol) [0x008D...0x758B5D49+25]\n\tRtlInitializeExceptionChain [0x779FCEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x779FCE41+561]\n'
+stacktrace = ['\tGetHandleVerifier [0x00A70283+25139]', '\t(No symbol) [0x009FB234]', '\t(No symbol) [0x008D04A3]', '\t(No symbol) [0x008D6EA1]', '\t(No symbol) [0x008D8F9A]', '\t(No symbol) [0x008D9017]', ...]
+status     = 'stale element reference'
+value      = {'error': 'stale element reference', 'message': 'stale element reference: stale element not found in the current frame...x758B5D49+25]\n\tRtlInitializeExceptionChain [0x779FCEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x779FCE41+561]\n'}
+value_json = '{"value":{"error":"stale element reference","message":"stale element reference: stale element not found in the curren...49+25]\\n\\tRtlInitializeExceptionChain [0x779FCEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x779FCE41+561]\\n"}}'
+
+../../../939/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: StaleElementReferenceException</failure></testcase><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="484.928" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="544.492" /></testsuite></testsuites>

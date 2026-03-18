@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="3" tests="11" time="442.315" timestamp="2026-02-22T22:49:50.221294-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="207.779"><skipped type="pytest.skip" message="DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-02022026-160804-93-test@evitetest.com' ORDER BY random();">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_greeting_card_create_from_past_event.py:116: DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-02022026-160804-93-test@evitetest.com' ORDER BY random();</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="209.423" /><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="213.893" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="308.850"><failure message="AssertionError: Fail verify name, expecting evite-volunteer-20260222-2255-531060-test, got">self = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f96f179f110&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f96f1117e30&gt;
+
+    def test_evite_sus_one_day_create(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+        sign_up_sheet_maker = config.pages["sign_up_sheet_maker"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info("Start %s", _test_name)
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+            )
+    
+        sign_up_sheet_maker.select_sus_event_from_meganav(sus_event="one_day")
+    
+        sign_up_sheet_maker.enter_details(test_data=self._json_test_data)
+        sign_up_sheet_maker.create_sheet_one_day(test_data=self._json_test_data)
+        sign_up_sheet_maker.verify_sheet_sign_ups(test_data=self._json_test_data)
+    
+        sign_up_sheet_maker.publish_sheet()
+        shareable_link = sign_up_sheet_maker.copy_shareable_link()
+    
+        login_modal.sign_out()
+    
+        # Get Volunteer view to build SUS data
+        config.driver.get(shareable_link)
+        logger.info("Going volunteer url - %s", config.driver.current_url)
+    
+        sign_up_sheet = sign_up_sheet_maker.get_sign_up_sheet_one_day()
+    
+        volunteers = sign_up_sheet_maker.initialize_volunteers(volunteers=self._json_test_data["volunteers"])
+    
+        for volunteer in volunteers:
+    
+            if volunteer["registered"]:
+                logger.info("Registering guest: %s", volunteer["name"])
+    
+                # Change register data
+                self._json_test_data["register"]["first_name"] = volunteer["name"]
+                self._json_test_data["register"]["email"] = volunteer["email_addr"]
+    
+                # Register
+                login_modal.register(test_data=self._json_test_data["register"], existing_user=True)
+    
+            sus_row = sign_up_sheet_maker.get_random_sus_row(sus=sign_up_sheet)
+    
+            sign_up_sheet_maker.select_sign_up(sus_row)
+&gt;           sign_up_sheet_maker.volunteer_sign_up(volunteer=volunteer)
+
+_test_name = 'test_evite_sus_one_day_create'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f96f1117e30&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f96f1117500&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_sus_one_day_create (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f96f1117b30&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f96f1117260&gt;
+page       = &lt;commons.page.Page object at 0x7f96f1116750&gt;
+self       = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f96f179f110&gt;
+shareable_link = 'https://evite.me/tmg4s6AnZm'
+sign_up_sheet = [{'row_count': 2, 'row_filled': 0, 'row_title': 'drinks'}, {'row_count': 5, 'row_filled': 0, 'row_title': 'chips'}, {'row_count': 10, 'row_filled': 0, 'row_title': 'food'}]
+sign_up_sheet_maker = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f96f1117e00&gt;
+sus_row    = {'row_count': 10, 'row_filled': 0, 'row_title': 'food'}
+user_email_addr = 'evite-02222026-225431-04-test@evitetest.com'
+user_pass  = 'test1234'
+volunteer  = {'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260222-2255-531060-test@evitetest.com', 'guest_count': 2, 'kids_count': 0, ...}
+volunteers = [{'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260222-2255-531060-test@evitetest.com', '...ENT', 'email_addr': 'evite-volunteer-20260222-2255-531414-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}]
+
+test_evite_sus_one_day_create.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f96f1117e00&gt;
+volunteer = {'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260222-2255-531060-test@evitetest.com', 'guest_count': 2, 'kids_count': 0, ...}
+
+    def volunteer_sign_up(self, volunteer):
+        self.logger.info("Start %s.%s", self.__class__.__name__, inspect.stack()[0][3])
+    
+        if volunteer["comment"]:
+            self.find_text_box_clear_enter_text(self._sign_up_comment, volunteer["comment"])
+    
+        if volunteer["registered"]:
+            # If registered, then Name and Email must be prepopulated already, verify and continue
+            if self.is_element_visible(self._sign_up_name):
+                web_name = self.find(self._sign_up_name).get_attribute("value")
+&gt;               assert volunteer["name"] in web_name, f"Fail verify name, expecting {volunteer['name']}, got {web_name}"
+E               AssertionError: Fail verify name, expecting evite-volunteer-20260222-2255-531060-test, got
+
+self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f96f1117e00&gt;
+volunteer  = {'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260222-2255-531060-test@evitetest.com', 'guest_count': 2, 'kids_count': 0, ...}
+web_name   = ''
+
+../../commons/pages/evite/sign_up_sheet_maker.py:501: AssertionError</failure></testcase><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="268.162" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="282.958" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="285.868" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="423.464" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="437.622" /></testsuite></testsuites>

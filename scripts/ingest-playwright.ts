@@ -37,6 +37,12 @@
  * or a full URL "https://jira.example.com/browse/QAA-123") automatically
  * produces a jira_automation_link row with confidence=HIGH, provenance=EXPLICIT.
  * Use --skip-jira-links to disable this behaviour.
+ *
+ * TestRail explicit link extraction from @tags
+ * ─────────────────────────────────────────────
+ * Any spec tag containing a TestRail case ID pattern (e.g. "@C1234", "C1234")
+ * produces an automation_testrail_link row with confidence=HIGH, provenance=EXPLICIT.
+ * Use --skip-tr-links to disable this behaviour.
  */
 
 import "dotenv/config";
@@ -50,6 +56,7 @@ import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 
 import { prisma } from "./db/prisma";
+import { uploadFile, uploadBuffer, buildKey } from "./storage.js";
 
 // ── Playwright JSON reporter types ────────────────────────────────────────────
 // Matches the shape emitted by `npx playwright test --reporter=json`.
@@ -149,6 +156,9 @@ const IngestArgsSchema = z.object({
   shardTotal:    z.coerce.number().int().min(1).optional(),
   projectFilter:  z.string().optional(),
   skipJiraLinks:  z.boolean().default(false),
+  skipTrLinks:    z.boolean().default(false),
+  skipArtifacts:  z.boolean().default(false),
+  artifactsDir:   z.string().optional(), // fallback dir for resolving attachment paths
   dryRun:         z.boolean().default(false),
   explain:        z.boolean().default(false),
 });
@@ -211,6 +221,38 @@ function extractJiraKeysFromTags(tags: string[]): TagJiraMatch[] {
       if (!seen.has(key)) {
         seen.add(key);
         results.push({ issueKey: key, tagValue: tag });
+      }
+    }
+  }
+  return results;
+}
+
+// ── TestRail tag extraction ───────────────────────────────────────────────────
+
+interface TagTrMatch {
+  trCaseId: bigint;
+  tagValue: string; // the raw tag string the case ID was found in
+}
+
+/**
+ * Scan a spec's tags array for TestRail case IDs.
+ * Handles: "@C1234", "C1234", "TR-C1234"
+ * Pattern: optional "@" or "TR-", then "C" followed by digits.
+ * Returns deduplicated matches.
+ */
+function extractTrCaseIdsFromTags(tags: string[]): TagTrMatch[] {
+  const seen    = new Set<bigint>();
+  const results: TagTrMatch[] = [];
+  // Matches: @C1234 | C1234 | TR-C1234  (case-insensitive, bounded by non-digits)
+  const re = /(?:@|TR-)?[Cc](\d+)(?!\d)/g;
+  for (const tag of tags) {
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(tag)) !== null) {
+      const id = BigInt(m[1]);
+      if (!seen.has(id)) {
+        seen.add(id);
+        results.push({ trCaseId: id, tagValue: tag });
       }
     }
   }
@@ -280,21 +322,110 @@ function hashFirstError(errors: PWError[]): string | null {
   return crypto.createHash("sha256").update(norm).digest("hex").slice(0, 16);
 }
 
+/** Derive a RawArtifact artifactType string from MIME type and attachment name. */
+function inferArtifactType(contentType: string, name: string): string {
+  if (contentType.startsWith("image/"))  return "screenshot";
+  if (contentType.startsWith("video/"))  return "video";
+  if (name.toLowerCase().includes("trace") || contentType === "application/zip") return "trace";
+  return "attachment";
+}
+
 /**
- * Build an artifactLinks map from Playwright attachments.
+ * Upload Playwright attachments to GCS and return a map of
+ * normalized key → gs:// URI plus a count of RawArtifact rows written.
+ *
+ * In dry-run mode the upload is skipped and local paths are returned
+ * unchanged for visual inspection.
+ *
+ * Path resolution order:
+ *   1. att.path as-is (works when ingest runs on the same machine as the test)
+ *   2. artifactsDir / parent-basename / filename  (preserves Playwright's
+ *      per-test subdirectory structure after a drop-zone download)
+ *   3. artifactsDir / filename  (flat fallback)
+ *
  * Keys are lower-cased attachment names (spaces → _).
  * Only includes attachments that have a file path.
  */
-function buildArtifactLinks(
-  attachments: PWAttachment[]
-): Record<string, string> | null {
+async function uploadAndBuildArtifactLinks(
+  attachments:  PWAttachment[],
+  executionId:  string,
+  buildId:      string,
+  dryRun:       boolean,
+  artifactsDir?: string,
+): Promise<{ links: Record<string, string>; rawCount: number } | null> {
   const map: Record<string, string> = {};
+  let rawCount = 0;
+
   for (const att of attachments) {
-    if (att.path) {
-      map[att.name.toLowerCase().replace(/\s+/g, "_")] = att.path;
+    if (!att.path) continue;
+
+    // ── Resolve local path ──────────────────────────────────────────────────
+    let localPath = att.path;
+    if (!fs.existsSync(localPath)) {
+      if (artifactsDir) {
+        // Try: artifactsDir/{test-subdir}/{filename} — preserves per-test dirs
+        const parentBasename = path.basename(path.dirname(att.path));
+        const subdirPath = path.join(artifactsDir, parentBasename, path.basename(att.path));
+        if (fs.existsSync(subdirPath)) {
+          localPath = subdirPath;
+        } else {
+          // Flat fallback: artifactsDir/{filename}
+          const flatPath = path.join(artifactsDir, path.basename(att.path));
+          if (fs.existsSync(flatPath)) {
+            localPath = flatPath;
+          } else {
+            console.warn(`[storage] Attachment not found, skipping: ${path.basename(att.path)}`);
+            continue;
+          }
+        }
+      } else {
+        console.warn(`[storage] Attachment not found, skipping: ${att.path}`);
+        continue;
+      }
     }
+
+    const normalKey = att.name.toLowerCase().replace(/\s+/g, "_");
+
+    if (dryRun) {
+      map[normalKey] = localPath;
+      continue;
+    }
+
+    const gcsKey = buildKey(buildId, `attachments/${executionId}`, path.basename(localPath));
+    const { gcsUri, bytes } = await uploadFile(localPath, gcsKey);
+    map[normalKey] = gcsUri;
+
+    // ── Write RawArtifact row so the lifecycle dashboard can track it ───────
+    await prisma.rawArtifact.create({
+      data: {
+        buildId,
+        artifactType: inferArtifactType(att.contentType, att.name),
+        storageUri:   gcsUri,
+        bytes,
+      },
+    });
+    rawCount++;
   }
-  return Object.keys(map).length ? map : null;
+
+  const hasEntries = Object.keys(map).length > 0;
+  return hasEntries ? { links: map, rawCount } : null;
+}
+
+/**
+ * Concatenate Playwright stdout or stderr chunks into a single Buffer.
+ * Returns null if the array is empty or all chunks are empty.
+ */
+function concatOutput(
+  chunks: Array<{ text?: string; buffer?: string }>,
+): Buffer | null {
+  const parts: Buffer[] = [];
+  for (const chunk of chunks) {
+    if (chunk.text)   parts.push(Buffer.from(chunk.text, "utf-8"));
+    if (chunk.buffer) parts.push(Buffer.from(chunk.buffer, "base64"));
+  }
+  if (parts.length === 0) return null;
+  const combined = Buffer.concat(parts);
+  return combined.length > 0 ? combined : null;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -319,6 +450,9 @@ async function main() {
     .option("shard-total", { type: "number",  describe: "Total shard count" })
     .option("project",          { type: "string",  describe: "Filter to a single Playwright project name" })
     .option("skip-jira-links",  { type: "boolean", default: false, describe: "Skip writing jira_automation_link rows from @tags" })
+    .option("skip-tr-links",    { type: "boolean", default: false, describe: "Skip writing automation_testrail_link rows from @C1234 tags" })
+    .option("skip-artifacts",   { type: "boolean", default: false, describe: "Skip uploading screenshots/traces/videos to GCS" })
+    .option("artifacts-dir",    { type: "string",  describe: "Base directory for resolving attachment paths (used when ingesting via drop zone — embedded paths are CI-machine absolute paths that do not exist locally)" })
     .option("dry-run",          { type: "boolean", default: false, describe: "Parse and validate; do not write to DB" })
     .option("explain",          { type: "boolean", default: false, describe: "Verbose per-test output" })
     .help()
@@ -338,6 +472,9 @@ async function main() {
     shardTotal:    argv["shard-total"],
     projectFilter:  argv["project"],
     skipJiraLinks:  argv["skip-jira-links"],
+    skipTrLinks:    argv["skip-tr-links"],
+    skipArtifacts:  argv["skip-artifacts"],
+    artifactsDir:   argv["artifacts-dir"] as string | undefined,
     dryRun:         argv["dry-run"],
     explain:        argv["explain"],
   });
@@ -481,12 +618,16 @@ async function main() {
     },
   });
 
-  // 2. Record artifact
+  // 2. Upload source JSON to GCS then record the artifact with its permanent gs:// URI.
+  // Upload happens before the DB write so we never store a URI that doesn't exist.
+  const jsonGcsKey = buildKey(build.id, "source/playwright-json", path.basename(absPath));
+  const { gcsUri: jsonGcsUri } = await uploadFile(absPath, jsonGcsKey);
+
   await prisma.rawArtifact.create({
     data: {
       buildId:      build.id,
       artifactType: "playwright-json",
-      storageUri:   `file://${absPath}`,
+      storageUri:   jsonGcsUri,
       sha256:       fileSha,
       bytes:        buf.length,
     },
@@ -527,19 +668,33 @@ async function main() {
     console.log(`[explain] ${knownJiraKeys.size} Jira issue keys loaded for link filtering`);
   }
 
-  // 5. Upsert TestExecutions + create TestAttempts + write Jira links
-  let executionsCreated = 0;
-  let executionsUpdated = 0;
-  let attemptsWritten   = 0;
-  let linksWritten      = 0;
-  let linksSkipped      = 0; // key found in tag but not in jira_issue
+  // 4b. Pre-load known TestRail case IDs for FK safety
+  const knownTrCaseIds: Set<bigint> = args.skipTrLinks
+    ? new Set()
+    : new Set(
+        (await prisma.testRailCase.findMany({ select: { trCaseId: true } }))
+          .map((r) => r.trCaseId)
+      );
+
+  if (args.explain && !args.skipTrLinks) {
+    console.log(`[explain] ${knownTrCaseIds.size} TestRail case IDs loaded for link filtering`);
+  }
+
+  // 5. Upsert TestExecutions + create TestAttempts + write Jira + TestRail links
+  let executionsCreated    = 0;
+  let executionsUpdated    = 0;
+  let attemptsWritten      = 0;
+  let linksWritten         = 0;
+  let linksSkipped         = 0; // key found in tag but not in jira_issue
+  let trLinksWritten       = 0;
+  let trLinksSkipped       = 0; // case ID found in tag but not in testrail_case
+  let rawArtifactsWritten  = 0; // screenshot/trace/video RawArtifact rows
 
   for (const { cs, test, testId, titlePath } of workItems) {
     const execStatus  = toExecutionStatus(test.status);
     const totalDurMs  = test.results.reduce((s, r) => s + r.duration, 0);
     const lastResult  = test.results.at(-1);
     const failureMsg  = lastResult?.errors[0]?.message?.slice(0, 2000) ?? null;
-    const artifLinks  = lastResult ? buildArtifactLinks(lastResult.attachments) : null;
 
     // Optional link to TestCase (best-effort; null if not found)
     const tcRow = await prisma.testCase.findFirst({
@@ -549,6 +704,8 @@ async function main() {
 
     // Upsert TestExecution via findFirst+create/update to handle nullable
     // (project, shardIndex) in the unique constraint without PG NULL quirks.
+    // artifactLinks is intentionally omitted here — we need execution.id first
+    // to build GCS keys, then patch the record after uploading attachments.
     const existing = await prisma.testExecution.findFirst({
       where: {
         runId:      ciRun.id,
@@ -565,11 +722,10 @@ async function main() {
       execution = await prisma.testExecution.update({
         where: { id: existing.id },
         data: {
-          status:       execStatus,
-          durationMs:   totalDurMs,
+          status:     execStatus,
+          durationMs: totalDurMs,
           failureMsg,
-          artifactLinks: artifLinks ?? undefined,
-          testCaseId:   tcRow?.id  ?? undefined,
+          testCaseId: tcRow?.id ?? undefined,
         },
         select: { id: true },
       });
@@ -577,22 +733,47 @@ async function main() {
     } else {
       execution = await prisma.testExecution.create({
         data: {
-          runId:        ciRun.id,
-          testCaseId:   tcRow?.id ?? null,
+          runId:      ciRun.id,
+          testCaseId: tcRow?.id ?? null,
           testId,
-          filePath:     cs.filePath || null,
+          filePath:   cs.filePath || null,
           titlePath,
-          tags:         cs.spec.tags ?? [],
-          project:      test.projectName,
-          shardIndex:   args.shardIndex ?? null,
-          status:       execStatus,
-          durationMs:   totalDurMs,
+          tags:       cs.spec.tags ?? [],
+          project:    test.projectName,
+          shardIndex: args.shardIndex ?? null,
+          status:     execStatus,
+          durationMs: totalDurMs,
           failureMsg,
-          artifactLinks: artifLinks ?? undefined,
         },
         select: { id: true },
       });
       executionsCreated++;
+    }
+
+    // Upload attachments (screenshots, videos, traces) to GCS.
+    // Only for failures and flaky tests — passing tests rarely have attachments
+    // and uploading them wastes storage quota.  Use --skip-artifacts to disable.
+    const shouldUploadArtifacts =
+      !args.skipArtifacts &&
+      lastResult &&
+      lastResult.attachments.length > 0 &&
+      (execStatus === "FAILED" || execStatus === "FLAKY" || execStatus === "ERROR");
+
+    if (shouldUploadArtifacts && lastResult) {
+      const uploaded = await uploadAndBuildArtifactLinks(
+        lastResult.attachments,
+        execution.id,
+        build.id,
+        args.dryRun,
+        args.artifactsDir,
+      );
+      if (uploaded) {
+        await prisma.testExecution.update({
+          where: { id: execution.id },
+          data:  { artifactLinks: uploaded.links },
+        });
+        rawArtifactsWritten += uploaded.rawCount;
+      }
     }
 
     // Upsert TestAttempts (@@unique([executionId, attemptNo]) — no nullable fields)
@@ -602,7 +783,7 @@ async function main() {
       const attStart   = new Date(result.startTime);
       const attEnd     = new Date(attStart.getTime() + result.duration);
 
-      await prisma.testAttempt.upsert({
+      const attempt = await prisma.testAttempt.upsert({
         where: {
           executionId_attemptNo: {
             executionId: execution.id,
@@ -619,12 +800,49 @@ async function main() {
           finishedAt:  attEnd,
         },
         update: {
-          status:    toAttemptStatus(result.status),
+          status:     toAttemptStatus(result.status),
           durationMs: result.duration,
           errorHash:  errHash,
         },
+        select: { id: true },
       });
       attemptsWritten++;
+
+      // Persist stdout and stderr to GCS + BuildLog rows.
+      // Skipped in dry-run mode; skipped when output is empty.
+      if (!args.dryRun) {
+        for (const [logType, chunks] of [
+          ["stdout", result.stdout] as const,
+          ["stderr", result.stderr] as const,
+        ]) {
+          const logBuf = concatOutput(chunks);
+          if (!logBuf) continue;
+
+          const gcsKey = buildKey(
+            build.id,
+            `attachments/${execution.id}`,
+            `${logType}-attempt${attemptNo}.txt`,
+          );
+          const gcsUri = await uploadBuffer(logBuf, gcsKey);
+
+          await prisma.buildLog.create({
+            data: {
+              attemptId:  attempt.id,
+              logType,
+              storageUri: gcsUri,
+              bytes:      logBuf.length,
+            },
+          });
+
+          // Fast-path URI on TestAttempt — set from stdout for quick lookup.
+          if (logType === "stdout") {
+            await prisma.testAttempt.update({
+              where: { id: attempt.id },
+              data:  { logUri: gcsUri },
+            });
+          }
+        }
+      }
     }
 
     // ── Jira link extraction from spec @tags ────────────────────────────────
@@ -693,6 +911,62 @@ async function main() {
       }
     }
 
+    // ── TestRail explicit link extraction from @C1234 tags ──────────────────
+    if (!args.skipTrLinks) {
+      const trTagMatches = extractTrCaseIdsFromTags(cs.spec.tags);
+
+      if (trTagMatches.length > 0) {
+        // Ensure a TestCase row exists (same pattern as Jira link above)
+        const tcForTrLink = await prisma.testCase.upsert({
+          where:  { identityKey: testId },
+          update: {},
+          create: {
+            identityKey: testId,
+            title:       cs.spec.title,
+            suiteName:   cs.filePath || null,
+            filePath:    cs.filePath || null,
+          },
+        });
+
+        for (const { trCaseId, tagValue } of trTagMatches) {
+          if (!knownTrCaseIds.has(trCaseId)) {
+            if (args.explain) {
+              console.log(`    SKIP TR link C${trCaseId} (not in testrail_case)`);
+            }
+            trLinksSkipped++;
+            continue;
+          }
+
+          await prisma.automationTestRailLink.upsert({
+            where: {
+              testCaseId_trCaseId_provenance: {
+                testCaseId: tcForTrLink.id,
+                trCaseId,
+                provenance: "EXPLICIT",
+              },
+            },
+            create: {
+              testCaseId: tcForTrLink.id,
+              trCaseId,
+              provenance: "EXPLICIT",
+              confidence: "HIGH",
+              evidence:   `Playwright tag "${tagValue}"`,
+              source:     "testrail-tag",
+            },
+            update: {
+              confidence: "HIGH",
+              evidence:   `Playwright tag "${tagValue}"`,
+            },
+          });
+
+          if (args.explain) {
+            console.log(`    TR LINK ${testId} → C${trCaseId}  (tag: "${tagValue}")`);
+          }
+          trLinksWritten++;
+        }
+      }
+    }
+
     if (args.explain) {
       const a = test.results.length;
       console.log(
@@ -706,6 +980,12 @@ async function main() {
     ? ""
     : `  jiraLinksWritten=${linksWritten} jiraLinksSkipped=${linksSkipped}`;
 
+  const trLinkSummary = args.skipTrLinks
+    ? ""
+    : `  trLinksWritten=${trLinksWritten} trLinksSkipped=${trLinksSkipped}`;
+
+  const artifactSummary = args.skipArtifacts ? "" : `  rawArtifactsWritten=${rawArtifactsWritten}`;
+
   console.log(
     `Playwright ingest complete:` +
     `  job=${args.jobName} #${args.buildNumber}` +
@@ -714,6 +994,8 @@ async function main() {
     `  executionsUpdated=${executionsUpdated}` +
     `  attemptsWritten=${attemptsWritten}` +
     linkSummary +
+    trLinkSummary +
+    artifactSummary +
     `  runStatus=${runStatus}`
   );
 }

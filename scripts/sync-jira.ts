@@ -262,7 +262,7 @@ class JiraClient {
     maxResults: number
   ): Promise<JiraSearchPage> {
     return withRetry(async () => {
-      const url = new URL(`${this.env.JIRA_BASE_URL}/rest/api/3/search`);
+      const url = new URL(`${this.env.JIRA_BASE_URL}/rest/api/3/search/jql`);
       url.searchParams.set("jql", jql);
       url.searchParams.set("startAt", String(startAt));
       url.searchParams.set("maxResults", String(maxResults));

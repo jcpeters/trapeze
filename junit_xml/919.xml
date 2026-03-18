@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="411.794" timestamp="2026-01-15T15:30:31.826299-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="394.876"><failure message="Exception: Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3">self = &lt;tests.evite_acceptance.test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew object at 0x7f5fed9ae210&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f5feda09be0&gt;
+
+    def test_evite_greeting_card_create_new(self, config):
+        """
+        Create Greeting Card as new registered user
+    
+        :param config:
+        :return:
+        """
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        login_modal = config.pages['login_modal']
+        evite_gallery_page = config.pages["evite_gallery_page"]
+        evite_overview = config.pages["evite_overview"]
+        evite_greeting_card = config.pages["evite_greeting_card"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_egift_card = config.pages["step2_egift_card"]
+        step3_grc_messages = config.pages["step3_grc_messages"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["host"] = (f"{self._json_test_data['register']['first_name']} "
+                                                                       f"{self._json_test_data['register']['last_name']}")
+    
+        evite_gallery_page.select_mega_nav(action="greeting_cards", url="cards")
+        evite_gallery_page.select_random_template(greeting_card=True)
+    
+        # step1_template.select_next(url="egift-card")
+        # step2_egift_card.select_egift_card_toggle(toggle=False)
+    
+&gt;       step1_template.select_next(url="recipients")
+
+_test_name = 'test_evite_greeting_card_create_new'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f5feda09be0&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f5feda08ad0&gt;
+evite_greeting_card = &lt;commons.pages.evite.evite_greeting_card.EviteGreetingCard object at 0x7f5feda09b80&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7f5feda09a30&gt;
+logger     = &lt;Logger test_evite_greeting_card_create_new (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f5feda09b50&gt;
+page       = &lt;commons.page.Page object at 0x7f5feda0af30&gt;
+self       = &lt;tests.evite_acceptance.test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew object at 0x7f5fed9ae210&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+step2_egift_card = &lt;commons.pages.evite.step2_egift_card.Step2EGiftCard object at 0x7f5feda09970&gt;
+step3_grc_messages = &lt;commons.pages.evite.step3_grc_messages.Step3GRCMessages object at 0x7f5feda099a0&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f5feda099d0&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f5feda09a90&gt;
+
+test_evite_greeting_card_create_new.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step1_template.py:184: in select_next
+    self.assert_url_contains(search_string=url)
+        config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f5feda09be0&gt;
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+        url        = 'recipients'
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 0
+        current_url = 'https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f5feda0ae10&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 1
+        current_url = 'https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f5feda09430&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 2
+        current_url = 'https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f5fed9ecce0&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 3
+        current_url = 'https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f5fed9ed2e0&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 4
+        current_url = 'https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f5fed9ed640&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 5
+        current_url = 'https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f5fed9ed1c0&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+../../commons/page.py:198: in assert_url_contains
+    self.log_and_raise_exception(msg)
+        count      = 6
+        current_url = 'https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3'
+        msg        = "Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3"
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f5fed9ed5e0&gt;
+        search_string = 'recipients'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+message = "Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3
+
+message    = "Can't verify page url contains recipients, current url: https://test23.evitelabs.com/cards/how-we-roll_card/create?v=&amp;c=featured_cards&amp;previous=featured_cards&amp;page=1&amp;invitation_type=card&amp;category_id=featured_cards&amp;pos=3"
+self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f5feda09910&gt;
+
+../../commons/page.py:1049: Exception</failure></testcase></testsuite></testsuites>

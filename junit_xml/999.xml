@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="2" tests="11" time="482.523" timestamp="2026-02-26T09:32:25.475710-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="263.118" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="333.970"><failure message="AssertionError: Signup mismatch for sheet index 0 (title=None): expected 2, got 12">self = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f53b3f1ea20&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f53b389b920&gt;
+
+    def test_evite_sus_one_day_create(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+        sign_up_sheet_maker = config.pages["sign_up_sheet_maker"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info("Start %s", _test_name)
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+            )
+    
+        sign_up_sheet_maker.select_sus_event_from_meganav(sus_event="one_day")
+    
+        sign_up_sheet_maker.enter_details(test_data=self._json_test_data)
+        sign_up_sheet_maker.create_sheet_one_day(test_data=self._json_test_data)
+&gt;       sign_up_sheet_maker.verify_sheet_sign_ups(test_data=self._json_test_data)
+
+_test_name = 'test_evite_sus_one_day_create'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f53b389b920&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f53b3899520&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_sus_one_day_create (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f53b389b890&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f53b389b230&gt;
+page       = &lt;commons.page.Page object at 0x7f53b389aa20&gt;
+self       = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f53b3f1ea20&gt;
+sign_up_sheet_maker = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f53b389b980&gt;
+user_email_addr = 'evite-02262026-093746-41-test@evitetest.com'
+user_pass  = 'test1234'
+
+test_evite_sus_one_day_create.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f53b389b980&gt;
+test_data = {'RSVP_NOTE': 'Guests', 'invitation': {'date_format_style': 'Formal (ceremonial)', 'event_details': {'add_end_time': F..., 'whats_needed': 'chips'}, {'description': 'food description', 'volunteers_needed': 10, 'whats_needed': 'food'}], ...}
+
+    def verify_sheet_sign_ups(self, test_data):
+        self.logger.info("Start %s.%s", self.__class__.__name__, inspect.stack()[0][3])
+    
+        sheets_element = self.find(self._builder_items)
+        sheets = sheets_element.find_elements(By.XPATH, "div")
+    
+        for index, sheet in enumerate(sheets):
+            web_signups = int(
+                sheet.find_element(By.CSS_SELECTOR, f'[data-qa-id="slot-item-quantity-{index}-value"]').get_attribute(
+                    "data-qa-value"
+                )
+            )
+&gt;           assert web_signups == test_data["sheets"][index]["volunteers_needed"], (
+                f"Signup mismatch for sheet index {index} "
+                f"(title={test_data['sheets'][index].get('title')!r}): "
+                f"expected {test_data['sheets'][index]['volunteers_needed']}, got {web_signups}"
+            )
+E           AssertionError: Signup mismatch for sheet index 0 (title=None): expected 2, got 12
+
+index      = 0
+self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f53b389b980&gt;
+sheet      = &lt;selenium.webdriver.remote.webelement.WebElement (session="e00a245da9fa8e4aeb3cca350b081b79", element="f.8382B68AE8427FE34593D6641B660E62.d.CB0CAA86137B1B052453972F5B930D6B.e.542")&gt;
+sheets     = [&lt;selenium.webdriver.remote.webelement.WebElement (session="e00a245da9fa8e4aeb3cca350b081b79", element="f.8382B68AE842...245da9fa8e4aeb3cca350b081b79", element="f.8382B68AE8427FE34593D6641B660E62.d.CB0CAA86137B1B052453972F5B930D6B.e.965")&gt;]
+sheets_element = &lt;selenium.webdriver.remote.webelement.WebElement (session="e00a245da9fa8e4aeb3cca350b081b79", element="f.8382B68AE8427FE34593D6641B660E62.d.CB0CAA86137B1B052453972F5B930D6B.e.959")&gt;
+test_data  = {'RSVP_NOTE': 'Guests', 'invitation': {'date_format_style': 'Formal (ceremonial)', 'event_details': {'add_end_time': F..., 'whats_needed': 'chips'}, {'description': 'food description', 'volunteers_needed': 10, 'whats_needed': 'food'}], ...}
+web_signups = 12
+
+../../commons/pages/evite/sign_up_sheet_maker.py:400: AssertionError</failure></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="322.090" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="334.204" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="351.578" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="355.014" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="357.586" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="472.324" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="477.750" /></testsuite></testsuites>

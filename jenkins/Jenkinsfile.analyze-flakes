@@ -1,0 +1,94 @@
+/**
+ * trapeze-analyze-flakes
+ *
+ * Analyses TestExecution history over a rolling window and writes
+ * FlakeDecision rows for tests exhibiting flaky behaviour.  Run weekly
+ * (Monday morning) so the QA team starts the week with an up-to-date
+ * flake report in Metabase.
+ *
+ * Jenkins configuration:
+ *   Pipeline → "Pipeline script from SCM"
+ *   Script Path: jenkins/Jenkinsfile.analyze-flakes
+ *
+ * Required Jenkins credentials:
+ *   trapeze-db-url   Secret text — full DATABASE_URL connection string
+ */
+
+pipeline {
+  agent { label 'trapeze' }
+
+  triggers {
+    // Every Monday at ~8 AM.
+    cron('H 8 * * 1')
+  }
+
+  parameters {
+    string(
+      name: 'WINDOW_DAYS',
+      defaultValue: '30',
+      description: 'Rolling window (days) of execution history to analyse'
+    )
+    string(
+      name: 'MIN_RUNS',
+      defaultValue: '5',
+      description: 'Minimum total executions required before a test is evaluated'
+    )
+    string(
+      name: 'MIN_SCORE',
+      defaultValue: '0.10',
+      description: 'Minimum flake score (0.0–1.0) to record a FlakeDecision'
+    )
+    booleanParam(
+      name: 'RESOLVE',
+      defaultValue: false,
+      description: 'Also clear FlakeDecision rows for tests that are now healthy'
+    )
+    booleanParam(
+      name: 'DRY_RUN',
+      defaultValue: false,
+      description: 'Compute decisions without writing to the database'
+    )
+  }
+
+  environment {
+    DATABASE_URL = credentials('trapeze-db-url')
+    NODE_ENV     = 'production'
+  }
+
+  options {
+    timeout(time: 20, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '52'))   // ~1 year of weekly runs
+    disableConcurrentBuilds()
+    timestamps()
+  }
+
+  stages {
+    stage('Install') {
+      steps {
+        sh 'npm ci --prefer-offline'
+      }
+    }
+
+    stage('Analyse Flakes') {
+      steps {
+        script {
+          def extraFlags = "--window-days ${params.WINDOW_DAYS} --min-runs ${params.MIN_RUNS} --min-score ${params.MIN_SCORE}"
+          if (params.RESOLVE) extraFlags += ' --resolve'
+          if (params.DRY_RUN) extraFlags += ' --dry-run'
+          sh "npm run analyze:flakes -- ${extraFlags}"
+        }
+      }
+    }
+  }
+
+  post {
+    failure {
+      echo "trapeze-analyze-flakes FAILED — check logs above"
+      // slackSend channel: '#qa-alerts', color: 'danger',
+      //   message: "trapeze-analyze-flakes failed — ${env.BUILD_URL}"
+    }
+    success {
+      echo "trapeze-analyze-flakes completed successfully"
+    }
+  }
+}

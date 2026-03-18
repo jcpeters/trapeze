@@ -84,6 +84,7 @@ model TestCase {
 
   // Coverage/traceability links
   jiraLinks JiraAutomationLink[]
+  trLinks   AutomationTestRailLink[]
 
   @@index([title])
 }
@@ -168,8 +169,9 @@ model TestRailCase {
   custom      Json?
   raw         Json?
 
-  jiraLinks JiraTestRailLink[]
-  results   TestRailResult[]
+  jiraLinks      JiraTestRailLink[]
+  results        TestRailResult[]
+  automationLinks AutomationTestRailLink[]
 
   @@index([suiteId], map: "testrail_case_suite_idx")
   @@index([sectionPath], map: "testrail_case_section_idx")
@@ -318,9 +320,28 @@ model TestAttempt {
   startedAt     DateTime?
   finishedAt    DateTime?
   createdAt     DateTime      @default(now())
+  logUri        String?       // gs:// URI of stdout/stderr log for this attempt (fast path)
+
+  logs          BuildLog[]
 
   @@unique([executionId, attemptNo])
   @@index([executionId])
+}
+
+// ---------------------------------------------------------------------------
+// BuildLog — per-attempt log blobs stored in GCS, referenced by URI.
+// Supports multiple log streams per attempt (stdout, stderr, future types).
+// ---------------------------------------------------------------------------
+model BuildLog {
+  id         String      @id @default(cuid())
+  attemptId  String
+  attempt    TestAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  logType    String      // "stdout" | "stderr"
+  storageUri String      // gs:// URI — the actual bytes live in GCS
+  bytes      Int?
+  createdAt  DateTime    @default(now())
+
+  @@index([attemptId])
 }
 
 // ---------------------------------------------------------------------------
@@ -372,4 +393,45 @@ model FlakeDecision {
   createdAt   DateTime @default(now())
 
   @@index([testCaseId])
+}
+
+// ---------------------------------------------------------------------------
+// AutomationTestRailLink
+// Direct link between an automated TestCase (Selenium/Playwright) and a
+// TestRail manual test case — without going through a Jira issue as the
+// bridge.  This enables dual-coverage reporting: same feature covered by
+// both an automated regression test and a manual TestRail case.
+//
+// Provenance values:
+//   EXPLICIT  — extracted from a @C1234 tag in Playwright or a
+//               <property name="testrail.case" value="C1234"/> in JUnit XML.
+//               Confidence is always HIGH.
+//   INFERRED  — written by infer-testrail-links.ts using keyword overlap
+//               between the automated test title and TestRail case title.
+//               Confidence is MED (>=0.5 score) or LOW (>=0.3 score).
+//   MANUAL    — analyst-reviewed link entered directly.
+//
+// Safe to re-run: @@unique on (testCaseId, trCaseId, provenance) means
+// EXPLICIT and INFERRED rows for the same pair coexist independently.
+// ---------------------------------------------------------------------------
+model AutomationTestRailLink {
+  id         BigInt @id @default(autoincrement())
+  testCaseId String @map("test_case_id")
+  trCaseId   BigInt @map("tr_case_id")
+
+  provenance LinkProvenance
+  confidence LinkConfidence
+
+  matchScore Float?  @map("match_score")  // 0.0–1.0 keyword overlap; null for EXPLICIT/MANUAL
+  evidence   String?                      // short explanation of why linked
+  source     String?                      // "testrail-tag" | "testrail-property" | "title-inference" | "manual"
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  testCase TestCase     @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+  trCase   TestRailCase @relation(fields: [trCaseId], references: [trCaseId], onDelete: Cascade)
+
+  @@unique([testCaseId, trCaseId, provenance], map: "automation_tr_link_uq")
+  @@index([testCaseId], map: "automation_tr_link_test_idx")
+  @@index([trCaseId],   map: "automation_tr_link_tr_idx")
+  @@map("automation_testrail_link")
 }

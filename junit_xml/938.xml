@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="5" tests="13" time="573.731" timestamp="2026-01-30T11:40:12.820706-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_rsvp_free_1cf.TestEviteRSVPFree1CF" name="test_evite_rsvp_free_1cf" time="0.000"><skipped type="pytest.skip" message="Experiment set to 0%">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_free_1cf.py:25: Experiment set to 0%</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:23: Egift disabled</skipped></testcase><testcase classname="test_evite_rsvp_invitation_maker_v3.TestEviteRSVPInvitationMakerV3" name="test_evite_rsvp_invitation_maker_v3" time="0.000"><skipped type="pytest.skip" message="Experiment forced control">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_invitation_maker_v3.py:24: Experiment forced control</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:22: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="115.691"><skipped type="pytest.skip" message="DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-11252025-003149-25-test@evitetest.com' ORDER BY random();">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_greeting_card_create_from_past_event.py:113: DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-11252025-003149-25-test@evitetest.com' ORDER BY random();</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="131.466" /><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="149.816" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="428.320"><failure message="selenium.common.exceptions.StaleElementReferenceException: Message: stale element reference: stale element not found in the current frame&#10;  (Session info: chrome=133.0.6943.126); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x00FE0283+25139]&#10;&#09;(No symbol) [0x00F6B234]&#10;&#09;(No symbol) [0x00E404A3]&#10;&#09;(No symbol) [0x00E46EA1]&#10;&#09;(No symbol) [0x00E48F9A]&#10;&#09;(No symbol) [0x00E49017]&#10;&#09;(No symbol) [0x00E87BC1]&#10;&#09;(No symbol) [0x00E8868B]&#10;&#09;(No symbol) [0x00E7DD71]&#10;&#09;(No symbol) [0x00EACF84]&#10;&#09;(No symbol) [0x00E7D8E4]&#10;&#09;(No symbol) [0x00EAD1B4]&#10;&#09;(No symbol) [0x00ECE6E1]&#10;&#09;(No symbol) [0x00EACD36]&#10;&#09;(No symbol) [0x00E7BD29]&#10;&#09;(No symbol) [0x00E7D064]&#10;&#09;GetHandleVerifier [0x012EB143+3215603]&#10;&#09;GetHandleVerifier [0x013022BA+3310186]&#10;&#09;GetHandleVerifier [0x012FC4D2+3286146]&#10;&#09;GetHandleVerifier [0x01079C80+654384]&#10;&#09;(No symbol) [0x00F745BD]&#10;&#09;(No symbol) [0x00F714A8]&#10;&#09;(No symbol) [0x00F71647]&#10;&#09;(No symbol) [0x00F63D20]&#10;&#09;BaseThreadInitThunk [0x76DE5D49+25]&#10;&#09;RtlInitializeExceptionChain [0x770ACEBB+107]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x770ACE41+561]">self = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7fc070779880&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fc0707c5e20&gt;
+
+    def test_evite_sus_one_day_create(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+        sign_up_sheet_maker = config.pages["sign_up_sheet_maker"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} "
+                f"{self._json_test_data['register']['last_name']}")
+    
+        sign_up_sheet_maker.select_sus_event(sus_event="one_day")
+    
+        sign_up_sheet_maker.enter_details(test_data=self._json_test_data)
+        sign_up_sheet_maker.create_sheet_one_day(test_data=self._json_test_data)
+        sign_up_sheet_maker.verify_sheet_sign_ups(test_data=self._json_test_data)
+    
+        sign_up_sheet_maker.publish_sheet()
+        shareable_link = sign_up_sheet_maker.copy_shareable_link()
+    
+        login_modal.sign_out()
+    
+        # Get Volunteer view to build SUS data
+        config.driver.get(shareable_link)
+        logger.info(f"Going volunteer url - {config.driver.current_url}")
+    
+        sign_up_sheet = sign_up_sheet_maker.get_sign_up_sheet_one_day()
+    
+        volunteers = sign_up_sheet_maker.initialize_volunteers(volunteers=self._json_test_data["volunteers"])
+    
+        for volunteer in volunteers:
+    
+            if volunteer["registered"]:
+                logger.info(f"Registering guest: {volunteer['name']}")
+    
+                # Change register data
+                self._json_test_data["register"]["first_name"] = volunteer["name"]
+                self._json_test_data["register"]["email"] = volunteer["email_addr"]
+    
+                # Register
+                login_modal.register(test_data=self._json_test_data['register'], existing_user=True)
+    
+            sus_row = sign_up_sheet_maker.get_random_sus_row(sus=sign_up_sheet)
+    
+&gt;           sign_up_sheet_maker.select_sign_up(sus_row)
+
+_test_name = 'test_evite_sus_one_day_create'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fc0707c5e20&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fc0707c57f0&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_sus_one_day_create (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fc0707c5d60&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fc0707c5d30&gt;
+page       = &lt;commons.page.Page object at 0x7fc0707c52b0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7fc070779880&gt;
+shareable_link = 'https://test2.evite.me/5mEGZw4AD5'
+sign_up_sheet = [{'row_count': 2, 'row_filled': 1, 'row_title': 'drinks'}, {'row_count': 5, 'row_filled': 0, 'row_title': 'chips'}, {'row_count': 10, 'row_filled': 1, 'row_title': 'food'}]
+sign_up_sheet_maker = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fc0707c5dc0&gt;
+sus_row    = {'row_count': 10, 'row_filled': 1, 'row_title': 'food'}
+user_email_addr = 'evite-01302026-114345-60-test@evitetest.com'
+user_pass  = 'test1234'
+volunteer  = {'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260130-1145-722056-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}
+volunteers = [{'comment': 'THIS IS A VOLUNTEER COMMENT', 'email_addr': 'evite-volunteer-20260130-1145-721725-test@evitetest.com', '...ENT', 'email_addr': 'evite-volunteer-20260130-1145-722056-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}]
+
+test_evite_sus_one_day_create.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/sign_up_sheet_maker.py:573: in select_sign_up
+    sus_rows = sus_options.find_elements(*self._sign_up_rows)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self       = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7fc0707c5dc0&gt;
+        sus_options = &lt;selenium.webdriver.remote.webelement.WebElement (session="0fc3b2a0707eac43615b24f016db3208", element="f.7A2D3853B6B0A37F01143DEFBFA83E8B.d.AB98735703EC40AA3F9D34BCD839BB9F.e.1005")&gt;
+        sus_row    = {'row_count': 10, 'row_filled': 1, 'row_title': 'food'}
+../../../938/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:631: in find_elements
+    return self._execute(Command.FIND_CHILD_ELEMENTS, {"using": by, "value": value})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        by         = 'css selector'
+        self       = &lt;selenium.webdriver.remote.webelement.WebElement (session="0fc3b2a0707eac43615b24f016db3208", element="f.7A2D3853B6B0A37F01143DEFBFA83E8B.d.AB98735703EC40AA3F9D34BCD839BB9F.e.1005")&gt;
+        value      = '[class="page-section__row volunteer"]'
+../../../938/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:573: in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        command    = 'findChildElements'
+        params     = {'id': 'f.7A2D3853B6B0A37F01143DEFBFA83E8B.d.AB98735703EC40AA3F9D34BCD839BB9F.e.1005', 'using': 'css selector', 'value': '[class="page-section__row volunteer"]'}
+        self       = &lt;selenium.webdriver.remote.webelement.WebElement (session="0fc3b2a0707eac43615b24f016db3208", element="f.7A2D3853B6B0A37F01143DEFBFA83E8B.d.AB98735703EC40AA3F9D34BCD839BB9F.e.1005")&gt;
+../../../938/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'findChildElements'
+        params     = {'using': 'css selector', 'value': '[class="page-section__row volunteer"]'}
+        response   = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"stale element reference: stale elemen...9+25]\\n\\tRtlInitializeExceptionChain [0x770ACEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x770ACE41+561]\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="0fc3b2a0707eac43615b24f016db3208")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fc0707c6ff0&gt;
+response = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"stale element reference: stale elemen...9+25]\\n\\tRtlInitializeExceptionChain [0x770ACEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x770ACE41+561]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.StaleElementReferenceException: Message: stale element reference: stale element not found in the current frame
+E         (Session info: chrome=133.0.6943.126); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception
+E       Stacktrace:
+E       	GetHandleVerifier [0x00FE0283+25139]
+E       	(No symbol) [0x00F6B234]
+E       	(No symbol) [0x00E404A3]
+E       	(No symbol) [0x00E46EA1]
+E       	(No symbol) [0x00E48F9A]
+E       	(No symbol) [0x00E49017]
+E       	(No symbol) [0x00E87BC1]
+E       	(No symbol) [0x00E8868B]
+E       	(No symbol) [0x00E7DD71]
+E       	(No symbol) [0x00EACF84]
+E       	(No symbol) [0x00E7D8E4]
+E       	(No symbol) [0x00EAD1B4]
+E       	(No symbol) [0x00ECE6E1]
+E       	(No symbol) [0x00EACD36]
+E       	(No symbol) [0x00E7BD29]
+E       	(No symbol) [0x00E7D064]
+E       	GetHandleVerifier [0x012EB143+3215603]
+E       	GetHandleVerifier [0x013022BA+3310186]
+E       	GetHandleVerifier [0x012FC4D2+3286146]
+E       	GetHandleVerifier [0x01079C80+654384]
+E       	(No symbol) [0x00F745BD]
+E       	(No symbol) [0x00F714A8]
+E       	(No symbol) [0x00F71647]
+E       	(No symbol) [0x00F63D20]
+E       	BaseThreadInitThunk [0x76DE5D49+25]
+E       	RtlInitializeExceptionChain [0x770ACEBB+107]
+E       	RtlGetAppContainerNamedObjectPath [0x770ACE41+561]
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7fc06fdeb470&gt;
+error_code = 'STALE_ELEMENT_REFERENCE'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [10, 'stale element reference']
+exception_class = &lt;class 'selenium.common.exceptions.StaleElementReferenceException'&gt;
+message    = 'stale element reference: stale element not found in the current frame\n  (Session info: chrome=133.0.6943.126)'
+response   = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"stale element reference: stale elemen...9+25]\\n\\tRtlInitializeExceptionChain [0x770ACEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x770ACE41+561]\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fc0707c6ff0&gt;
+st_value   = '\tGetHandleVerifier [0x00FE0283+25139]\n\t(No symbol) [0x00F6B234]\n\t(No symbol) [0x00E404A3]\n\t(No symbol) [0x00E4...0x76DE5D49+25]\n\tRtlInitializeExceptionChain [0x770ACEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x770ACE41+561]\n'
+stacktrace = ['\tGetHandleVerifier [0x00FE0283+25139]', '\t(No symbol) [0x00F6B234]', '\t(No symbol) [0x00E404A3]', '\t(No symbol) [0x00E46EA1]', '\t(No symbol) [0x00E48F9A]', '\t(No symbol) [0x00E49017]', ...]
+status     = 'stale element reference'
+value      = {'error': 'stale element reference', 'message': 'stale element reference: stale element not found in the current frame...x76DE5D49+25]\n\tRtlInitializeExceptionChain [0x770ACEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x770ACE41+561]\n'}
+value_json = '{"value":{"error":"stale element reference","message":"stale element reference: stale element not found in the curren...49+25]\\n\\tRtlInitializeExceptionChain [0x770ACEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x770ACE41+561]\\n"}}'
+
+../../../938/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: StaleElementReferenceException</failure></testcase><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="430.534"><failure message="Exception: Can't verify page url contains confirm, current url: https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI">self = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7fc7ee90c7a0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fc7ee975490&gt;
+
+    def test_evite_copy_premium_past_event(self, config):
+        """
+        Copy premium past event:
+        Select past event from DB
+        Copy
+        Change title, time, etc
+        Update and Delete guest list, then update total guest list
+        Send event
+        Verify
+    
+        :param config:
+        :return:
+        """
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+    
+        logger.info(f"Start {inspect.stack()[0][3]}")
+    
+        page = config.pages["page"]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        evite_home_page = config.pages["evite_home_page"]
+        evite_event_page = config.pages["evite_event_page"]
+        evite_overview = config.pages["evite_overview"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        page.get_url(config.environment, "")
+    
+        user_email_addr = ""
+        user_pass = ""
+        user_first_name = ""
+        user_last_name = ""
+        event_title = ""
+        cursor = None
+    
+        # Get event with event_date &gt; 2023-04-01 which is fabric
+    
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+        db_connect = psql_db.connect_db()
+    
+        if self._json_test_data["sign_in"]["email"]:
+            user_email_addr = self._json_test_data["sign_in"]["email"]
+            user_pass = self._json_test_data["sign_in_credentials"]["password"]
+        else:
+            sql_string = (
+                "SELECT %s, %s, %s, %s, %s, %s FROM %s WHERE event_create_date &gt; '%s' "
+                "AND event_sent_date &gt; '%s'"
+                "AND env = '%s' "
+                "AND event_cancelled = '%s' "
+                "AND event_premium = '%s' "
+                "AND event_draft = '%s' "
+                "AND event_draft_guests = '%s' "
+                "AND created_by = '%s'"
+                "ORDER BY random() LIMIT %s;"
+                % (
+                    "user_email_addr",
+                    "user_pass",
+                    "event_title",
+                    "event_id",
+                    "event_date",
+                    "event_premium",
+                    settings.DB_TABLE_EVENTS,
+                    "2023-04-01",
+                    "2023-04-01",
+                    settings.ENV,
+                    False,
+                    True,
+                    False,
+                    False,
+                    "evite",
+                    1,
+                )
+            )
+    
+            try:
+                cursor = db_connect.cursor()
+                cursor.execute(sql_string)
+    
+                # Check result first, if no data then don't fail: Skip
+                if cursor.rowcount:
+                    user_email_addr, user_pass, event_title, event_id, event_date, event_premium = cursor.fetchone()
+                else:
+                    msg = f"DB have no record for sql: {sql_string}"
+                    logger.warn(msg)
+                    pytest.skip(msg)
+    
+            except psycopg2.DatabaseError as db_error:
+                logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+            else:
+                logger.info("SQL execute success")
+    
+        # Log in with fetched user
+    
+        # Log in with fetched user
+        login_modal.sign_in(email=user_email_addr, password=user_pass)
+    
+        # Get user's first and last name
+        sql_string = psql_db.get_select_from_table_string(
+            settings.DB_TABLE_USERS, ["user_first_name", "user_last_name"], user_email_addr=user_email_addr
+        )
+        try:
+            cursor = db_connect.cursor()
+            cursor.execute(sql_string)
+            if cursor.rowcount:
+                user_first_name, user_last_name = cursor.fetchone()
+            else:
+                config.test_failed["value"] = False
+                msg = f"DB have no record for sql: {sql_string}"
+                logger.warn(msg)
+                pytest.skip(msg)
+        except psycopg2.DatabaseError as db_error:
+            logger.error(f"Unable to execute sql: , {sql_string}, {db_error}")
+        else:
+            logger.info("SQL execute success")
+        finally:
+            db_connect.close()
+            cursor.close()
+    
+        evite_home_page.select_logged_in_menu(action="events")
+    
+        # First verify event, we have bad data in db
+        if not my_events.find_event(event_title=event_title, fail=False):
+            # There is a mismatch between event and host, delete the row
+            sql_string = "DELETE FROM %s WHERE user_email_addr = '%s';" % (settings.DB_TABLE_EVENTS, user_email_addr)
+            psql_db.db_execute(sql_string)
+    
+            config.test_failed["value"] = False
+            pytest.skip(f"Can't find event {event_title}")
+    
+        my_events.select_event_options(event_title=event_title,
+                                       event_option="copy_invitation",
+                                       url="preview")
+        # Update title
+        self._json_test_data["invitation"]["event_details"]["event_title"] = f"{event_title}-copy"
+        # Get random date between today and range specified in settings
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        # Get random time between 1-12, random :00 or :30, random AM or PM
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        # Update host
+        # NOTE: We might enter different host name here, so can check if JSON data there then don't do update
+        self._json_test_data["invitation"]["event_details"]["host"] = f"{user_first_name} {user_last_name}"
+    
+        # Step 5: Add Guests
+        step1_template.select_next(url="guests")
+        guest_list = step5_guests.fetch_all_guests_upload_file()
+        guests_to_delete = [guest_list.pop()]
+        step5_guests.delete_guests(guests_to_delete=guests_to_delete)
+    
+        step5_guests.add_guests(test_data=self._json_test_data["guests"])
+        step1_template.select_next(url="review")
+    
+&gt;       step6_review_send.enter_checkout_page(test_data=self._json_test_data, url="confirm")
+
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fc7ee975490&gt;
+cursor     = &lt;cursor object at 0x7fc7ee8fda80; closed: -1&gt;
+db_connect = &lt;connection object at 0x7fc7eea1dd00; dsn: 'user=jenkins password=xxx dbname=qatests host=34.133.6.167 port=5432', closed: 1&gt;
+event_date = datetime.datetime(2024, 8, 5, 12, 30)
+event_id   = '01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+event_premium = True
+event_title = 'testCIYTSQ123test_20240715-094315'
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7fc7ee975010&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fc7ee974ef0&gt;
+evite_overview = &lt;commons.pages.evite.evite_overview.EviteOverview object at 0x7fc7ee974e90&gt;
+guest_list = [{'contact': 'evite-guest-45029866-l-test@evitetest.com', 'name': 'evite-guest-45029866-L-test'}, {'contact': '(555) 1...est-46165582-P-test'}, {'contact': 'evite-guest-46335382-t-test@evitetest.com', 'name': 'evite-guest-46335382-T-test'}]
+guests_to_delete = [{'contact': '(555) 745-6003', 'name': 'evite-guest-47743758-O-test'}]
+logger     = &lt;Logger test_evite_copy_premium_past_event (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fc7ee975520&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fc7ee975100&gt;
+page       = &lt;commons.page.Page object at 0x7fc7ee974200&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7fc7ee975f10&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7fc7ee975790&gt;
+self       = &lt;tests.evite_acceptance.test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent object at 0x7fc7ee90c7a0&gt;
+sql_string = "SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-07152024-094218-94-test@evitetest.com' ORDER BY random();"
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fc7ee975430&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fc7ee975580&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+user_email_addr = 'evite-07152024-094218-94-test@evitetest.com'
+user_first_name = 'automation'
+user_last_name = 'test'
+user_pass  = 'test1234'
+
+test_evite_copy_premium_past_event.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step6_review_send.py:216: in enter_checkout_page
+    self.assert_url_contains(search_string=url)
+        promo_code = None
+        select_next = True
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+        test_data  = {'action': {'create_invitation': True, 'party_ideas': False, 'thank_you_card': False}, 'cohost': {'add_cohost': False,...': [{'link': 'https://www.babylist.com/'}, {'link': 'https://www.walmart.com/'}, {'link': 'http://amazon.com/'}]}, ...}
+        url        = 'confirm'
+../../commons/page.py:190: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 0
+        current_url = 'https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fc7ee2977d0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+../../commons/page.py:190: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 1
+        current_url = 'https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fc7ee295be0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+../../commons/page.py:190: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 2
+        current_url = 'https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fc7ee297980&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+../../commons/page.py:190: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 3
+        current_url = 'https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fc7ee2975c0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+../../commons/page.py:190: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 4
+        current_url = 'https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fc7ee295ca0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+../../commons/page.py:190: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 5
+        current_url = 'https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fc7ee297dd0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.log_and_raise_exception(msg)
+        count      = 6
+        current_url = 'https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI'
+        msg        = "Can't verify page url contains confirm, current url: https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI"
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7fc7ee295fd0&gt;
+        search_string = 'confirm'
+        self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+message = "Can't verify page url contains confirm, current url: https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't verify page url contains confirm, current url: https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI
+
+message    = "Can't verify page url contains confirm, current url: https://test2.evitelabs.com/invitation/01AEIIAE4SKDAADR4EPQ7YKBO572CI/review?previous=copy_my_events&amp;source_event=01AE7M33FMKHIIHJ4EPPILEWM4VXYI"
+self       = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fc7ee9750a0&gt;
+
+../../commons/page.py:1045: Exception</failure></testcase><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="273.652" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="302.949" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="478.730" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="568.852" /></testsuite></testsuites>

@@ -1,0 +1,21 @@
+# Trapeze local Jenkins — required plugins
+# Managed by: Dockerfile.jenkins → jenkins-plugin-cli --plugin-file plugins.txt
+# Format: pluginId[:version]  (omit version to get latest compatible)
+
+# ── Pipeline ─────────────────────────────────────────────────────────────────
+workflow-aggregator          # "Pipeline" meta-plugin (includes all pipeline steps)
+pipeline-stage-view          # Stage visualization in the UI
+blueocean                    # Blue Ocean UI (optional but nice for pipeline visualization)
+
+# ── SCM ───────────────────────────────────────────────────────────────────────
+git                          # Git checkout step
+github                       # GitHub integration (webhooks, status checks)
+
+# ── Credentials ───────────────────────────────────────────────────────────────
+credentials-binding          # withCredentials{} DSL step
+plain-credentials            # Username/password and secret-text credential types
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+timestamper                  # Timestamps in console output
+ansicolor                    # Coloured console output from Node/npm scripts
+ws-cleanup                   # cleanWs() step for workspace hygiene

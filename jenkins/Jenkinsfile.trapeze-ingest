@@ -1,0 +1,210 @@
+/**
+ * Jenkinsfile.trapeze-ingest
+ *
+ * Reusable post-build stage to upload test results to the Trapeze
+ * GCS drop zone.  Add this stage to any pipeline that runs Selenium
+ * (pytest/JUnit XML) or Playwright tests.
+ *
+ * This stage is DATABASE-FREE.  It only needs:
+ *   - Node.js on the Jenkins agent (or node available via PATH)
+ *   - GCS write access (service account key or Workload Identity on GKE agents)
+ *   - The Trapeze repo checked out at TRAPEZE_DIR (defaults to a sibling workspace)
+ *
+ * After this stage completes, run `npm run etl:ingest:from-gcs` on any host
+ * that has DATABASE_URL access (developer machine, Cloud Run job, drain pipeline)
+ * to pull the uploaded results into Postgres.
+ *
+ * ── Usage in a Selenium/pytest pipeline ──────────────────────────────────────
+ *
+ *   // In your existing Jenkinsfile, add after the test step:
+ *   post {
+ *     always {
+ *       trapezePushResults(
+ *         framework:   'pytest',
+ *         resultFile:  "${WORKSPACE}/test-output/junit-results.xml",
+ *         environment: 'acceptance'
+ *       )
+ *     }
+ *   }
+ *
+ * ── Usage in a Playwright pipeline ───────────────────────────────────────────
+ *
+ *   post {
+ *     always {
+ *       trapezePushResults(
+ *         framework:   'playwright',
+ *         resultFile:  "${WORKSPACE}/playwright-report/results.json",
+ *         environment: 'acceptance',
+ *         shardIndex:  env.SHARD_INDEX?.toInteger(),
+ *         shardTotal:  env.SHARD_TOTAL?.toInteger(),
+ *         project:     'chromium'
+ *       )
+ *     }
+ *   }
+ *
+ * ── Required Jenkins credentials ─────────────────────────────────────────────
+ *
+ *   trapeze-gcs-bucket        Secret text  — GCS bucket name
+ *                             (e.g. "test-intel-artifacts")
+ *   trapeze-gcs-project       Secret text  — GCP project ID
+ *   trapeze-gcs-sa-key        Secret file  — GCP service account JSON key
+ *                             (omit if agents use Workload Identity)
+ *
+ * ── Local dev override ────────────────────────────────────────────────────────
+ *
+ *   When running against the local Jenkins container (docker compose --profile jenkins up),
+ *   GCS credentials point to fake-gcs-server instead of real GCS.
+ *   The docker-compose.yml injects GCS_EMULATOR_HOST=fake-gcs:4443 automatically.
+ */
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared library function  (place in vars/trapezePushResults.groovy if using
+// a Jenkins shared library, or inline into your Jenkinsfile)
+// ─────────────────────────────────────────────────────────────────────────────
+
+def call(Map config = [:]) {
+    // Required
+    def framework   = config.framework    ?: error("trapezePushResults: 'framework' is required")
+    def resultFile  = config.resultFile   ?: error("trapezePushResults: 'resultFile' is required")
+
+    // Optional with defaults
+    def environment = config.environment  ?: 'unknown'
+    def suiteName   = config.suiteName    ?: ''
+    def shardIndex  = config.shardIndex   // null means not sharded
+    def shardTotal  = config.shardTotal
+    def project     = config.project      ?: ''
+
+    // Location of the checked-out Trapeze repo on this agent.
+    // Default: a sibling directory named "trapeze" next to your project workspace.
+    // Override by setting TRAPEZE_DIR as a pipeline env var or passing it in config.
+    def trapezeDir  = config.trapezeDir   ?: (env.TRAPEZE_DIR ?: "${WORKSPACE}/../trapeze")
+
+    stage("Trapeze: push results to drop zone") {
+        // Check that the result file was actually produced (test step may have
+        // been skipped or the runner exited early)
+        if (!fileExists(resultFile)) {
+            echo "⚠️  Trapeze: result file not found at ${resultFile} — skipping drop zone upload."
+            return
+        }
+
+        withCredentials([
+            string(credentialsId: 'trapeze-gcs-bucket',  variable: 'GCS_BUCKET'),
+            string(credentialsId: 'trapeze-gcs-project', variable: 'GCS_PROJECT'),
+            // Remove the next line if your agents use GKE Workload Identity
+            file(credentialsId: 'trapeze-gcs-sa-key',    variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
+        ]) {
+            dir(trapezeDir) {
+                // Build the upload command
+                def cmd = [
+                    "node_modules/.bin/tsx",
+                    "./scripts/upload-to-drop-zone.ts",
+                    "--file",        resultFile,
+                    "--job",         env.JOB_NAME,
+                    "--build",       env.BUILD_NUMBER,
+                    "--framework",   framework,
+                    "--branch",      env.GIT_BRANCH     ?: env.BRANCH_NAME ?: 'unknown',
+                    "--git-sha",     env.GIT_COMMIT      ?: 'unknown',
+                    "--build-url",   env.BUILD_URL,
+                    "--environment", environment,
+                    "--ci-provider", "jenkins",
+                ]
+
+                if (suiteName) {
+                    cmd += ["--suite-name", suiteName]
+                }
+                if (shardIndex != null) {
+                    cmd += ["--shard-index", shardIndex.toString(),
+                            "--shard-total", shardTotal.toString()]
+                }
+                if (project) {
+                    cmd += ["--project", project]
+                }
+
+                sh cmd.join(" ")
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Example: full Selenium pipeline with Trapeze drop-zone upload
+// ─────────────────────────────────────────────────────────────────────────────
+
+/*
+pipeline {
+    agent any
+
+    environment {
+        TRAPEZE_DIR = "${WORKSPACE}/../trapeze"
+    }
+
+    stages {
+        stage("Checkout") {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage("Run Selenium Tests") {
+            steps {
+                sh "python -m pytest tests/ --junitxml=test-output/results.xml"
+            }
+        }
+    }
+
+    post {
+        always {
+            // Archive locally for Jenkins artifact store (optional)
+            junit "test-output/results.xml"
+
+            // Push to Trapeze drop zone (database-free)
+            trapezePushResults(
+                framework:   'pytest',
+                resultFile:  "${WORKSPACE}/test-output/results.xml",
+                environment: 'acceptance'
+            )
+        }
+    }
+}
+*/
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Example: Playwright pipeline with sharding
+// ─────────────────────────────────────────────────────────────────────────────
+
+/*
+pipeline {
+    agent { label 'playwright-node' }
+
+    parameters {
+        string(name: 'SHARD_INDEX', defaultValue: '0')
+        string(name: 'SHARD_TOTAL', defaultValue: '4')
+    }
+
+    stages {
+        stage("Run Playwright (shard ${params.SHARD_INDEX}/${params.SHARD_TOTAL})") {
+            steps {
+                sh """
+                    npx playwright test \\
+                        --shard=${params.SHARD_INDEX}/${params.SHARD_TOTAL} \\
+                        --reporter=json \\
+                        --output=playwright-report/results.json
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            trapezePushResults(
+                framework:   'playwright',
+                resultFile:  "${WORKSPACE}/playwright-report/results.json",
+                environment: 'acceptance',
+                shardIndex:  params.SHARD_INDEX.toInteger(),
+                shardTotal:  params.SHARD_TOTAL.toInteger(),
+                project:     'chromium'
+            )
+        }
+    }
+}
+*/

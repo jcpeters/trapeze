@@ -1,0 +1,101 @@
+/**
+ * trapeze-sync-testrail
+ *
+ * Two-phase TestRail sync: pulls test cases then incremental run results
+ * and upserts them into testrail_case / testrail_result.  Also writes
+ * jira_testrail_link rows from case `refs` fields.
+ *
+ * Jenkins configuration:
+ *   Pipeline → "Pipeline script from SCM"
+ *   Script Path: jenkins/Jenkinsfile.sync-testrail
+ *
+ * Required Jenkins credentials:
+ *   trapeze-db-url                Secret text  — full DATABASE_URL
+ *   trapeze-testrail-base-url     Secret text  — https://yourorg.testrail.io
+ *   trapeze-testrail-email        Secret text  — service account email
+ *   trapeze-testrail-api-token    Secret text  — TestRail API key
+ */
+
+pipeline {
+  agent { label 'trapeze' }
+
+  triggers {
+    // Nightly at ~6 AM — run alongside (or just before) sync-jira.
+    cron('H 6 * * *')
+  }
+
+  parameters {
+    string(
+      name: 'PROJECT_IDS',
+      defaultValue: '1',
+      description: 'Comma-separated TestRail project IDs to sync (e.g. 1,2)'
+    )
+    booleanParam(
+      name: 'CASES_ONLY',
+      defaultValue: false,
+      description: 'Only sync test cases, skip run results'
+    )
+    booleanParam(
+      name: 'RESULTS_ONLY',
+      defaultValue: false,
+      description: 'Only sync run results, skip cases'
+    )
+    booleanParam(
+      name: 'FULL_SYNC',
+      defaultValue: false,
+      description: 'Ignore the updatedAt watermark and re-fetch everything'
+    )
+    booleanParam(
+      name: 'DRY_RUN',
+      defaultValue: false,
+      description: 'Parse and log without writing to the database'
+    )
+  }
+
+  environment {
+    DATABASE_URL            = credentials('trapeze-db-url')
+    TESTRAIL_BASE_URL       = credentials('trapeze-testrail-base-url')
+    TESTRAIL_EMAIL          = credentials('trapeze-testrail-email')
+    TESTRAIL_API_TOKEN      = credentials('trapeze-testrail-api-token')
+    NODE_ENV                = 'production'
+  }
+
+  options {
+    timeout(time: 60, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '30'))
+    disableConcurrentBuilds()
+    timestamps()
+  }
+
+  stages {
+    stage('Install') {
+      steps {
+        sh 'npm ci --prefer-offline'
+      }
+    }
+
+    stage('Sync TestRail') {
+      steps {
+        script {
+          def extraFlags = "--project-ids ${params.PROJECT_IDS}"
+          if (params.CASES_ONLY)   extraFlags += ' --cases-only'
+          if (params.RESULTS_ONLY) extraFlags += ' --results-only'
+          if (params.FULL_SYNC)    extraFlags += ' --full-sync'
+          if (params.DRY_RUN)      extraFlags += ' --dry-run'
+          sh "npm run etl:sync:testrail -- ${extraFlags}"
+        }
+      }
+    }
+  }
+
+  post {
+    failure {
+      echo "trapeze-sync-testrail FAILED — check logs above"
+      // slackSend channel: '#qa-alerts', color: 'danger',
+      //   message: "trapeze-sync-testrail failed — ${env.BUILD_URL}"
+    }
+    success {
+      echo "trapeze-sync-testrail completed successfully"
+    }
+  }
+}

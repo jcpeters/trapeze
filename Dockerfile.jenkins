@@ -1,0 +1,54 @@
+# Dockerfile.jenkins
+#
+# Extends the official Jenkins LTS image with:
+#   • Node.js 20 LTS  — to run Trapeze ETL scripts (ingest-junit.ts, etc.)
+#   • npm             — package manager
+#   • Pre-installed Jenkins plugins — Pipeline, Blue Ocean basics, NodeJS plugin
+#
+# Build context: repo root  (docker compose --profile jenkins up)
+#
+# The image is intentionally self-contained; it does NOT bake in credentials.
+# Credentials are injected at runtime via docker-compose environment / env_file.
+
+FROM jenkins/jenkins:lts-jdk21
+
+# ── Install plugins at image build time ──────────────────────────────────────
+# Avoids the "install plugins" wizard step on first boot.
+# Add any additional plugins your Groovy pipeline needs to this list.
+COPY --chown=jenkins:jenkins jenkins/plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+# ── Disable setup wizard (we handle config via JCasC / env vars) ─────────────
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+
+# ── Switch to root to install Node.js, then restore jenkins user ─────────────
+USER root
+
+# Node.js 20 LTS via NodeSource
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends curl ca-certificates gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Verify
+RUN node --version && npm --version
+
+# ── Pre-install Trapeze npm dependencies (layer-cached) ──────────────────────
+# Copy only package files first for better layer caching.
+# The full repo is volume-mounted at /workspace/trapeze at runtime;
+# this pre-install step means `npm ci` is not needed during pipeline runs.
+WORKDIR /workspace/trapeze
+COPY package.json package-lock.json* ./
+RUN npm ci --prefer-offline 2>/dev/null || npm install
+
+# ── Create a default admin user via Groovy init script ───────────────────────
+# Credentials: admin / trapeze-local
+# Change in production or inject via Jenkins credential store.
+COPY jenkins/init.groovy.d/ /usr/share/jenkins/ref/init.groovy.d/
+
+# Restore jenkins user
+USER jenkins
+
+# Jenkins home is persisted via the jenkins_home Docker volume.
+VOLUME ["/var/jenkins_home"]

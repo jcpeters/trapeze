@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="3" tests="11" time="551.979" timestamp="2026-02-09T11:21:10.119344-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="0.000"><skipped type="pytest.skip" message="Skipping pending updatesto SUS test">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_sus_one_day_create.py:23: Skipping pending updatesto SUS test</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="131.578" /><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="172.143" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="390.786"><failure message="Exception: Add Guest button failed to reset before attempting to add new guest">self = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fa9f5cf3a40&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fa9f56bd070&gt;
+
+    def test_evite_rsvp_premium(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        quake_v3_event = QuakeV3Event(_test_name)
+        psql_db = PostgreSQL(_test_name)
+    
+        # Logger
+        logger = LoggingConfig().initialize_logger(_test_name)
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav("create_invitation")
+        evite_gallery_page.select_filter_by(["premium"])
+    
+        # Pick up a random template from the template page
+        evite_gallery_page.select_random_template(premium=True)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(test_name=_test_name)
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time(premium=True)
+        self._json_test_data["invitation"]["event_details"]["host"] = (
+            f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+        )
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+        step1_template.select_next(url="preview")
+    
+        step1_template.select_next(url="guests")
+&gt;       step5_guests.add_guests(test_data=self._json_test_data["guests"])
+
+_test_name = 'test_evite_rsvp_premium'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fa9f56bd070&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7fa9f56bc920&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7fa9f56919d0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fa9f56be480&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_premium (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fa9f56bd6a0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fa9f56bcad0&gt;
+page       = &lt;commons.page.Page object at 0x7fa9f56be4e0&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7faa135eaba0&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7fa9f5d92240&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fa9f56bcf80&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fa9f5cf3a40&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fa9f56be270&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7fa9f56bd460&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fa9f56bd520&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fa9f56bd4f0&gt;
+user_email_addr = 'evite-02092026-112555-90-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7fa9f56be000&gt;
+
+test_evite_rsvp_premium.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step5_guests.py:101: in add_guests
+    self.add_guest(guest, for_greeting_card=for_greeting_card)
+        for_greeting_card = False
+        guest      = {'comment': '', 'email_addr': 'evite-guest-27315432-l-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}
+        initialized_guests = [{'comment': 'THIS IS A YES RSVP GUEST COMMENT', 'email_addr': 'evite-guest-27315258-z-test@evitetest.com', 'guest_cou....}, {'comment': '', 'email_addr': 'evite-guest-27315577-B-test@evitetest.com', 'guest_count': 1, 'kids_count': 0, ...}]
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fa9f56bd520&gt;
+        test_data  = [{'comment': 'THIS IS A YES RSVP GUEST COMMENT', 'email_addr': 'evite-guest-27315258-z-test@evitetest.com', 'guest_cou....}, {'comment': '', 'email_addr': 'evite-guest-27315577-B-test@evitetest.com', 'guest_count': 1, 'kids_count': 0, ...}]
+../../commons/pages/evite/step5_guests.py:188: in add_guest
+    self.log_and_raise_exception("Add Guest button failed to reset before attempting to add new guest")
+        _          = 14
+        add_guest_button_disabled = True
+        add_guest_button_text = 'guest added!'
+        expected_text = 'add guest'
+        for_greeting_card = False
+        guest      = {'comment': '', 'email_addr': 'evite-guest-27315432-l-test@evitetest.com', 'guest_count': 0, 'kids_count': 0, ...}
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fa9f56bd520&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fa9f56bd520&gt;
+message = 'Add Guest button failed to reset before attempting to add new guest'
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Add Guest button failed to reset before attempting to add new guest
+
+message    = 'Add Guest button failed to reset before attempting to add new guest'
+self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fa9f56bd520&gt;
+
+../../commons/page.py:553: Exception</failure></testcase><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="256.215" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="278.458" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="337.199" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="534.122" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="462.182" /></testsuite></testsuites>

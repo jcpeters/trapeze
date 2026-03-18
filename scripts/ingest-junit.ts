@@ -10,6 +10,7 @@ import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 
 import { prisma } from "./db/prisma";
+import { uploadFile, buildKey } from "./storage.js";
 
 // ---------------------------
 // Types
@@ -73,6 +74,14 @@ const IngestArgsSchema = z.object({
     .string()
     .default("jira,jira.issue,jira.key,allure.link.issue,allure.link.tms"),
   skipJiraLinks: z.boolean().default(false),
+
+  // TestRail explicit link extraction from <properties>
+  // Comma-separated list of <property name="..."> values to scan for TestRail case IDs (C1234).
+  // Set to "" or use --skip-tr-links to disable.
+  trPropertyNames: z
+    .string()
+    .default("testrail.case,testrail_case,testrail,tr.case"),
+  skipTrLinks: z.boolean().default(false),
 
   // new flags
   dryRun: z.boolean().default(false),
@@ -358,6 +367,17 @@ async function parseArgs(argv: string[]): Promise<IngestArgs> {
       default: false,
       describe: "Skip writing jira_automation_link rows even if keys are found",
     })
+    .option("trPropertyNames", {
+      type: "string",
+      default: "testrail.case,testrail_case,testrail,tr.case",
+      describe:
+        "Comma-separated <property name=...> values to scan for TestRail case IDs (C1234)",
+    })
+    .option("skipTrLinks", {
+      type: "boolean",
+      default: false,
+      describe: "Skip writing automation_testrail_link rows even if C-IDs are found",
+    })
     .help()
     .parse();
 
@@ -380,6 +400,8 @@ async function parseArgs(argv: string[]): Promise<IngestArgs> {
     finishedAt,
     jiraPropertyNames: y.jiraPropertyNames,
     skipJiraLinks: y.skipJiraLinks,
+    trPropertyNames: y.trPropertyNames,
+    skipTrLinks: y.skipTrLinks,
     dryRun: y.dryRun,
     explain: y.explain,
   });
@@ -479,12 +501,16 @@ async function main() {
     },
   });
 
-  // Record artifact (local file URI for now)
+  // Upload source XML to GCS then record the artifact with its permanent gs:// URI.
+  // Upload happens before the DB write so we never store a URI that doesn't exist.
+  const gcsKey = buildKey(build.id, "source/junit-xml", path.basename(absPath));
+  const { gcsUri } = await uploadFile(absPath, gcsKey);
+
   const artifact = await prisma.rawArtifact.create({
     data: {
       buildId: build.id,
       artifactType: "junit-xml",
-      storageUri: `file://${absPath}`,
+      storageUri: gcsUri,
       sha256: fileSha,
       bytes,
     },
@@ -514,10 +540,30 @@ async function main() {
     console.log(`[explain] ${knownJiraKeys.size} Jira issue keys in DB for link filtering`);
   }
 
+  // Pre-load known TestRail case IDs for FK safety
+  const trPropertyNameSet = args.skipTrLinks
+    ? null
+    : new Set(args.trPropertyNames.split(",").map((s) => s.trim()).filter(Boolean));
+
+  const knownTrCaseIds: Set<bigint> = trPropertyNameSet
+    ? new Set(
+        (await prisma.testRailCase.findMany({ select: { trCaseId: true } })).map(
+          (r) => r.trCaseId
+        )
+      )
+    : new Set();
+
+  if (args.explain && trPropertyNameSet) {
+    console.log(`[explain] ${knownTrCaseIds.size} TestRail case IDs in DB for link filtering`);
+    console.log(`[explain] trPropertyNames=${[...trPropertyNameSet].join(",")}`);
+  }
+
   // Upsert test cases + insert results
   let inserted = 0;
   let linksWritten = 0;
   let linksSkipped = 0; // keys found but not in jira_issue yet
+  let trLinksWritten = 0;
+  let trLinksSkipped = 0; // C-IDs found but not in testrail_case yet
 
   for (const tc of parsed.cases) {
     const testCase = await prisma.testCase.upsert({
@@ -601,6 +647,62 @@ async function main() {
       }
       linksWritten++;
     }
+
+    // Write automation_testrail_link rows for any TestRail C-IDs found in <properties>.
+    if (trPropertyNameSet) {
+      for (const prop of tc.properties ? Object.entries(tc.properties as Record<string, unknown>) : []) {
+        const [propName, propValue] = prop;
+        if (!trPropertyNameSet.has(propName)) continue;
+        if (!propValue) continue;
+
+        // Extract C1234 patterns from the property value
+        const re = /(?:@|TR-)?[Cc](\d+)(?!\d)/g;
+        const valueStr = String(propValue);
+        let m: RegExpExecArray | null;
+        while ((m = re.exec(valueStr)) !== null) {
+          const trCaseId = BigInt(m[1]);
+
+          if (!knownTrCaseIds.has(trCaseId)) {
+            if (args.explain) {
+              console.log(
+                `[explain] ${tc.identityKey}: TestRail C${trCaseId} not in testrail_case — skipping link`
+              );
+            }
+            trLinksSkipped++;
+            continue;
+          }
+
+          await prisma.automationTestRailLink.upsert({
+            where: {
+              testCaseId_trCaseId_provenance: {
+                testCaseId: testCase.id,
+                trCaseId,
+                provenance: "EXPLICIT",
+              },
+            },
+            create: {
+              testCaseId: testCase.id,
+              trCaseId,
+              provenance: "EXPLICIT",
+              confidence: "HIGH",
+              evidence: `<property name="${propName}"> in JUnit XML`,
+              source: "testrail-property",
+            },
+            update: {
+              confidence: "HIGH",
+              evidence: `<property name="${propName}"> in JUnit XML`,
+            },
+          });
+
+          if (args.explain) {
+            console.log(
+              `[explain] TR Linked ${tc.identityKey} → C${trCaseId} (${propName})`
+            );
+          }
+          trLinksWritten++;
+        }
+      }
+    }
   }
 
   const linkSummary =
@@ -608,8 +710,13 @@ async function main() {
       ? ` jiraLinksWritten=${linksWritten} jiraLinksSkipped=${linksSkipped}`
       : "";
 
+  const trLinkSummary =
+    trPropertyNameSet
+      ? ` trLinksWritten=${trLinksWritten} trLinksSkipped=${trLinksSkipped}`
+      : "";
+
   console.log(
-    `Ingest complete: build=${args.jobName} #${args.buildNumber} suite=${parsed.suiteName} resultsInserted=${inserted}${linkSummary} artifact=${artifact.id}`
+    `Ingest complete: build=${args.jobName} #${args.buildNumber} suite=${parsed.suiteName} resultsInserted=${inserted}${linkSummary}${trLinkSummary} artifact=${artifact.id}`
   );
 }
 

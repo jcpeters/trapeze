@@ -1,0 +1,91 @@
+/**
+ * trapeze-sync-jira
+ *
+ * Fetches Jira issues for the configured projects and upserts them into
+ * the jira_issue table.  Run nightly so coverage dashboards reflect the
+ * current story landscape.
+ *
+ * Jenkins configuration:
+ *   Pipeline → "Pipeline script from SCM"
+ *   Script Path: jenkins/Jenkinsfile.sync-jira
+ *   Trigger: this file's cron trigger handles scheduling automatically.
+ *
+ * Required Jenkins credentials (Manage Jenkins → Credentials):
+ *   trapeze-db-url          Secret text  — full DATABASE_URL connection string
+ *   trapeze-jira-base-url   Secret text  — https://yourorg.atlassian.net
+ *   trapeze-jira-email      Secret text  — service account email
+ *   trapeze-jira-api-token  Secret text  — Atlassian API token
+ */
+
+pipeline {
+  agent { label 'trapeze' }
+
+  triggers {
+    // Nightly at ~6 AM server time. 'H' spreads load across the hour.
+    cron('H 6 * * *')
+  }
+
+  parameters {
+    string(
+      name: 'PROJECTS',
+      defaultValue: 'QAA',
+      description: 'Comma-separated Jira project keys to sync (e.g. QAA,PROJ)'
+    )
+    booleanParam(
+      name: 'FULL_SYNC',
+      defaultValue: false,
+      description: 'Skip the updatedAt watermark and re-fetch all issues'
+    )
+    booleanParam(
+      name: 'DRY_RUN',
+      defaultValue: false,
+      description: 'Parse and log without writing to the database'
+    )
+  }
+
+  environment {
+    DATABASE_URL      = credentials('trapeze-db-url')
+    JIRA_BASE_URL     = credentials('trapeze-jira-base-url')
+    JIRA_EMAIL        = credentials('trapeze-jira-email')
+    JIRA_API_TOKEN    = credentials('trapeze-jira-api-token')
+    NODE_ENV          = 'production'
+  }
+
+  options {
+    timeout(time: 30, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '30'))
+    disableConcurrentBuilds()
+    timestamps()
+  }
+
+  stages {
+    stage('Install') {
+      steps {
+        sh 'npm ci --prefer-offline'
+      }
+    }
+
+    stage('Sync Jira') {
+      steps {
+        script {
+          def extraFlags = "--projects ${params.PROJECTS}"
+          if (params.FULL_SYNC) extraFlags += ' --full-sync'
+          if (params.DRY_RUN)   extraFlags += ' --dry-run'
+          sh "npm run etl:sync:jira -- ${extraFlags}"
+        }
+      }
+    }
+  }
+
+  post {
+    failure {
+      echo "trapeze-sync-jira FAILED — check logs above"
+      // Replace with your notification step, e.g.:
+      // slackSend channel: '#qa-alerts', color: 'danger',
+      //   message: "trapeze-sync-jira failed on ${env.BRANCH_NAME} — ${env.BUILD_URL}"
+    }
+    success {
+      echo "trapeze-sync-jira completed successfully"
+    }
+  }
+}

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="3" tests="11" time="574.849" timestamp="2026-02-10T13:39:15.934286-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="0.000"><skipped type="pytest.skip" message="Skipping pending updatesto SUS test">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_sus_one_day_create.py:23: Skipping pending updatesto SUS test</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="118.734" /><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="142.636" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="236.934" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="246.637" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="280.845" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="316.542" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="556.462"><failure message="Exception: Can't verify page url contains preview, current url: https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free">self = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f0934b74a40&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f09345219d0&gt;
+
+    def test_evite_rsvp_free(self, config):
+        """
+        New Creation Flow with Fabric Templates
+    
+        Create Event, RSVP guests, Yes, No. Email and/or Phone.
+    
+        Verify guest in Guest List
+        Verify RSVP in Manage Invitation Dashboard
+    
+        :param config:
+        :return:
+        """
+    
+        _test_name = inspect.stack()[0][3]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav(action="create_invitation")
+        evite_gallery_page.select_filter_by(actions=["free"])
+        evite_event_page = evite_gallery_page.select_random_template()
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+    
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+            )
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+&gt;       step1_template.select_next(url="preview")
+
+_test_name = 'test_evite_rsvp_free'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f09345219d0&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7f0934521070&gt;
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7f0934c77ef0&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f0934523dd0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f0934521400&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_free (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f09345216a0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f09345215b0&gt;
+page       = &lt;commons.page.Page object at 0x7f09345209b0&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f09345203e0&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f0934520470&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7f09345217c0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f0934b74a40&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7f0934521910&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f0934521ac0&gt;
+user_email_addr = 'evite-02102026-134558-94-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7f09345200b0&gt;
+
+test_evite_rsvp_free.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step1_template.py:147: in select_next
+    self.assert_url_contains(search_string=url)
+        config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f09345219d0&gt;
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+        url        = 'preview'
+../../commons/page.py:147: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 0
+        current_url = 'https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featu...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f0934518ce0&gt;
+        search_string = 'preview'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+../../commons/page.py:147: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 1
+        current_url = 'https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featu...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f0934519610&gt;
+        search_string = 'preview'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+../../commons/page.py:147: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 2
+        current_url = 'https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featu...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f0934519790&gt;
+        search_string = 'preview'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+../../commons/page.py:147: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 3
+        current_url = 'https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featu...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f0934519340&gt;
+        search_string = 'preview'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+../../commons/page.py:147: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 4
+        current_url = 'https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featu...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f0934518890&gt;
+        search_string = 'preview'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+../../commons/page.py:147: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 5
+        current_url = 'https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featu...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f093451bb60&gt;
+        search_string = 'preview'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+../../commons/page.py:151: in assert_url_contains
+    self.log_and_raise_exception(msg)
+        count      = 6
+        current_url = 'https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featu...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free'
+        msg        = "Can't verify page url contains preview, current url: https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E7...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free"
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f093451afc0&gt;
+        search_string = 'preview'
+        self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+message = "Can't verify page url contains preview, current url: https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E7...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't verify page url contains preview, current url: https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E75WX7ZQ/gifting?template=old-jess-joy&amp;event_type=featured&amp;c=featured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free
+
+message    = "Can't verify page url contains preview, current url: https://test13.evitelabs.com/invitation/0281IIAE4SKDAAGJ2EPRA3E7...tured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=free&amp;category_id=featured&amp;pos=0&amp;variant=free"
+self       = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f0934520d10&gt;
+
+../../commons/page.py:553: Exception</failure></testcase><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="511.146" /></testsuite></testsuites>

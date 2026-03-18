@@ -13,16 +13,26 @@
     "db:views": "tsx ./scripts/apply-views.ts",
     "etl:ingest:junit": "tsx ./scripts/ingest-junit.ts",
     "etl:ingest:playwright": "tsx ./scripts/ingest-playwright.ts",
+    "etl:ingest:from-gcs": "tsx ./scripts/ingest-from-gcs.ts",
+    "etl:upload:drop-zone": "tsx ./scripts/upload-to-drop-zone.ts",
     "etl:sync:jira": "tsx ./scripts/sync-jira.ts",
     "etl:sync:testrail": "tsx ./scripts/sync-testrail.ts",
     "etl:infer:jira": "tsx ./scripts/infer-jira-links.ts",
+    "etl:infer:testrail": "tsx ./scripts/infer-testrail-links.ts",
+    "etl:infer:jira-testrail": "tsx ./scripts/infer-jira-testrail-links.ts",
+    "etl:seed:coverage-epics": "tsx ./scripts/seed-coverage-epics.ts",
     "etl:snapshot:coverage": "tsx ./scripts/snapshot-coverage.ts",
     "analyze:flakes": "tsx ./scripts/detect-flakes.ts",
     "mb:setup": "tsx ./scripts/setup-metabase.ts",
+    "storage:bucket": "tsx ./scripts/storage.ts --create-bucket",
+    "storage:lifecycle": "tsx ./scripts/setup-gcs-lifecycle.ts",
+    "storage:migrate:dry": "tsx ./scripts/migrate-artifacts.ts --dry-run",
+    "storage:migrate": "tsx ./scripts/migrate-artifacts.ts",
     "lint": "eslint .",
     "format": "prettier -w ."
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
     "@prisma/client": "^5.22.0",
     "dotenv": "^16.4.5",
     "fast-xml-parser": "^5.3.4",
@@ -37,7 +47,7 @@
     "eslint": "^9.9.0",
     "prettier": "^3.3.3",
     "prisma": "^5.22.0",
-    "tsx": "^4.16.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.5.4"
   }
 }

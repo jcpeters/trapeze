@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="1" skipped="3" tests="11" time="358.521" timestamp="2026-02-05T18:27:47.930993-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="117.548"><failure message="selenium.common.exceptions.InvalidCookieDomainException: Message: invalid cookie domain&#10;  (Session info: chrome=133.0.6943.126)&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x00D40283+25139]&#10;&#09;(No symbol) [0x00CCB234]&#10;&#09;(No symbol) [0x00BA0300]&#10;&#09;(No symbol) [0x00C3F360]&#10;&#09;(No symbol) [0x00C0CF3C]&#10;&#09;(No symbol) [0x00C2E6E1]&#10;&#09;(No symbol) [0x00C0CD36]&#10;&#09;(No symbol) [0x00BDBD29]&#10;&#09;(No symbol) [0x00BDD064]&#10;&#09;GetHandleVerifier [0x0104B143+3215603]&#10;&#09;GetHandleVerifier [0x010622BA+3310186]&#10;&#09;GetHandleVerifier [0x0105C4D2+3286146]&#10;&#09;GetHandleVerifier [0x00DD9C80+654384]&#10;&#09;(No symbol) [0x00CD45BD]&#10;&#09;(No symbol) [0x00CD14A8]&#10;&#09;(No symbol) [0x00CD1647]&#10;&#09;(No symbol) [0x00CC3D20]&#10;&#09;BaseThreadInitThunk [0x76925D49+25]&#10;&#09;RtlInitializeExceptionChain [0x7773CEBB+107]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x7773CE41+561]">self = &lt;tests.evite_acceptance.test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect object at 0x7fec2dc0e240&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fec0fcfc500&gt;
+
+    def test_evite_cms_admin_redirect(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page = config.pages["page"]
+        _redirect_url = "cstool/admin_login"
+    
+        # get_url checks if sub_page_url in current_url but in this case redirect happens
+        environment_url = settings.get_url_string(config.environment)
+        _cms_admin_url = environment_url + "admin/cms"
+    
+        config.driver.get(_cms_admin_url)
+&gt;       page.setup_default_cookies()
+
+_cms_admin_url = 'https://www.evite.comadmin/cms'
+_redirect_url = 'cstool/admin_login'
+_test_name = 'test_evite_cms_admin_redirect'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fec0fcfc500&gt;
+environment_url = 'https://www.evite.com'
+logger     = &lt;Logger test_evite_cms_admin_redirect (INFO)&gt;
+page       = &lt;commons.page.Page object at 0x7fec0fcfd070&gt;
+self       = &lt;tests.evite_acceptance.test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect object at 0x7fec2dc0e240&gt;
+
+test_evite_cms_admin_redirect.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/web.py:423: in setup_default_cookies
+    self.selenium.add_cookie(settings.DEFAULT_COOKIES[feature_name][settings.ENV.lower()])
+        feature_name = 'evtqa'
+        self       = &lt;commons.page.Page object at 0x7fec0fcfd070&gt;
+../../../949/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:805: in add_cookie
+    self.execute(Command.ADD_COOKIE, {"cookie": cookie_dict})
+        cookie_dict = {'domain': '.evite.com', 'name': 'evtqa', 'value': 'uSAvh0ln1i8'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="52ca800536db1a357b8a7bb785e6fd7e")&gt;
+../../../949/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'addCookie'
+        params     = {'cookie': {'domain': '.evite.com', 'name': 'evtqa', 'value': 'uSAvh0ln1i8'}}
+        response   = {'status': 400, 'value': '{"value":{"error":"invalid cookie domain","message":"invalid cookie domain\\n  (Session info...9+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="52ca800536db1a357b8a7bb785e6fd7e")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fec0fcfe570&gt;
+response = {'status': 400, 'value': '{"value":{"error":"invalid cookie domain","message":"invalid cookie domain\\n  (Session info...9+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.InvalidCookieDomainException: Message: invalid cookie domain
+E         (Session info: chrome=133.0.6943.126)
+E       Stacktrace:
+E       	GetHandleVerifier [0x00D40283+25139]
+E       	(No symbol) [0x00CCB234]
+E       	(No symbol) [0x00BA0300]
+E       	(No symbol) [0x00C3F360]
+E       	(No symbol) [0x00C0CF3C]
+E       	(No symbol) [0x00C2E6E1]
+E       	(No symbol) [0x00C0CD36]
+E       	(No symbol) [0x00BDBD29]
+E       	(No symbol) [0x00BDD064]
+E       	GetHandleVerifier [0x0104B143+3215603]
+E       	GetHandleVerifier [0x010622BA+3310186]
+E       	GetHandleVerifier [0x0105C4D2+3286146]
+E       	GetHandleVerifier [0x00DD9C80+654384]
+E       	(No symbol) [0x00CD45BD]
+E       	(No symbol) [0x00CD14A8]
+E       	(No symbol) [0x00CD1647]
+E       	(No symbol) [0x00CC3D20]
+E       	BaseThreadInitThunk [0x76925D49+25]
+E       	RtlInitializeExceptionChain [0x7773CEBB+107]
+E       	RtlGetAppContainerNamedObjectPath [0x7773CE41+561]
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7fec0fcfe960&gt;
+error_code = 'INVALID_COOKIE_DOMAIN'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [24, 'invalid cookie domain']
+exception_class = &lt;class 'selenium.common.exceptions.InvalidCookieDomainException'&gt;
+message    = 'invalid cookie domain\n  (Session info: chrome=133.0.6943.126)'
+response   = {'status': 400, 'value': '{"value":{"error":"invalid cookie domain","message":"invalid cookie domain\\n  (Session info...9+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fec0fcfe570&gt;
+st_value   = '\tGetHandleVerifier [0x00D40283+25139]\n\t(No symbol) [0x00CCB234]\n\t(No symbol) [0x00BA0300]\n\t(No symbol) [0x00C3...0x76925D49+25]\n\tRtlInitializeExceptionChain [0x7773CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\n'
+stacktrace = ['\tGetHandleVerifier [0x00D40283+25139]', '\t(No symbol) [0x00CCB234]', '\t(No symbol) [0x00BA0300]', '\t(No symbol) [0x00C3F360]', '\t(No symbol) [0x00C0CF3C]', '\t(No symbol) [0x00C2E6E1]', ...]
+status     = 'invalid cookie domain'
+value      = {'error': 'invalid cookie domain', 'message': 'invalid cookie domain\n  (Session info: chrome=133.0.6943.126)', 'stack...x76925D49+25]\n\tRtlInitializeExceptionChain [0x7773CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\n'}
+value_json = '{"value":{"error":"invalid cookie domain","message":"invalid cookie domain\\n  (Session info: chrome=133.0.6943.126)"...49+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'
+
+../../../949/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: InvalidCookieDomainException</failure></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="107.258" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="109.772"><skipped type="pytest.skip" message="DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-09032025-132904-97-test@evitetest.com' ORDER BY random();">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_greeting_card_create_from_past_event.py:116: DB have no record for sql: SELECT user_first_name,user_last_name FROM public.evite_users WHERE user_email_addr = 'evite-09032025-132904-97-test@evitetest.com' ORDER BY random();</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="0.255"><error message="failed on teardown with &quot;selenium.common.exceptions.WebDriverException: Message: &lt;unknown&gt;: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.&#10;  (Session info: chrome=133.0.6943.126)&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x00D40283+25139]&#10;&#09;(No symbol) [0x00CCB234]&#10;&#09;(No symbol) [0x00BA04A3]&#10;&#09;(No symbol) [0x00BA6EA1]&#10;&#09;(No symbol) [0x00BA9203]&#10;&#09;(No symbol) [0x00C2F6C5]&#10;&#09;(No symbol) [0x00C0CF3C]&#10;&#09;(No symbol) [0x00C2E6E1]&#10;&#09;(No symbol) [0x00C0CD36]&#10;&#09;(No symbol) [0x00BDBD29]&#10;&#09;(No symbol) [0x00BDD064]&#10;&#09;GetHandleVerifier [0x0104B143+3215603]&#10;&#09;GetHandleVerifier [0x010622BA+3310186]&#10;&#09;GetHandleVerifier [0x0105C4D2+3286146]&#10;&#09;GetHandleVerifier [0x00DD9C80+654384]&#10;&#09;(No symbol) [0x00CD45BD]&#10;&#09;(No symbol) [0x00CD14A8]&#10;&#09;(No symbol) [0x00CD1647]&#10;&#09;(No symbol) [0x00CC3D20]&#10;&#09;BaseThreadInitThunk [0x76925D49+25]&#10;&#09;RtlInitializeExceptionChain [0x7773CEBB+107]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x7773CE41+561]&quot;">def tear_down():
+        logger.info(f"Start {inspect.stack()[0][3]}")
+    
+        if test_failed["value"]:
+            ScreenShotHelper(test_name).take_screen_shot(driver)
+    
+            if "gridlastic" in _selenium_hub_url.lower():
+                # logger.warning(f"Video: http://s3-us-west-1.amazonaws.com/027a15f2-530d-31e5-f8cc-7ceaf6355377/6aabf53f-1881-9622-7d9d-50a59e24f562/play.html?" + driver.session_id)
+                logger.warning(
+                    f"Video: https://s3-us-west-2.amazonaws.com/6ca5b6bd-816f-45ea-b0af-d33a1627f21e/6aabf53f-1881-9622-7d9d-50a59e24f562/play.html?"
+                    + driver.session_id
+                )
+    
+            # This doesn't work anymore https://github.com/SeleniumHQ/selenium/issues/15772
+            # Save console errors if any
+            # From https://stackoverflow.com/questions/20907180/
+            # /getting-console-log-output-from-chrome-with-selenium-python-api-bindings
+    
+            error_logs = []
+            from pprint import pformat
+    
+            from selenium.webdriver.chrome.webdriver import WebDriver as ChromeDriver
+    
+            messages = ChromeDriver.get_log(driver, "browser")
+    
+            for entry in messages:
+                if entry["level"] == "SEVERE" or entry["level"] == "ERROR":
+                    if "appsignal" in entry["message"]:
+                        continue
+                    error_logs.append(entry)
+    
+            if error_logs:
+                logger.exception(f"Found {len(error_logs)} SEVERE/ERROR network error(s) during testing")
+                formatted_logs = pformat(error_logs, indent=2, compact=True)
+                logger.exception(f"Errors:\n{formatted_logs}")
+    
+        # Delete cookies for next session to run clean
+&gt;       test_config.pages["page"].evt_clean_up()
+
+ChromeDriver = &lt;class 'selenium.webdriver.chrome.webdriver.WebDriver'&gt;
+_selenium_hub_url = 'https://srPxQAUK9ol2T4yuRbKYw7UBhXZ2qYkI:gZ6XqQxp5JhODG9kHJ83GTuOGkGX8Rvf@eu839yns-hub.gridlastic.com/wd/hub'
+driver     = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="52ca800536db1a357b8a7bb785e6fd7e")&gt;
+error_logs = []
+logger     = &lt;Logger test_evite_cms_admin_redirect (INFO)&gt;
+messages   = []
+pformat    = &lt;function pformat at 0x7fec2e196160&gt;
+test_config = &lt;commons.test_configuration.TestConfiguration object at 0x7fec0fcfc500&gt;
+test_failed = {'value': True}
+test_name  = 'test_evite_cms_admin_redirect'
+
+conftest.py:326: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/page.py:196: in evt_clean_up
+    self.execute_script("localStorage.clear();")
+        self       = &lt;commons.page.Page object at 0x7fec0fcfd070&gt;
+../../commons/web.py:332: in execute_script
+    self.selenium.execute_script(script)
+        script     = 'localStorage.clear();'
+        self       = &lt;commons.page.Page object at 0x7fec0fcfd070&gt;
+../../../949/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:555: in execute_script
+    return self.execute(command, {"script": script, "args": converted_args})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        args       = ()
+        command    = 'w3cExecuteScript'
+        converted_args = []
+        script     = 'localStorage.clear();'
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="52ca800536db1a357b8a7bb785e6fd7e")&gt;
+../../../949/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'w3cExecuteScript'
+        params     = {'args': [], 'script': 'localStorage.clear();'}
+        response   = {'status': 500, 'value': '{"value":{"error":"\\u003Cunknown&gt;","message":"\\u003Cunknown&gt;: Failed to read the \'localSt...9+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="52ca800536db1a357b8a7bb785e6fd7e")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fec0fcfe570&gt;
+response = {'status': 500, 'value': '{"value":{"error":"\\u003Cunknown&gt;","message":"\\u003Cunknown&gt;: Failed to read the \'localSt...9+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.WebDriverException: Message: &lt;unknown&gt;: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+E         (Session info: chrome=133.0.6943.126)
+E       Stacktrace:
+E       	GetHandleVerifier [0x00D40283+25139]
+E       	(No symbol) [0x00CCB234]
+E       	(No symbol) [0x00BA04A3]
+E       	(No symbol) [0x00BA6EA1]
+E       	(No symbol) [0x00BA9203]
+E       	(No symbol) [0x00C2F6C5]
+E       	(No symbol) [0x00C0CF3C]
+E       	(No symbol) [0x00C2E6E1]
+E       	(No symbol) [0x00C0CD36]
+E       	(No symbol) [0x00BDBD29]
+E       	(No symbol) [0x00BDD064]
+E       	GetHandleVerifier [0x0104B143+3215603]
+E       	GetHandleVerifier [0x010622BA+3310186]
+E       	GetHandleVerifier [0x0105C4D2+3286146]
+E       	GetHandleVerifier [0x00DD9C80+654384]
+E       	(No symbol) [0x00CD45BD]
+E       	(No symbol) [0x00CD14A8]
+E       	(No symbol) [0x00CD1647]
+E       	(No symbol) [0x00CC3D20]
+E       	BaseThreadInitThunk [0x76925D49+25]
+E       	RtlInitializeExceptionChain [0x7773CEBB+107]
+E       	RtlGetAppContainerNamedObjectPath [0x7773CE41+561]
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7fec1022d490&gt;
+error_code = 'XPATH_LOOKUP_ERROR'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [19, 'invalid selector']
+exception_class = &lt;class 'selenium.common.exceptions.WebDriverException'&gt;
+message    = "&lt;unknown&gt;: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n  (Session info: chrome=133.0.6943.126)"
+response   = {'status': 500, 'value': '{"value":{"error":"\\u003Cunknown&gt;","message":"\\u003Cunknown&gt;: Failed to read the \'localSt...9+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7fec0fcfe570&gt;
+st_value   = '\tGetHandleVerifier [0x00D40283+25139]\n\t(No symbol) [0x00CCB234]\n\t(No symbol) [0x00BA04A3]\n\t(No symbol) [0x00BA...0x76925D49+25]\n\tRtlInitializeExceptionChain [0x7773CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\n'
+stacktrace = ['\tGetHandleVerifier [0x00D40283+25139]', '\t(No symbol) [0x00CCB234]', '\t(No symbol) [0x00BA04A3]', '\t(No symbol) [0x00BA6EA1]', '\t(No symbol) [0x00BA9203]', '\t(No symbol) [0x00C2F6C5]', ...]
+status     = '&lt;unknown&gt;'
+value      = {'error': '&lt;unknown&gt;', 'message': "&lt;unknown&gt;: Failed to read the 'localStorage' property from 'Window': Access is deni...x76925D49+25]\n\tRtlInitializeExceptionChain [0x7773CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\n'}
+value_json = '{"value":{"error":"\\u003Cunknown&gt;","message":"\\u003Cunknown&gt;: Failed to read the \'localStorage\' property from \'W...49+25]\\n\\tRtlInitializeExceptionChain [0x7773CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7773CE41+561]\\n"}}'
+
+../../../949/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: WebDriverException</error></testcase><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="203.528" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="204.606" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="212.038" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="228.035" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="334.880" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="353.900" /></testsuite></testsuites>

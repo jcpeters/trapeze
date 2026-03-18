@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="2" tests="11" time="503.714" timestamp="2026-02-23T14:27:49.557296-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:25: Egift disabled</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.001"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:24: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="202.884" /><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="231.443" /><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="292.917" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="327.470" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="331.058" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="475.844"><failure message="selenium.common.exceptions.ElementClickInterceptedException: Message: element click intercepted: Element &lt;button data-qa-id=&quot;login&quot; data-impression-tracking=&quot;&quot; data-qa-tigran=&quot;&quot; data-testid=&quot;&quot; data-clipboard-text=&quot;&quot; class=&quot;button assets-js-common-components-MegaNav-MegaNavVariant-components-GlobalNav-components-Login-Login-module__loginButton__w1mLl unstyled-button small&quot; type=&quot;button&quot; title=&quot;&quot; aria-label=&quot;&quot; tabindex=&quot;0&quot;&gt;...&lt;/button&gt; is not clickable at point (1831, 22). Other element would receive the click: &lt;div class=&quot;view-invitation__tabs&quot;&gt;...&lt;/div&gt;&#10;  (Session info: chrome=144.0.7559.96); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception&#10;Stacktrace:&#10;Symbols not available. Dumping unresolved backtrace:&#10;&#09;0xce7d13&#10;&#09;0xce7d54&#10;&#09;0xb0b290&#10;&#09;0xb5bde8&#10;&#09;0xb59ff9&#10;&#09;0xb579b2&#10;&#09;0xb56bc4&#10;&#09;0xb4b308&#10;&#09;0xb77fbc&#10;&#09;0xb4ad44&#10;&#09;0xb78184&#10;&#09;0xb95111&#10;&#09;0xb77d56&#10;&#09;0xb494d9&#10;&#09;0xb4a294&#10;&#09;0xf5bb64&#10;&#09;0xf57215&#10;&#09;0xf73fad&#10;&#09;0xd01ef8&#10;&#09;0xd09b0d&#10;&#09;0xcf0738&#10;&#09;0xcf0902&#10;&#09;0xcda1da&#10;&#09;0x76dd5d49&#10;&#09;0x77cfcebb&#10;&#09;0x77cfce41">self = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7ffbab5a09b0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7ffbaaf8d7f0&gt;
+
+    def test_evite_rsvp_free(self, config):
+        """
+        New Creation Flow with Fabric Templates
+    
+        Create Event, RSVP guests, Yes, No. Email and/or Phone.
+    
+        Verify guest in Guest List
+        Verify RSVP in Manage Invitation Dashboard
+    
+        :param config:
+        :return:
+        """
+    
+        _test_name = inspect.stack()[0][3]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav(action="create_invitation")
+        evite_gallery_page.select_filter_by(actions=["free"])
+        evite_event_page = evite_gallery_page.select_random_template()
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+    
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+            )
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+        step1_template.select_next(url="preview")
+        step1_template.select_next(url="send")
+        evite_event_page.skip_ads()
+    
+        config.pages["evite_event_confirmation"].select_confirmation_button(action="add_guests")
+        step5_guests.add_guests(test_data=self._json_test_data["guests"])
+        step1_template.select_next(url="confirm")
+    
+        event_id = Utils.get_event_id_from_url(config.driver.current_url)
+    
+        # Get Event Details
+        get_event_data = quake_v3_event.get_event_information(
+            user_email_addr=user_email_addr, user_pass=user_pass, event_id=event_id
+        )
+    
+        login_modal.sign_out()
+    
+        guest_list = step5_guests.initialize_guest_list(
+            test_data=self._json_test_data["guests"], get_event_data=get_event_data["guests"]
+        )
+    
+        # RSVP for each guest
+        for guest in guest_list:
+    
+            if (
+                guest["guest_type"] == "host"
+                or guest["test_data"]["rsvp"] == "undecided"
+                or not guest["test_data"]["rsvp"]
+            ):
+                continue
+    
+            logger.info("Going guest view URL")
+            page.get_url(
+                environment=config.environment,
+                sub_page_url=f"/event/{get_event_data['event']['id']}?gid={guest['guest_id']}",
+                add_cookie=False,
+            )
+    
+            # Check if guest have to be registered
+            if guest["test_data"]["registered"]:
+                # Change register data
+                self._json_test_data["register"]["first_name"] = guest["test_data"]["name"]
+                self._json_test_data["register"]["email"] = guest["test_data"]["email_addr"]
+                # Register
+&gt;               login_modal.register(test_data=self._json_test_data["register"], existing_user=True)
+
+_test_name = 'test_evite_rsvp_free'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7ffbaaf8d7f0&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7ffbaaf45ee0&gt;
+event_id   = '00C1IIAE4SKDAA3SUEPRCED5DWZH5A'
+evite_event_page = &lt;commons.pages.evite.evite_event_page.EviteEventPage object at 0x7ffbaaf441d0&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7ffbaaf8c080&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7ffbaaf46120&gt;
+get_event_data = {'current_user_rsvp': {'address': None, 'avatar_url': None, 'checked_in': True, 'comments': None, ...}, 'event': {'ama...ium_assets/fabric_gallery_asset/1771621648/composed_thumbnail_5884953430884352_default_800x600.webp', ...}}, ...}, ...}
+guest      = {'avatar_url': None, 'checked_in': False, 'comments': None, 'date_created': '2026-02-23T22:35:34', ...}
+guest_list = [{'avatar_url': None, 'checked_in': True, 'comments': None, 'date_created': '2026-02-23T22:34:31', ...}, {'avatar_url'...:35:34', ...}, {'avatar_url': None, 'checked_in': False, 'comments': None, 'date_created': '2026-02-23T22:35:34', ...}]
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_free (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7ffbaaf8d280&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7ffbaaf8c230&gt;
+page       = &lt;commons.page.Page object at 0x7ffbaaf45f10&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7ffbaba26360&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7ffbac1328d0&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7ffbaaf469f0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7ffbab5a09b0&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7ffbaaf444a0&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7ffbaaf45a00&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7ffbaaf45550&gt;
+user_email_addr = 'evite-02232026-143359-53-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7ffbaaf44110&gt;
+
+test_evite_rsvp_free.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/login_modal.py:114: in register
+    self.select_sign_in()
+        create_flow = False
+        existing_user = True
+        self       = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7ffbaaf8d280&gt;
+        test_data  = {'country': 'United States', 'email': 'evite-guest-35693304-C-test@evitetest.com', 'facebook': {'email_or_phone': '-test@evitetest.com', 'keep_me_logged_in': False, 'password': 'test1234'}, 'first_name': 'evite-guest-35693304-C-test', ...}
+../../commons/pages/evite/login_modal.py:72: in select_sign_in
+    sign_in_element.click()
+        self       = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7ffbaaf8d280&gt;
+        sign_in_element = &lt;selenium.webdriver.remote.webelement.WebElement (session="11379913319ec9226544ecb2076e06ab", element="f.99926BFAF15902BD65AB4BD0482E33B7.d.FBECE121731CD9E107706DE0F61234D7.e.4134")&gt;
+../../../988/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:120: in click
+    self._execute(Command.CLICK_ELEMENT)
+        self       = &lt;selenium.webdriver.remote.webelement.WebElement (session="11379913319ec9226544ecb2076e06ab", element="f.99926BFAF15902BD65AB4BD0482E33B7.d.FBECE121731CD9E107706DE0F61234D7.e.4134")&gt;
+../../../988/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:573: in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        command    = 'clickElement'
+        params     = {'id': 'f.99926BFAF15902BD65AB4BD0482E33B7.d.FBECE121731CD9E107706DE0F61234D7.e.4134'}
+        self       = &lt;selenium.webdriver.remote.webelement.WebElement (session="11379913319ec9226544ecb2076e06ab", element="f.99926BFAF15902BD65AB4BD0482E33B7.d.FBECE121731CD9E107706DE0F61234D7.e.4134")&gt;
+../../../988/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'clickElement'
+        params     = {}
+        response   = {'status': 400, 'value': '{"value":{"error":"element click intercepted","message":"element click intercepted: Element ...xd01ef8\\n\\t0xd09b0d\\n\\t0xcf0738\\n\\t0xcf0902\\n\\t0xcda1da\\n\\t0x76dd5d49\\n\\t0x77cfcebb\\n\\t0x77cfce41\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="11379913319ec9226544ecb2076e06ab")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7ffbab4aa6f0&gt;
+response = {'status': 400, 'value': '{"value":{"error":"element click intercepted","message":"element click intercepted: Element ...xd01ef8\\n\\t0xd09b0d\\n\\t0xcf0738\\n\\t0xcf0902\\n\\t0xcda1da\\n\\t0x76dd5d49\\n\\t0x77cfcebb\\n\\t0x77cfce41\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.ElementClickInterceptedException: Message: element click intercepted: Element &lt;button data-qa-id="login" data-impression-tracking="" data-qa-tigran="" data-testid="" data-clipboard-text="" class="button assets-js-common-components-MegaNav-MegaNavVariant-components-GlobalNav-components-Login-Login-module__loginButton__w1mLl unstyled-button small" type="button" title="" aria-label="" tabindex="0"&gt;...&lt;/button&gt; is not clickable at point (1831, 22). Other element would receive the click: &lt;div class="view-invitation__tabs"&gt;...&lt;/div&gt;
+E         (Session info: chrome=144.0.7559.96); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception
+E       Stacktrace:
+E       Symbols not available. Dumping unresolved backtrace:
+E       	0xce7d13
+E       	0xce7d54
+E       	0xb0b290
+E       	0xb5bde8
+E       	0xb59ff9
+E       	0xb579b2
+E       	0xb56bc4
+E       	0xb4b308
+E       	0xb77fbc
+E       	0xb4ad44
+E       	0xb78184
+E       	0xb95111
+E       	0xb77d56
+E       	0xb494d9
+E       	0xb4a294
+E       	0xf5bb64
+E       	0xf57215
+E       	0xf73fad
+E       	0xd01ef8
+E       	0xd09b0d
+E       	0xcf0738
+E       	0xcf0902
+E       	0xcda1da
+E       	0x76dd5d49
+E       	0x77cfcebb
+E       	0x77cfce41
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7ffbaaf97950&gt;
+error_code = 'ELEMENT_CLICK_INTERCEPTED'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [64, 'element click intercepted']
+exception_class = &lt;class 'selenium.common.exceptions.ElementClickInterceptedException'&gt;
+message    = 'element click intercepted: Element &lt;button data-qa-id="login" data-impression-tracking="" data-qa-tigran="" data-test... element would receive the click: &lt;div class="view-invitation__tabs"&gt;...&lt;/div&gt;\n  (Session info: chrome=144.0.7559.96)'
+response   = {'status': 400, 'value': '{"value":{"error":"element click intercepted","message":"element click intercepted: Element ...xd01ef8\\n\\t0xd09b0d\\n\\t0xcf0738\\n\\t0xcf0902\\n\\t0xcda1da\\n\\t0x76dd5d49\\n\\t0x77cfcebb\\n\\t0x77cfce41\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7ffbab4aa6f0&gt;
+st_value   = 'Symbols not available. Dumping unresolved backtrace:\n\t0xce7d13\n\t0xce7d54\n\t0xb0b290\n\t0xb5bde8\n\t0xb59ff9\n\t0...15\n\t0xf73fad\n\t0xd01ef8\n\t0xd09b0d\n\t0xcf0738\n\t0xcf0902\n\t0xcda1da\n\t0x76dd5d49\n\t0x77cfcebb\n\t0x77cfce41\n'
+stacktrace = ['Symbols not available. Dumping unresolved backtrace:', '\t0xce7d13', '\t0xce7d54', '\t0xb0b290', '\t0xb5bde8', '\t0xb59ff9', ...]
+status     = 'element click intercepted'
+value      = {'error': 'element click intercepted', 'message': 'element click intercepted: Element &lt;button data-qa-id="login" data-...5\n\t0xf73fad\n\t0xd01ef8\n\t0xd09b0d\n\t0xcf0738\n\t0xcf0902\n\t0xcda1da\n\t0x76dd5d49\n\t0x77cfcebb\n\t0x77cfce41\n'}
+value_json = '{"value":{"error":"element click intercepted","message":"element click intercepted: Element \\u003Cbutton data-qa-id=...0xd01ef8\\n\\t0xd09b0d\\n\\t0xcf0738\\n\\t0xcf0902\\n\\t0xcda1da\\n\\t0x76dd5d49\\n\\t0x77cfcebb\\n\\t0x77cfce41\\n"}}'
+
+../../../988/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: ElementClickInterceptedException</failure></testcase><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="341.294" /><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="485.198"><failure message="utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test23.evitelabs.com/invitation/0350IIAE4SKDAA3SUEPRCED6E3B65Y/guests?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=premium&amp;category_id=featured&amp;pos=10">self = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f15b836b8c0&gt;
+locator = ('css selector', '.new-guest-page'), timeout = 30
+
+    def wait_for(self, locator, timeout=None):
+        """
+        Waits for an element to be visible using the passed in locator.
+    
+        :param locator: Locator tuple for the element
+        :param timeout: (Int) Number of seconds to wait for an element
+        :return: WebElement if it is visible
+        """
+        timeout = timeout or settings.DEFAULT_TIMEOUT
+    
+        try:
+&gt;           return WebDriverWait(self.selenium, timeout).until(ec.visibility_of_element_located(locator))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+locator    = ('css selector', '.new-guest-page')
+msg        = "Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test23.evitelabs.com/invitation/03...?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=premium&amp;category_id=featured&amp;pos=10"
+self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f15b836b8c0&gt;
+timeout    = 30
+
+../../commons/web.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="b7e22310d575649490dc49b1831be0a9")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x7f15b8356de0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Parameters:
+        -----------
+        method: callable(WebDriver)
+            - A callable object that takes a WebDriver instance as an argument.
+    
+        message: str
+            - Optional message for :exc:`TimeoutException`
+    
+        Return:
+        -------
+        object: T
+            - The result of the last call to `method`
+    
+        Raises:
+        -------
+        TimeoutException
+            - If 'method' does not return a truthy value within the WebDriverWait
+            object's timeout
+    
+        Example:
+        --------
+        &gt;&gt;&gt; from selenium.webdriver.common.by import By
+        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait
+        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+    
+        # Wait until an element is visible on the page
+        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+        &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       Symbols not available. Dumping unresolved backtrace:
+E       	0x477d13
+E       	0x477d54
+E       	0x29b290
+E       	0x2e56ea
+E       	0x2e598b
+E       	0x327912
+E       	0x308004
+E       	0x325111
+E       	0x307d56
+E       	0x2d94d9
+E       	0x2da294
+E       	0x6ebb64
+E       	0x6e7215
+E       	0x703fad
+E       	0x491ef8
+E       	0x499b0d
+E       	0x480738
+E       	0x480902
+E       	0x46a1da
+E       	0x762e5d49
+E       	0x7713cebb
+E       	0x7713ce41
+
+end_time   = 62642424.40880492
+message    = ''
+method     = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x7f15b8356de0&gt;
+screen     = None
+self       = &lt;selenium.webdriver.support.wait.WebDriverWait (session="b7e22310d575649490dc49b1831be0a9")&gt;
+stacktrace = ['Symbols not available. Dumping unresolved backtrace:', '\t0x477d13', '\t0x477d54', '\t0x29b290', '\t0x2e56ea', '\t0x2e598b', ...]
+
+../../../988/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:138: TimeoutException
+
+The above exception was the direct cause of the following exception:
+
+self = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7f15b89fd5e0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f15b83680e0&gt;
+
+    def test_evite_rsvp_premium(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        quake_v3_event = QuakeV3Event(_test_name)
+        psql_db = PostgreSQL(_test_name)
+    
+        # Logger
+        logger = LoggingConfig().initialize_logger(_test_name)
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav("create_invitation")
+        evite_gallery_page.select_filter_by(["premium"])
+    
+        # Pick up a random template from the template page
+        evite_gallery_page.select_random_template(premium=True)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(test_name=_test_name)
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time(premium=True)
+        self._json_test_data["invitation"]["event_details"]["host"] = (
+            f"{self._json_test_data['register']['first_name']} " f"{self._json_test_data['register']['last_name']}"
+        )
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+        step1_template.select_next(url="preview")
+    
+        step1_template.select_next(url="guests")
+&gt;       step5_guests.add_guests(test_data=self._json_test_data["guests"])
+
+_test_name = 'test_evite_rsvp_premium'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f15b83680e0&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7f15b8368620&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f15b83697c0&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f15b8368dd0&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_premium (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f15b83680b0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f15b8368050&gt;
+page       = &lt;commons.page.Page object at 0x7f15b8368d70&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f15b99b8e90&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f15ba54c5f0&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7f15b836ac30&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7f15b89fd5e0&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f15b836ae40&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7f15b8369370&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f15b836b8c0&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7f15b836b680&gt;
+user_email_addr = 'evite-02232026-143431-44-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7f15b8369d90&gt;
+
+test_evite_rsvp_premium.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/step5_guests.py:98: in add_guests
+    self.wait_for(self.ADD_GUESTS_PAGE)
+        for_greeting_card = False
+        self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f15b836b8c0&gt;
+        test_data  = [{'comment': 'THIS IS A YES RSVP GUEST COMMENT', 'email_addr': 'evite-guest-32926279-S-test@evitetest.com', 'guest_cou....}, {'comment': '', 'email_addr': 'evite-guest-32926662-v-test@evitetest.com', 'guest_count': 1, 'kids_count': 0, ...}]
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f15b836b8c0&gt;
+locator = ('css selector', '.new-guest-page'), timeout = 30
+
+    def wait_for(self, locator, timeout=None):
+        """
+        Waits for an element to be visible using the passed in locator.
+    
+        :param locator: Locator tuple for the element
+        :param timeout: (Int) Number of seconds to wait for an element
+        :return: WebElement if it is visible
+        """
+        timeout = timeout or settings.DEFAULT_TIMEOUT
+    
+        try:
+            return WebDriverWait(self.selenium, timeout).until(ec.visibility_of_element_located(locator))
+        except TimeoutException as e:
+            msg = f"Timed out waiting for element: {locator} at URL: {self.selenium.current_url}"
+            self.logger.info(msg)
+&gt;           raise ElementNotFoundError(msg) from e
+E           utils.exceptions.ElementNotFoundError: Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test23.evitelabs.com/invitation/0350IIAE4SKDAA3SUEPRCED6E3B65Y/guests?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=premium&amp;category_id=featured&amp;pos=10
+
+locator    = ('css selector', '.new-guest-page')
+msg        = "Timed out waiting for element: ('css selector', '.new-guest-page') at URL: https://test23.evitelabs.com/invitation/03...?v=&amp;c=featured&amp;previous=featured&amp;page=1&amp;invitation_type=invitation&amp;invitation_type=premium&amp;category_id=featured&amp;pos=10"
+self       = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f15b836b8c0&gt;
+timeout    = 30
+
+../../commons/web.py:215: ElementNotFoundError</failure></testcase><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="389.446" /></testsuite></testsuites>

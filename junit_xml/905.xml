@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="4" tests="13" time="985.601" timestamp="2026-01-07T10:07:41.575268-08:00" hostname="jenkins-mobile-automation-node-3-8-2"><testcase classname="test_evite_rsvp_free_1cf.TestEviteRSVPFree1CF" name="test_evite_rsvp_free_1cf" time="0.000"><skipped type="pytest.skip" message="Experiment set to 0%">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_free_1cf.py:25: Experiment set to 0%</skipped></testcase><testcase classname="test_evite_rsvp_invitation_maker_v3.TestEviteRSVPInvitationMakerV3" name="test_evite_rsvp_invitation_maker_v3" time="0.000"><skipped type="pytest.skip" message="Experiment forced control">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_rsvp_invitation_maker_v3.py:24: Experiment forced control</skipped></testcase><testcase classname="test_evite_egift_card_create_new.TestEviteEGiftCardCreateNew" name="test_evite_egift_card_create_new" time="0.000"><skipped type="pytest.skip" message="Egift disabled">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_egift_card_create_new.py:23: Egift disabled</skipped></testcase><testcase classname="test_evite_upsell_gallery_page.TestEviteUpsellGalleryPage" name="test_evite_upsell_gallery_page" time="0.000"><skipped type="pytest.skip" message="skip because of EVT36079">/var/lib/jenkins/workspace/qa-evite-test-tests-acceptance/webdriver-framework/tests/evite_acceptance/test_evite_upsell_gallery_page.py:22: skip because of EVT36079</skipped></testcase><testcase classname="test_evite_cms_admin_redirect.TestEviteCMSAdminRedirect" name="test_evite_cms_admin_redirect" time="272.646" /><testcase classname="test_evite_sign_in.TestEviteSignIn" name="test_evite_sign_in" time="289.618" /><testcase classname="test_evite_sus_one_day_create.TestEviteSUSOneDayCreate" name="test_evite_sus_one_day_create" time="603.716"><failure message="selenium.common.exceptions.JavascriptException: Message: javascript error: Cannot read properties of null (reading 'click')&#10;  (Session info: chrome=133.0.6943.126)&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x00B50283+25139]&#10;&#09;(No symbol) [0x00ADB234]&#10;&#09;(No symbol) [0x009B04A3]&#10;&#09;(No symbol) [0x009B6EA1]&#10;&#09;(No symbol) [0x009B9203]&#10;&#09;(No symbol) [0x00A3F6C5]&#10;&#09;(No symbol) [0x00A1CF3C]&#10;&#09;(No symbol) [0x00A3E6E1]&#10;&#09;(No symbol) [0x00A1CD36]&#10;&#09;(No symbol) [0x009EBD29]&#10;&#09;(No symbol) [0x009ED064]&#10;&#09;GetHandleVerifier [0x00E5B143+3215603]&#10;&#09;GetHandleVerifier [0x00E722BA+3310186]&#10;&#09;GetHandleVerifier [0x00E6C4D2+3286146]&#10;&#09;GetHandleVerifier [0x00BE9C80+654384]&#10;&#09;(No symbol) [0x00AE45BD]&#10;&#09;(No symbol) [0x00AE14A8]&#10;&#09;(No symbol) [0x00AE1647]&#10;&#09;(No symbol) [0x00AD3D20]&#10;&#09;BaseThreadInitThunk [0x75A15D49+25]&#10;&#09;RtlInitializeExceptionChain [0x7734CEBB+107]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x7734CE41+561]">self = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f347a7106b0&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f347a705130&gt;
+
+    def test_evite_sus_one_day_create(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+        sign_up_sheet_maker = config.pages["sign_up_sheet_maker"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(inspect.stack()[0][3])
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time()
+        if host:
+            self._json_test_data["invitation"]["event_details"]["host"] = host
+        else:
+            self._json_test_data["invitation"]["event_details"]["host"] = (
+                f"{self._json_test_data['register']['first_name']} "
+                f"{self._json_test_data['register']['last_name']}")
+    
+        sign_up_sheet_maker.select_sus_event(sus_event="one_day")
+    
+        sign_up_sheet_maker.enter_details(test_data=self._json_test_data)
+        sign_up_sheet_maker.create_sheet_one_day(test_data=self._json_test_data)
+        sign_up_sheet_maker.verify_sheet_sign_ups(test_data=self._json_test_data)
+    
+        sign_up_sheet_maker.publish_sheet()
+        shareable_link = sign_up_sheet_maker.copy_shareable_link()
+    
+&gt;       login_modal.sign_out()
+
+_test_name = 'test_evite_sus_one_day_create'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f347a705130&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f347a828710&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_sus_one_day_create (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f347a705790&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f347a705580&gt;
+page       = &lt;commons.page.Page object at 0x7f347a829a30&gt;
+self       = &lt;tests.evite_acceptance.test_evite_sus_one_day_create.TestEviteSUSOneDayCreate object at 0x7f347a7106b0&gt;
+shareable_link = 'https://test51.evite.me/a4KgAdnrY9'
+sign_up_sheet_maker = &lt;commons.pages.evite.sign_up_sheet_maker.SignUpSheetMaker object at 0x7f347a705760&gt;
+user_email_addr = 'evite-01072026-101540-96-test@evitetest.com'
+user_pass  = 'test1234'
+
+test_evite_sus_one_day_create.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/login_modal.py:453: in sign_out
+    self.find_element_click(element_locator=self._open_account_sign_out)
+        nav_open_account_element = &lt;selenium.webdriver.remote.webelement.WebElement (session="b7ccb62df3f46b8c7401e03d35fe8e82", element="f.FA4C0E44E0B53B93C838D186667AA358.d.77D82EAD5A416B284A62182BBCD36BF9.e.524")&gt;
+        self       = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f347a705790&gt;
+../../commons/web.py:812: in find_element_click
+    self.selenium.execute_script(f"document.querySelector('{element_locator[1]}').click()")
+        config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f347a705130&gt;
+        element_locator = ('css selector', '[data-qa-id="signOutAcctDrawerItem"]')
+        js         = False
+        scroll     = False
+        self       = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f347a705790&gt;
+        timeout    = 30
+../../../905/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:555: in execute_script
+    return self.execute(command, {"script": script, "args": converted_args})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        args       = ()
+        command    = 'w3cExecuteScript'
+        converted_args = []
+        script     = 'document.querySelector(\'[data-qa-id="signOutAcctDrawerItem"]\').click()'
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="b7ccb62df3f46b8c7401e03d35fe8e82")&gt;
+../../../905/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+        driver_command = 'w3cExecuteScript'
+        params     = {'args': [], 'script': 'document.querySelector(\'[data-qa-id="signOutAcctDrawerItem"]\').click()'}
+        response   = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x7734CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7734CE41+561]\\n"}}'}
+        self       = &lt;selenium.webdriver.remote.webdriver.WebDriver (session="b7ccb62df3f46b8c7401e03d35fe8e82")&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f347c2bf980&gt;
+response = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x7734CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7734CE41+561]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.JavascriptException: Message: javascript error: Cannot read properties of null (reading 'click')
+E         (Session info: chrome=133.0.6943.126)
+E       Stacktrace:
+E       	GetHandleVerifier [0x00B50283+25139]
+E       	(No symbol) [0x00ADB234]
+E       	(No symbol) [0x009B04A3]
+E       	(No symbol) [0x009B6EA1]
+E       	(No symbol) [0x009B9203]
+E       	(No symbol) [0x00A3F6C5]
+E       	(No symbol) [0x00A1CF3C]
+E       	(No symbol) [0x00A3E6E1]
+E       	(No symbol) [0x00A1CD36]
+E       	(No symbol) [0x009EBD29]
+E       	(No symbol) [0x009ED064]
+E       	GetHandleVerifier [0x00E5B143+3215603]
+E       	GetHandleVerifier [0x00E722BA+3310186]
+E       	GetHandleVerifier [0x00E6C4D2+3286146]
+E       	GetHandleVerifier [0x00BE9C80+654384]
+E       	(No symbol) [0x00AE45BD]
+E       	(No symbol) [0x00AE14A8]
+E       	(No symbol) [0x00AE1647]
+E       	(No symbol) [0x00AD3D20]
+E       	BaseThreadInitThunk [0x75A15D49+25]
+E       	RtlInitializeExceptionChain [0x7734CEBB+107]
+E       	RtlGetAppContainerNamedObjectPath [0x7734CE41+561]
+
+e          = &lt;selenium.webdriver.remote.errorhandler.ErrorCode object at 0x7f347a707260&gt;
+error_code = 'JAVASCRIPT_ERROR'
+error_codes = ['DETACHED_SHADOW_ROOT', 'ELEMENT_CLICK_INTERCEPTED', 'ELEMENT_IS_NOT_SELECTABLE', 'ELEMENT_NOT_INTERACTABLE', 'ELEMENT_NOT_VISIBLE', 'IME_ENGINE_ACTIVATION_FAILED', ...]
+error_info = [17, 'javascript error']
+exception_class = &lt;class 'selenium.common.exceptions.JavascriptException'&gt;
+message    = "javascript error: Cannot read properties of null (reading 'click')\n  (Session info: chrome=133.0.6943.126)"
+response   = {'status': 500, 'value': '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of ...9+25]\\n\\tRtlInitializeExceptionChain [0x7734CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7734CE41+561]\\n"}}'}
+screen     = None
+self       = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f347c2bf980&gt;
+st_value   = '\tGetHandleVerifier [0x00B50283+25139]\n\t(No symbol) [0x00ADB234]\n\t(No symbol) [0x009B04A3]\n\t(No symbol) [0x009B...0x75A15D49+25]\n\tRtlInitializeExceptionChain [0x7734CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7734CE41+561]\n'
+stacktrace = ['\tGetHandleVerifier [0x00B50283+25139]', '\t(No symbol) [0x00ADB234]', '\t(No symbol) [0x009B04A3]', '\t(No symbol) [0x009B6EA1]', '\t(No symbol) [0x009B9203]', '\t(No symbol) [0x00A3F6C5]', ...]
+status     = 'javascript error'
+value      = {'error': 'javascript error', 'message': "javascript error: Cannot read properties of null (reading 'click')\n  (Sessi...x75A15D49+25]\n\tRtlInitializeExceptionChain [0x7734CEBB+107]\n\tRtlGetAppContainerNamedObjectPath [0x7734CE41+561]\n'}
+value_json = '{"value":{"error":"javascript error","message":"javascript error: Cannot read properties of null (reading \'click\')\...49+25]\\n\\tRtlInitializeExceptionChain [0x7734CEBB+107]\\n\\tRtlGetAppContainerNamedObjectPath [0x7734CE41+561]\\n"}}'
+
+../../../905/venv/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: JavascriptException</failure></testcase><testcase classname="test_evite_copy_free_past_event.TestEviteCopyFreePastEvent" name="test_evite_copy_free_past_event" time="461.200" /><testcase classname="test_evite_greeting_card_create_new.TestEviteGreetingCardCreateNew" name="test_evite_greeting_card_create_new" time="483.325" /><testcase classname="test_evite_copy_premium_past_event.TestEviteCopyPremiumPastEvent" name="test_evite_copy_premium_past_event" time="504.637" /><testcase classname="test_evite_greeting_card_create_from_past_event.TestEviteGreetingCardCreateFromPastEvent" name="test_evite_greeting_card_create_from_past_event" time="506.980" /><testcase classname="test_evite_rsvp_free.TestEviteRSVPFree" name="test_evite_rsvp_free" time="721.735"><failure message="Exception: Can't verify page url contains create, current url: https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree">self = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f114ab46660&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7f114ab61d60&gt;
+
+    def test_evite_rsvp_free(self, config):
+        """
+        New Creation Flow with Fabric Templates
+    
+        Create Event, RSVP guests, Yes, No. Email and/or Phone.
+    
+        Verify guest in Guest List
+        Verify RSVP in Manage Invitation Dashboard
+    
+        :param config:
+        :return:
+        """
+    
+        _test_name = inspect.stack()[0][3]
+    
+        quake_v3_event = QuakeV3Event(inspect.stack()[0][3])
+        psql_db = PostgreSQL(inspect.stack()[0][3])
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        login_modal = config.pages["login_modal"]
+        my_events = config.pages["my_events"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+    
+        logger = LoggingConfig().initialize_logger(inspect.stack()[0][3])
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+         # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav(action="create_invitation")
+        evite_gallery_page.select_filter_by(actions=["free"])
+&gt;       evite_event_page = evite_gallery_page.select_random_template()
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+_test_name = 'test_evite_rsvp_free'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7f114ab61d60&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7f114ab61610&gt;
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7f114ab618b0&gt;
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_free (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7f114ab61dc0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7f114ab61550&gt;
+page       = &lt;commons.page.Page object at 0x7f114ab60e90&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7f114ab59bb0&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7f114ceac140&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7f114ab61910&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_free.TestEviteRSVPFree object at 0x7f114ab46660&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7f114ab62120&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7f114ab61d00&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7f114ab61cd0&gt;
+user_email_addr = 'evite-01072026-101807-38-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7f114ab61a00&gt;
+
+test_evite_rsvp_free.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/evite_gallery_page.py:565: in select_random_template
+    self.assert_url_contains(search_string="create")
+        all_templates = [&lt;selenium.webdriver.remote.webelement.WebElement (session="aabd702c4c4393efbd62edbc30c80f72", element="f.F14FA3B2DA45...c4393efbd62edbc30c80f72", element="f.F14FA3B2DA455D996AF542B18FCACE51.d.65B0086F50F7CCA8BFC38AAFFD329385.e.251")&gt;, ...]
+        dyo_keywords = ['design', 'design-own', 'own', 'general', 'dyo', 'uyo', ...]
+        greeting_card = False
+        keyword    = 'save-the-date'
+        number_of_templates = 13
+        pdp_select = 'free'
+        pdp_select_premium = False
+        premium    = False
+        quake_v3_gallery = &lt;commons.pages.quake_v3.quake_v3_gallery.QuakeV3Gallery object at 0x7f1149d4b9e0&gt;
+        random_template = &lt;selenium.webdriver.remote.webelement.WebElement (session="aabd702c4c4393efbd62edbc30c80f72", element="f.F14FA3B2DA455D996AF542B18FCACE51.d.65B0086F50F7CCA8BFC38AAFFD329385.e.250")&gt;
+        random_template_name = 'Vino Vibes'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+        template   = &lt;selenium.webdriver.remote.webelement.WebElement (session="aabd702c4c4393efbd62edbc30c80f72", element="f.F14FA3B2DA455D996AF542B18FCACE51.d.65B0086F50F7CCA8BFC38AAFFD329385.e.258")&gt;
+        template_element = &lt;selenium.webdriver.remote.webelement.WebElement (session="aabd702c4c4393efbd62edbc30c80f72", element="f.F14FA3B2DA455D996AF542B18FCACE51.d.65B0086F50F7CCA8BFC38AAFFD329385.e.246")&gt;
+        template_id = 'silvermirrorballnewyear'
+        template_name = 'Silver Mirror Ball'
+        templates_in_page = 12
+        templates_set = [&lt;selenium.webdriver.remote.webelement.WebElement (session="aabd702c4c4393efbd62edbc30c80f72", element="f.F14FA3B2DA45...c4393efbd62edbc30c80f72", element="f.F14FA3B2DA455D996AF542B18FCACE51.d.65B0086F50F7CCA8BFC38AAFFD329385.e.252")&gt;, ...]
+        url        = 'invites'
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 0
+        current_url = 'https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f114aba1af0&gt;
+        search_string = 'create'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 1
+        current_url = 'https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f114aba0440&gt;
+        search_string = 'create'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 2
+        current_url = 'https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f114aba1d00&gt;
+        search_string = 'create'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 3
+        current_url = 'https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f114aba2030&gt;
+        search_string = 'create'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 4
+        current_url = 'https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f114aba1a30&gt;
+        search_string = 'create'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+../../commons/page.py:194: in assert_url_contains
+    self.assert_url_contains(search_string=search_string, current_url="", count=count + 1)
+        count      = 5
+        current_url = 'https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree'
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f114aba1e80&gt;
+        search_string = 'create'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+../../commons/page.py:198: in assert_url_contains
+    self.log_and_raise_exception(msg)
+        count      = 6
+        current_url = 'https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree'
+        msg        = "Can't verify page url contains create, current url: https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree"
+        screen_shot_helper = &lt;lib.screenshot.ScreenShotHelper object at 0x7f114aba2270&gt;
+        search_string = 'create'
+        self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+message = "Can't verify page url contains create, current url: https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't verify page url contains create, current url: https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree
+
+message    = "Can't verify page url contains create, current url: https://test51.evitelabs.com/invites/?active_filter=free_premium%2Cfree"
+self       = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7f1149d4b200&gt;
+
+../../commons/page.py:1049: Exception</failure></testcase><testcase classname="test_evite_rsvp_premium.TestEviteRSVPPremium" name="test_evite_rsvp_premium" time="952.858"><failure message="Exception: Can't click on footer, exiting">self = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fb7a1820470&gt;
+config = &lt;commons.test_configuration.TestConfiguration object at 0x7fb7a185db20&gt;
+
+    def test_evite_rsvp_premium(self, config):
+        _test_name = inspect.stack()[0][3]
+    
+        page = config.pages["page"]
+    
+        evite_home_page = config.pages["evite_home_page"]
+    
+        rsvp_modal = config.pages["rsvp_modal"]
+        event_details = config.pages["event_details"]
+        who_is_coming = config.pages["who_is_coming"]
+        my_events = config.pages["my_events"]
+        login_modal = config.pages["login_modal"]
+    
+        step1_template = config.pages["step1_template"]
+        step2_event_details = config.pages["step2_event_details"]
+        step5_guests = config.pages["step5_guests"]
+        step6_review_send = config.pages["step6_review_send"]
+    
+        quake_v3_event = QuakeV3Event(_test_name)
+        psql_db = PostgreSQL(_test_name)
+    
+        # Logger
+        logger = LoggingConfig().initialize_logger(_test_name)
+        logger.info(f"Start {_test_name}")
+    
+        page.get_url(environment=config.environment)
+    
+        # Sign-In or Register
+        user_email_addr, user_pass, host = login_modal.sign_in_register(test_data=self._json_test_data)
+    
+        # Create Invitation
+        evite_gallery_page = evite_home_page.select_nav("create_invitation")
+        evite_gallery_page.select_filter_by(["premium"])
+    
+        # Pick up a random template from the template page
+        evite_gallery_page.select_random_template(premium=True)
+    
+        self._json_test_data["invitation"]["event_details"]["event_title"] = Utils().get_event_title()
+        self._json_test_data["invitation"]["event_details"]["start_date"] = Utils().get_rand_date(test_name=_test_name)
+        self._json_test_data["invitation"]["event_details"]["start_time"] = Utils().get_start_time(premium=True)
+        self._json_test_data["invitation"]["event_details"]["host"] = (f"{self._json_test_data['register']['first_name']} "
+                                                                       f"{self._json_test_data['register']['last_name']}")
+    
+        # Step 1: Card Editor
+        step1_template.fill_text_editors(test_data=self._json_test_data)
+        step1_template.select_next(url="details")
+    
+        # Step 2: Enter Details page
+        step2_event_details.enter_details(test_data=self._json_test_data)
+        step1_template.select_next(url="gifting")
+        step1_template.select_next(url="preview")
+    
+        step1_template.select_next(url="guests")
+        step5_guests.add_guests(test_data=self._json_test_data["guests"])
+        step1_template.select_next(url="review")
+    
+        step6_review_send.enter_checkout_page(test_data=self._json_test_data, url="confirm")
+    
+        event_id = Utils.get_event_id_from_url(config.driver.current_url)
+    
+        get_event_data = quake_v3_event.get_event_information(
+            user_email_addr=user_email_addr, user_pass=user_pass, event_id=event_id
+        )
+    
+        login_modal.sign_out()
+    
+        guest_list = step5_guests.initialize_guest_list(
+            test_data=self._json_test_data["guests"],
+            get_event_data=get_event_data["guests"])
+    
+        # RSVP for each guest
+        for guest in guest_list:
+    
+            if (guest["guest_type"] == "host" or
+                    guest["test_data"]["rsvp"] == "undecided" or
+                    not guest["test_data"]["rsvp"]):
+                continue
+    
+            logger.info("Going guest view URL")
+            page.get_url(environment=config.environment,
+                         sub_page_url=f"event/{get_event_data['event']['id']}?gid={guest['guest_id']}",
+                         add_cookie=False)
+    
+            # Check if guest have to be registered
+            if guest["test_data"]["registered"]:
+                # Change register data
+                self._json_test_data["register"]["first_name"] = guest["name"]
+                self._json_test_data["register"]["email"] = guest["email"]
+                # Register
+                login_modal.register(test_data=self._json_test_data['register'], existing_user=True)
+    
+            # RSVP
+&gt;           rsvp_modal.rsvp(action=guest["test_data"]["rsvp"], guest=guest)
+
+_test_name = 'test_evite_rsvp_premium'
+config     = &lt;commons.test_configuration.TestConfiguration object at 0x7fb7a185db20&gt;
+event_details = &lt;commons.pages.evite.evite_view_invitation_event_details_module.EventDetailsModule object at 0x7fb7a185daf0&gt;
+event_id   = '0269IIAE4SKDAAQWOEPQ5P2XTCNJPI'
+evite_gallery_page = &lt;commons.pages.evite.evite_gallery_page.EviteGalleryPage object at 0x7fb7a185a150&gt;
+evite_home_page = &lt;commons.pages.evite.evite_home_page.EviteHomePage object at 0x7fb7a185d0a0&gt;
+get_event_data = {'current_user_rsvp': {'address': None, 'avatar_url': None, 'checked_in': True, 'comments': None, ...}, 'event': {'ama...ium_assets/fabric_gallery_asset/1767678335/composed_thumbnail_5019107707879424_default_800x600.webp', ...}}, ...}, ...}
+guest      = {'avatar_url': None, 'checked_in': False, 'comments': None, 'date_created': '2026-01-07T18:22:40', ...}
+guest_list = [{'avatar_url': None, 'checked_in': True, 'comments': None, 'date_created': '2026-01-07T18:19:58', ...}, {'avatar_url'...:22:40', ...}, {'avatar_url': None, 'checked_in': False, 'comments': None, 'date_created': '2026-01-07T18:22:40', ...}]
+host       = 'automation test'
+logger     = &lt;Logger test_evite_rsvp_premium (INFO)&gt;
+login_modal = &lt;commons.pages.evite.login_modal.LoginModal object at 0x7fb7a185dbb0&gt;
+my_events  = &lt;commons.pages.evite.my_events.MyEvents object at 0x7fb7a185db50&gt;
+page       = &lt;commons.page.Page object at 0x7fb7a185d310&gt;
+psql_db    = &lt;lib.postgre_sql.PostgreSQL object at 0x7fb7a2722750&gt;
+quake_v3_event = &lt;commons.pages.quake_v3.quake_v3_event.QuakeV3Event object at 0x7fb7b7fdfe60&gt;
+rsvp_modal = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+self       = &lt;tests.evite_acceptance.test_evite_rsvp_premium.TestEviteRSVPPremium object at 0x7fb7a1820470&gt;
+step1_template = &lt;commons.pages.evite.step1_template.Step1Template object at 0x7fb7a185dc70&gt;
+step2_event_details = &lt;commons.pages.evite.step2_event_details.Step2EventDetails object at 0x7fb7a185d5e0&gt;
+step5_guests = &lt;commons.pages.evite.step5_guests.Step5Guests object at 0x7fb7a185db80&gt;
+step6_review_send = &lt;commons.pages.evite.step6_review_send.Step6ReviewSend object at 0x7fb7a185d790&gt;
+user_email_addr = 'evite-01072026-101846-81-test@evitetest.com'
+user_pass  = 'test1234'
+who_is_coming = &lt;commons.pages.evite.evite_view_invitation_whos_coming_module.WhosComingModule object at 0x7fb7a185d700&gt;
+
+test_evite_rsvp_premium.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../commons/pages/evite/evite_view_invitation_rsvp_modal.py:58: in rsvp
+    self.select_rsvp_footer(action=action)
+        action     = 'yes'
+        guest      = {'avatar_url': None, 'checked_in': False, 'comments': None, 'date_created': '2026-01-07T18:22:40', ...}
+        self       = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+../../commons/pages/evite/evite_view_invitation.py:146: in select_rsvp_footer
+    self.select_rsvp_footer(action=action)
+        action     = 'yes'
+        self       = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+../../commons/pages/evite/evite_view_invitation.py:146: in select_rsvp_footer
+    self.select_rsvp_footer(action=action)
+        action     = 'yes'
+        self       = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+../../commons/pages/evite/evite_view_invitation.py:146: in select_rsvp_footer
+    self.select_rsvp_footer(action=action)
+        action     = 'yes'
+        self       = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+../../commons/pages/evite/evite_view_invitation.py:146: in select_rsvp_footer
+    self.select_rsvp_footer(action=action)
+        action     = 'yes'
+        self       = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+../../commons/pages/evite/evite_view_invitation.py:144: in select_rsvp_footer
+    self.log_and_raise_exception(message=msg)
+        action     = 'yes'
+        msg        = "Can't click on footer, exiting"
+        self       = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+message = "Can't click on footer, exiting"
+
+    def log_and_raise_exception(self, message):
+        """
+        Uses logger to log exception and then raises Exception error
+        :param message: Message to log and raise
+        :return:
+        """
+        self.logger.exception(message)
+&gt;       raise Exception(message)
+E       Exception: Can't click on footer, exiting
+
+message    = "Can't click on footer, exiting"
+self       = &lt;commons.pages.evite.evite_view_invitation_rsvp_modal.RSVPModal object at 0x7fb7a185dbe0&gt;
+
+../../commons/page.py:1049: Exception</failure></testcase></testsuite></testsuites>
