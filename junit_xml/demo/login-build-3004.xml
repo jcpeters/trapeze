@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="289.4" timestamp="2026-03-17T08:00:00.000000">
+  <testcase classname="test_evite_login.TestEviteLogin" name="test_valid_login" time="131.5">
+    <properties>
+      <property name="jira" value="QAA-659"/>
+      <property name="testrail.case" value="C27088"/>
+    </properties>
+    <failure message="TimeoutError: Waiting for element '#dashboard-header' timed out after 30000ms. Network response was 504 Gateway Timeout during login POST.">
+TimeoutError: Waiting for element '#dashboard-header' timed out after 30000ms.
+  File "test_evite_login.py", line 44, in test_valid_login
+    WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.ID, "dashboard-header")))
+selenium.common.exceptions.TimeoutException: Message: timeout: Timed out receiving message from renderer: 30.000
+  (Session info: chrome=122.0.6261.94)
+    </failure>
+  </testcase>
+  <testcase classname="test_evite_rsvp.TestEviteRSVP" name="test_rsvp_yes_flow" time="157.9">
+  </testcase>
+</testsuite>

@@ -88,6 +88,7 @@ export interface DropZoneManifest {
   shardTotal?: number;
   project?:    string;          // Playwright project name (e.g. "chromium")
   artifactFiles?: string[];     // relative paths of uploaded artifacts (under artifacts/ prefix)
+  extraEnv?:   Record<string, unknown>; // system-level metadata (node version, OS, browser, etc.)
 }
 
 // ── Args ─────────────────────────────────────────────────────────────────────
@@ -109,6 +110,7 @@ const ArgsSchema = z.object({
   shardTotal:  z.coerce.number().int().optional(),
   project:     z.string().optional(),
   artifactsDir: z.string().optional(), // local test-results dir to upload
+  extraEnv:    z.string().optional(),  // JSON string of system-level metadata
   dryRun:      z.boolean().default(false),
   explain:     z.boolean().default(false),
 });
@@ -135,6 +137,7 @@ async function main() {
     .option("shard-total", { type: "number",  describe: "Total number of Playwright shards" })
     .option("project",     { type: "string",  describe: "Playwright project name (e.g. chromium)" })
     .option("artifacts-dir", { type: "string",  describe: "Path to Playwright test-results/ (or pytest artifact output) directory — only failed-test artifacts need be included; contents uploaded to artifacts/ prefix alongside the result file" })
+    .option("extra-env",   { type: "string",  describe: "JSON string of system-level metadata to store in the manifest (e.g. node version, OS, Playwright version)" })
     .option("dry-run",     { type: "boolean", default: false, describe: "Show what would be uploaded without writing to GCS" })
     .option("explain",     { type: "boolean", default: false, describe: "Verbose logging" })
     .help()
@@ -157,6 +160,7 @@ async function main() {
     shardTotal:  raw["shard-total"],
     project:     raw["project"],
     artifactsDir: raw["artifacts-dir"] as string | undefined,
+    extraEnv:    raw["extra-env"] as string | undefined,
     dryRun:      raw["dry-run"] as boolean,
     explain:     raw["explain"] as boolean,
   });
@@ -209,6 +213,10 @@ async function main() {
     ...(args.shardTotal  != null && { shardTotal: args.shardTotal }),
     ...(args.project          && { project:       args.project }),
     ...(artifactRelPaths.length > 0 && { artifactFiles: artifactRelPaths }),
+    ...(args.extraEnv         && (() => {
+      try { return { extraEnv: JSON.parse(args.extraEnv!) }; }
+      catch { console.warn("Warning: --extra-env is not valid JSON — ignored"); return {}; }
+    })()),
   };
 
   const manifestKey  = `${prefix}/${manifestName}`;

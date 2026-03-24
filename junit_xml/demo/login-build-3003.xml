@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="pytest" errors="0" failures="0" skipped="0" tests="2" time="241.8" timestamp="2026-03-16T08:00:00.000000">
+  <testcase classname="test_evite_login.TestEviteLogin" name="test_valid_login" time="83.9">
+    <properties>
+      <property name="jira" value="QAA-659"/>
+      <property name="testrail.case" value="C27088"/>
+    </properties>
+  </testcase>
+  <testcase classname="test_evite_rsvp.TestEviteRSVP" name="test_rsvp_yes_flow" time="157.9">
+  </testcase>
+</testsuite>

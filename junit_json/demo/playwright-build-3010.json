@@ -1,0 +1,123 @@
+{
+  "config": {
+    "configFile": "/workspace/playwright.config.ts",
+    "rootDir": "/workspace",
+    "projects": [
+      {
+        "name": "chromium",
+        "id": "chromium"
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "tests/auth/login.spec.ts",
+      "file": "tests/auth/login.spec.ts",
+      "column": 0,
+      "line": 0,
+      "suites": [
+        {
+          "title": "Login",
+          "file": "tests/auth/login.spec.ts",
+          "column": 0,
+          "line": 5,
+          "suites": [],
+          "specs": [
+            {
+              "title": "should complete login flow",
+              "ok": true,
+              "tags": ["@QAA-100", "@C28961", "@smoke"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3142,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-18T08:00:00.000Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a1b2c3d4e5f6g7h8",
+              "file": "tests/auth/login.spec.ts",
+              "line": 8,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "tests/rsvp/rsvp.spec.ts",
+      "file": "tests/rsvp/rsvp.spec.ts",
+      "column": 0,
+      "line": 0,
+      "suites": [
+        {
+          "title": "RSVP",
+          "file": "tests/rsvp/rsvp.spec.ts",
+          "column": 0,
+          "line": 5,
+          "suites": [],
+          "specs": [
+            {
+              "title": "should complete free RSVP",
+              "ok": true,
+              "tags": ["@QAA-660", "@regression"],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4871,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-18T08:00:05.000Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "h8g7f6e5d4c3b2a1",
+              "file": "tests/rsvp/rsvp.spec.ts",
+              "line": 8,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-18T08:00:00.000Z",
+    "duration": 8013,
+    "expected": 2,
+    "unexpected": 0,
+    "flaky": 0,
+    "skipped": 0
+  }
+}

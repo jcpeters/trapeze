@@ -1,0 +1,18 @@
+Uploads Playwright JSON or JUnit XML test results to the Trapeze GCS drop zone
+after a CI build. Database-free — requires only Node.js and GCS write access.
+Results are ingested into Postgres by the trapeze-ingest-from-gcs job (every 15 min)
+and appear in Metabase dashboards within one polling interval.
+
+Required credentials: trapeze-gcs-bucket (secret text), trapeze-gcs-project (secret text),
+trapeze-gcs-credentials (secret file — GCP SA key; omit for Workload Identity).
+Required global env var: TRAPEZE_REPO_URL (or pass trapezeDir in config).
+
+Parameters:
+  framework    (required) 'playwright' | 'pytest' | 'junit'
+  resultFile   (required) Absolute path to the result file on the agent
+  environment  (optional) Target environment label, default 'unknown'
+  shardIndex   (optional) 1-based shard index (null = not sharded)
+  shardTotal   (optional) Total shard count (required when shardIndex is set)
+  project      (optional) Playwright project name or test suite label
+  suiteName    (optional) Suite name override
+  trapezeDir   (optional) Path to checked-out Trapeze repo (auto-checked-out if omitted)

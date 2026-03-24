@@ -70,6 +70,7 @@ const ManifestSchema = z.object({
   shardTotal:    z.number().optional(),
   project:       z.string().optional(),
   artifactFiles: z.array(z.string()).optional().default([]), // relative paths under artifacts/ prefix
+  extraEnv:      z.record(z.unknown()).optional(),           // system-level metadata (node version, OS, etc.)
 });
 
 type Manifest = z.infer<typeof ManifestSchema>;
@@ -195,6 +196,7 @@ function buildIngestArgs(
     if (manifest.shardTotal  != null) args.push("--shard-total", String(manifest.shardTotal));
     if (manifest.project)          args.push("--project",       manifest.project);
     if (artifactsLocalDir)         args.push("--artifacts-dir", artifactsLocalDir);
+    if (manifest.extraEnv)         args.push("--extra-env",     JSON.stringify(manifest.extraEnv));
     // Note: ingest-playwright.ts has no --started-at flag; start time is
     // derived from the JSON reporter's startTime field.
   } else {

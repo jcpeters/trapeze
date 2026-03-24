@@ -159,6 +159,7 @@ const IngestArgsSchema = z.object({
   skipTrLinks:    z.boolean().default(false),
   skipArtifacts:  z.boolean().default(false),
   artifactsDir:   z.string().optional(), // fallback dir for resolving attachment paths
+  extraEnv:       z.string().optional(), // JSON string of system-level metadata (node version, OS, etc.)
   dryRun:         z.boolean().default(false),
   explain:        z.boolean().default(false),
 });
@@ -453,6 +454,7 @@ async function main() {
     .option("skip-tr-links",    { type: "boolean", default: false, describe: "Skip writing automation_testrail_link rows from @C1234 tags" })
     .option("skip-artifacts",   { type: "boolean", default: false, describe: "Skip uploading screenshots/traces/videos to GCS" })
     .option("artifacts-dir",    { type: "string",  describe: "Base directory for resolving attachment paths (used when ingesting via drop zone — embedded paths are CI-machine absolute paths that do not exist locally)" })
+    .option("extra-env",        { type: "string",  describe: "JSON string of system-level metadata to merge into CiRun.env (e.g. node version, OS, Playwright version, base URL)" })
     .option("dry-run",          { type: "boolean", default: false, describe: "Parse and validate; do not write to DB" })
     .option("explain",          { type: "boolean", default: false, describe: "Verbose per-test output" })
     .help()
@@ -475,6 +477,7 @@ async function main() {
     skipTrLinks:    argv["skip-tr-links"],
     skipArtifacts:  argv["skip-artifacts"],
     artifactsDir:   argv["artifacts-dir"] as string | undefined,
+    extraEnv:       argv["extra-env"] as string | undefined,
     dryRun:         argv["dry-run"],
     explain:        argv["explain"],
   });
@@ -648,7 +651,14 @@ async function main() {
       project:    args.projectFilter ?? null,
       shardIndex: args.shardIndex ?? null,
       shardTotal: args.shardTotal ?? null,
-      env:        args.environment ? { environment: args.environment } : undefined,
+      env: (() => {
+        const base: Record<string, unknown> = {};
+        if (args.environment) base.environment = args.environment;
+        if (args.extraEnv) {
+          try { Object.assign(base, JSON.parse(args.extraEnv)); } catch { /* ignore invalid JSON */ }
+        }
+        return Object.keys(base).length > 0 ? base : undefined;
+      })(),
     },
   });
 

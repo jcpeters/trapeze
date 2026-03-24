@@ -15,6 +15,9 @@ github                       # GitHub integration (webhooks, status checks)
 credentials-binding          # withCredentials{} DSL step
 plain-credentials            # Username/password and secret-text credential types
 
+# ── Shared Libraries ──────────────────────────────────────────────────────────
+workflow-cps-global-lib      # Global shared libraries (@Library support)
+
 # ── Utilities ─────────────────────────────────────────────────────────────────
 timestamper                  # Timestamps in console output
 ansicolor                    # Coloured console output from Node/npm scripts

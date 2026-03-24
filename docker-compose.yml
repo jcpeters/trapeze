@@ -81,17 +81,40 @@ services:
       GCS_EMULATOR_HOST:  "fake-gcs:4443"
       GCS_BUCKET:         "test-intel-artifacts"
       GCS_PROJECT:        "test-intel-local"
+      # ── Shared library + credential seeding ─────────────────────────────
+      # TRAPEZE_REPO_URL: used by 03-create-jobs.groovy and 04-register-shared-library.groovy
+      #   Default: file:///workspace/trapeze (the volume mount below) — works without SSH.
+      #   Override in .env to point at the remote Git URL for production-parity testing.
+      TRAPEZE_REPO_URL: "${TRAPEZE_REPO_URL:-file:///workspace/trapeze}"
+      # EVITE_PLAYWRIGHT_REPO_URL: used by 03-create-jobs.groovy for the playwright-acceptance job.
+      #   Default: file:///workspace/evite-playwright (volume mount below) — works without SSH.
+      #   Override in .env to point at a remote Git URL.
+      EVITE_PLAYWRIGHT_REPO_URL: "${EVITE_PLAYWRIGHT_REPO_URL:-file:///workspace/evite-playwright}"
+      # GCS_SA_KEY_PATH: path *inside the container* to the GCP service account JSON key.
+      #   The volume mount below maps GCS_SA_KEY_PATH_HOST (host path from .env) to this
+      #   container path.  02-seed-credentials.groovy reads the file at this path.
+      #   In dev with fake-gcs, leave GCS_SA_KEY_PATH_HOST unset — the seeder skips
+      #   trapeze-gcs-credentials gracefully when the file is missing.
+      GCS_SA_KEY_PATH:    "/run/secrets/gcs-sa-key.json"
       # Jira / TestRail — loaded from host .env at container start via env_file
       # ── Jenkins initial admin password shortcut ──────────────────────────
       JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
     env_file:
-      # Loads JIRA_*, TESTRAIL_* from the host .env into the container.
-      # The DATABASE_URL and GCS_* above override any values in .env.
+      # Loads JIRA_*, TESTRAIL_*, and any TRAPEZE_REPO_URL override from the host .env.
+      # The DATABASE_URL and GCS_* above take precedence over values in .env.
       - .env
     volumes:
       - jenkins_home:/var/jenkins_home
-      # Mount the repo read-only so pipeline steps can call npm scripts
+      # Mount the repo read-only so pipeline steps can call npm scripts and
+      # the init scripts can use file:///workspace/trapeze as the SCM URL.
       - .:/workspace/trapeze:ro
+      # GCS service account key (optional — only needed for real GCS, not fake-gcs).
+      # Set GCS_SA_KEY_PATH_HOST=/path/to/sa-key.json in .env to enable.
+      # Leave unset (or set to /dev/null) for local dev with fake-gcs.
+      - ${GCS_SA_KEY_PATH_HOST:-/dev/null}:/run/secrets/gcs-sa-key.json:ro
+      # evite-playwright repo (read-only) — used by the playwright-acceptance pipeline job.
+      # Set EVITE_PLAYWRIGHT_DIR=/path/to/evite-playwright in .env to override.
+      - ${EVITE_PLAYWRIGHT_DIR:-../evite-playwright}:/workspace/evite-playwright:ro
     depends_on:
       postgres:
         condition: service_healthy

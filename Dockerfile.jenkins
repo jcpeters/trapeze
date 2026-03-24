@@ -34,6 +34,18 @@ RUN apt-get update -qq && \
 # Verify
 RUN node --version && npm --version
 
+# ── Pre-install Playwright Chromium OS dependencies ──────────────────────────
+# Installs the OS-level packages that Chromium needs (libnss3, libatk, etc.)
+# so that pipeline steps can run "npx playwright install chromium" without
+# --with-deps, which would require sudo and is not available for the jenkins user.
+#
+# Strategy: install playwright globally, run install-deps, then remove it.
+# The browser binaries themselves are installed at pipeline run time by each job.
+RUN npm install -g playwright && \
+    npx playwright install-deps chromium && \
+    npm uninstall -g playwright && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # ── Pre-install Trapeze npm dependencies (layer-cached) ──────────────────────
 # Copy only package files first for better layer caching.
 # The full repo is volume-mounted at /workspace/trapeze at runtime;

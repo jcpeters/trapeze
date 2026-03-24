@@ -28,6 +28,7 @@
     "storage:lifecycle": "tsx ./scripts/setup-gcs-lifecycle.ts",
     "storage:migrate:dry": "tsx ./scripts/migrate-artifacts.ts --dry-run",
     "storage:migrate": "tsx ./scripts/migrate-artifacts.ts",
+    "demo:e2e": "bash ./scripts/demo/run-e2e-demo.sh",
     "lint": "eslint .",
     "format": "prettier -w ."
   },

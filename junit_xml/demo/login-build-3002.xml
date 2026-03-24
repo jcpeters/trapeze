@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="312.7" timestamp="2026-03-15T08:00:00.000000">
+  <testcase classname="test_evite_login.TestEviteLogin" name="test_valid_login" time="154.2">
+    <properties>
+      <property name="jira" value="QAA-659"/>
+      <property name="testrail.case" value="C27088"/>
+    </properties>
+    <failure message="AssertionError: Expected element '#dashboard-header' to be visible after login but it was not found. Session expired or login redirect failed.">
+AssertionError: Expected element '#dashboard-header' to be visible after login but it was not found.
+  File "test_evite_login.py", line 48, in test_valid_login
+    self.assertTrue(self.driver.find_element(By.ID, "dashboard-header").is_displayed())
+selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"css selector","selector":"#dashboard-header"}
+  (Session info: chrome=122.0.6261.94)
+    </failure>
+  </testcase>
+  <testcase classname="test_evite_rsvp.TestEviteRSVP" name="test_rsvp_yes_flow" time="158.5">
+  </testcase>
+</testsuite>
