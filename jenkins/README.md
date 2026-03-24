@@ -81,3 +81,117 @@ The `H` token in cron expressions spreads load across the hour. If you need stri
 ## Notification Setup
 
 Each Jenkinsfile has a commented-out `slackSend` block in the `post { failure }` section. Uncomment and configure with your Slack workspace credentials and channel name once the Jenkins Slack plugin is installed.
+
+---
+
+## Integrating with CI Test Jobs
+
+Trapeze captures results from two job types: **legacy freestyle jobs** (shell script) and **modern pipeline jobs** (Groovy DSL). Both use the same `trapeze-push.sh` script — the difference is only in how it is called.
+
+### Agent Setup (both job types)
+
+Each Jenkins agent that runs tests needs:
+
+1. **Node.js 20+** on `PATH`
+2. **Trapeze repo** cloned to a fixed location and dependencies installed:
+   ```
+   git clone git@github.com:jcpeters/trapeze.git /opt/trapeze
+   cd /opt/trapeze && npm ci
+   ```
+3. **`TRAPEZE_HOME`** set as a global Jenkins environment variable (`Manage Jenkins → System → Global properties → Environment variables`):
+   ```
+   TRAPEZE_HOME = /opt/trapeze
+   ```
+4. **GCS credentials** — either a service account JSON file referenced by `GOOGLE_APPLICATION_CREDENTIALS`, or Workload Identity if running on GCP. The `GCS_BUCKET` value must be set in `/opt/trapeze/.env` on each agent:
+   ```
+   GCS_BUCKET=your-trapeze-drop-zone-bucket
+   ```
+
+---
+
+### Legacy Freestyle Jobs (Shell Script)
+
+Add **one line** to the end of your existing `Execute shell` build step, after the test runner writes its result file but before the exit-code check.
+
+**Selenium / pytest example** — based on the existing acceptance test job:
+
+```bash
+#!/bin/bash
+# ... existing pyenv / venv / pytest setup ...
+
+PYTHONPATH="" pytest -rxs -v -s --junitxml="../../logs/$BUILD_NUMBER.xml" \
+  -n$NUM_NODES --maxfail=$MAX_FAIL -r R -l --cache-clear \
+  --hub=$HUB --env=$ENV --browser=CHROME "$TEST_NAME"
+
+# ── Trapeze: upload results to drop zone (non-fatal) ──────────────────────────
+bash $TRAPEZE_HOME/scripts/trapeze-push.sh --framework pytest --result-file $WORKSPACE/webdriver-framework/logs/$BUILD_NUMBER.xml --environment $ENV
+# ─────────────────────────────────────────────────────────────────────────────
+
+rm -rf ${VENV_ROOT}
+EXIT_CODE=$?
+if [[ "$EXIT_CODE" -eq 1 ]]; then
+  exit 1
+fi
+```
+
+**Playwright example:**
+
+```bash
+npx playwright test --reporter=json 2>&1 | tee $WORKSPACE/playwright-report/results.json
+
+bash $TRAPEZE_HOME/scripts/trapeze-push.sh --framework playwright --result-file $WORKSPACE/playwright-report/results.json --artifacts-dir $WORKSPACE/test-results --environment acceptance
+```
+
+The script reads `$JOB_NAME`, `$BUILD_NUMBER`, `$BUILD_URL`, `$GIT_COMMIT`, and `$GIT_BRANCH` automatically from the Jenkins environment. It **always exits 0** — a Trapeze failure will never fail your CI build.
+
+---
+
+### Modern Pipeline Jobs (Groovy DSL)
+
+Add a `post { always { ... } }` block to your `Jenkinsfile`:
+
+```groovy
+pipeline {
+  agent { label 'selenium' }
+  stages {
+    stage('Test') {
+      steps {
+        sh """
+          pytest --junitxml=${WORKSPACE}/test-results.xml ...
+        """
+      }
+    }
+  }
+  post {
+    always {
+      // Publish to Jenkins
+      junit 'test-results.xml'
+
+      // Upload to Trapeze drop zone
+      sh "bash $TRAPEZE_HOME/scripts/trapeze-push.sh --framework pytest --result-file ${WORKSPACE}/test-results.xml --environment ${params.ENV ?: 'acceptance'}"
+    }
+  }
+}
+```
+
+For Playwright with artifacts:
+
+```groovy
+post {
+  always {
+    sh "bash $TRAPEZE_HOME/scripts/trapeze-push.sh --framework playwright --result-file ${WORKSPACE}/playwright-report/results.json --artifacts-dir ${WORKSPACE}/test-results --environment acceptance"
+  }
+}
+```
+
+---
+
+### Verifying the Integration
+
+After a build runs, drain the drop zone from any machine with database access:
+
+```bash
+npm run etl:ingest:from-gcs -- --explain
+```
+
+Results should appear in Metabase within 15 minutes once the `trapeze-ingest-from-gcs` pipeline job is configured and running on its schedule.
