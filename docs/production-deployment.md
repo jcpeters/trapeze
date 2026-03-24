@@ -42,8 +42,11 @@ Target cloud: **Google Cloud Platform (GCP)**
 
 ### Instance config
 
+One Cloud SQL instance hosts **two databases** — `trapeze` (app data) and `metabase` (Metabase internal config). This avoids paying the ~$25/month base cost twice.
+
 ```
 Database engine : PostgreSQL 16
+Instance name   : trapeze-prod
 Instance tier   : db-g1-small (1 vCPU, 1.7 GB RAM) — sufficient for current load
                   Upgrade to db-custom-2-7680 if query latency becomes noticeable
 Region          : us-west1 (same as Cloud Run to minimise latency)
@@ -52,24 +55,41 @@ Storage         : 20 GB SSD, auto-growth enabled
 Backups         : Automated daily, 7-day retention
 ```
 
+### Databases and users
+
+| Database | User | Used by | Connection |
+|----------|------|---------|------------|
+| `trapeze` | `trapeze_app` | ETL jobs, ingest scripts | `DATABASE_URL` in Secret Manager |
+| `metabase` | `metabase_app` | Metabase internal config (dashboards, users, questions) | `MB_DB_*` env vars on Cloud Run |
+
+Each user only has access to its own database — `trapeze_app` cannot read `metabase` and vice versa.
+
 ### Migration from local dev
 
 ```bash
 # 1. Export local Postgres (from Docker)
 docker exec -i trapeze-postgres pg_dump -U test_intel test_intel > trapeze-dump.sql
 
-# 2. Create Cloud SQL instance (gcloud or Terraform)
+# 2. Create Cloud SQL instance
 gcloud sql instances create trapeze-prod --database-version=POSTGRES_16 --tier=db-g1-small --region=us-west1 --no-assign-ip --network=default
 
-# 3. Create database and user
+# 3. Create both databases and users
 gcloud sql databases create trapeze --instance=trapeze-prod
+gcloud sql databases create metabase --instance=trapeze-prod
 gcloud sql users create trapeze_app --instance=trapeze-prod --password=<generate>
+gcloud sql users create metabase_app --instance=trapeze-prod --password=<generate>
 
-# 4. Import dump via Cloud SQL Admin API (or Cloud SQL Proxy)
+# 4. Grant each user access to only their database (connect via Cloud SQL Auth Proxy)
+psql "host=127.0.0.1 port=5432 user=postgres dbname=trapeze" -c "GRANT ALL PRIVILEGES ON DATABASE trapeze TO trapeze_app;"
+psql "host=127.0.0.1 port=5432 user=postgres dbname=metabase" -c "GRANT ALL PRIVILEGES ON DATABASE metabase TO metabase_app;"
+
+# 5. Import Trapeze dump
 gcloud sql import sql trapeze-prod gs://your-migration-bucket/trapeze-dump.sql --database=trapeze
 
-# 5. Run Prisma migrations on the new instance
-DATABASE_URL="postgresql://trapeze_app:<pass>@<cloud-sql-private-ip>/trapeze" npx prisma migrate deploy
+# 6. Run Prisma migrations on the new instance
+DATABASE_URL="postgresql://trapeze_app:<pass>@/trapeze?host=/cloudsql/PROJECT:us-west1:trapeze-prod" npx prisma migrate deploy
+
+# Metabase will initialise its own schema on first boot — no manual migration needed.
 ```
 
 ---
@@ -104,7 +124,7 @@ Metabase runs as a long-lived container service — the only Trapeze component t
 
 Metabase publishes an official Docker image: `metabase/metabase:latest` (pin to a specific version in production, e.g. `v0.50.x`).
 
-Metabase requires its own internal Postgres database (separate from the Trapeze app DB) to store dashboard definitions, user accounts, and question history. Use a second small Cloud SQL instance or a separate database on the same instance.
+Metabase requires its own internal Postgres database to store dashboard definitions, user accounts, and question history. This uses the `metabase` database on the same `trapeze-prod` Cloud SQL instance — no second instance needed.
 
 ### Cloud Run service definition
 
@@ -311,7 +331,7 @@ Set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/trapeze-ci-uploader-key.json` in `/
 - [ ] Deploy Cloud Run Jobs for each ETL script
 - [ ] Create Cloud Scheduler triggers for each job
 - [ ] Deploy Metabase to Cloud Run
-- [ ] Configure Metabase internal DB (second Cloud SQL DB)
+- [ ] Create `metabase` database and `metabase_app` user on the same `trapeze-prod` Cloud SQL instance
 - [ ] Run `npm run mb:setup` pointing at production Metabase URL
 - [ ] Configure Google SSO in Metabase Admin
 - [ ] Create Metabase user groups and permissions
