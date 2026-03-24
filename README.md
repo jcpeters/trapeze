@@ -27,6 +27,7 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 | Playwright Jenkins pipeline | ✅ Complete (`evite-playwright/scripts/playwright_pipeline.groovy`) |
 | **GCS artifact storage** | ✅ Complete — source files, attachments, and stdout/stderr uploaded to GCS; local dev uses `fake-gcs-server` |
 | **Automated → TestRail mapping** | ✅ Complete — `automation_testrail_link` table, title-inference script, `@C1234` tag extraction in Playwright, `<property name="testrail.case">` extraction in JUnit |
+| **Jira ↔ TestRail link inference** | ✅ Complete (`etl:infer:jira-testrail`) |
 | **Feature-area coverage epics** | ✅ Complete — 14 Jira epics (QAA-659–QAA-672) created as coverage anchors; 29 MANUAL/HIGH `jira_automation_link` rows map all 29 regression tests to their feature area |
 | **GCS Drop Zone (CI → Trapeze bridge)** | ✅ Complete — `upload-to-drop-zone.ts` (Jenkins step, DB-free), `ingest-from-gcs.ts` (drainer), `simulate-build.sh` (local test harness), `jenkins/Jenkinsfile.trapeze-ingest` (reusable Groovy). Jenkins uploads result files to GCS; drainer runs on any host with `DATABASE_URL`. |
 | **Local Jenkins (dev/test)** | ✅ Complete — `docker compose --profile jenkins up` starts Jenkins LTS + Node.js 20 on the Docker network; reaches `postgres:5432` and `fake-gcs:4443` directly. |
@@ -47,7 +48,8 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
                                                            │         │
                                                            ├──► Postgres (metadata + gs:// URIs) ──► SQL views ──► Metabase
                                                            │
-  infer-jira-links.ts ── (text-match links) ─────────────┤
+  infer-jira-links.ts ──────── (test→jira text-match) ───┤
+  infer-jira-testrail-links.ts  (TR↔jira bridge+sim) ────┤
   detect-flakes.ts ────── (rolling-window flake math) ────┤
   snapshot-coverage.ts ── (KPI time-series row) ──────────┘
 ```
@@ -212,6 +214,7 @@ npm run db:seed
 | `etl:sync:testrail` | Pull TestRail test cases and results |
 | `etl:infer:jira` | Text-match test titles against Jira issues to create `jira_automation_link` rows |
 | `etl:infer:testrail` | Keyword-overlap match automated test titles against TestRail case titles to create `automation_testrail_link` rows |
+| `etl:infer:jira-testrail` | Infer `jira_testrail_link` rows via automation bridge + title similarity |
 | `etl:seed:coverage-epics` | Create 14 feature-area Jira epics (QAA-659–QAA-672) as coverage anchors and link all regression tests to them via MANUAL/HIGH `jira_automation_link` rows. Idempotent — reuses epics that already exist. |
 | `etl:snapshot:coverage` | Write one `coverage_snapshot` row from current `v_executed_coverage_summary` values |
 
@@ -412,6 +415,39 @@ Scans `TestCase.identityKey`, `title`, and `suiteName` for Jira key patterns and
 ```bash
 npm run etl:infer:jira
 npm run etl:infer:jira -- --reset   # full re-inference
+```
+
+---
+
+### `etl:infer:jira-testrail`
+
+Infers `jira_testrail_link` rows by bridging through data already in the database.  No API calls required — runs purely against Postgres.
+
+**Two strategies:**
+
+| Strategy | Method | Provenance | Confidence |
+|---|---|---|---|
+| A — Automation bridge | Normalizes `testrail_case.title` ↔ `test_case.title`, then follows `jira_automation_link` to get issue keys | INFERRED | HIGH |
+| B — Title similarity | Jaccard token-overlap between `testrail_case.title` and `jira_issue.summary`. Suppresses ambiguous matches. | INFERRED | MED |
+
+Strategy A runs first. Strategy B only runs on cases that have no link after A.
+Both strategies skip cases that already have EXPLICIT links (written by `sync-testrail` from the TestRail `refs` field).
+
+**Key flags:**
+
+| Flag | Description |
+|------|-------------|
+| `--strategy` | `a`, `b`, or `both` (default: `both`) |
+| `--min-similarity` | Minimum Jaccard score for strategy B (default: `0.45`) |
+| `--ambiguity-gap` | Suppress strategy B match if top-2 scores are within this gap (default: `0.15`) |
+| `--jira-projects` | Comma-separated Jira project keys to restrict Jira side of matching (e.g. `QAA`) |
+
+**Examples:**
+```bash
+npm run etl:infer:jira-testrail -- --dry-run --explain
+npm run etl:infer:jira-testrail -- --strategy a
+npm run etl:infer:jira-testrail -- --strategy b --min-similarity 0.5 --jira-projects QAA
+npm run etl:infer:jira-testrail
 ```
 
 ---

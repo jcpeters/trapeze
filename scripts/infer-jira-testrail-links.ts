@@ -143,7 +143,7 @@ async function parseArgs(): Promise<Args> {
   });
 }
 
-// ── Title normalisation ────────────────────────────────────────────────────────
+// ── Title normalization ────────────────────────────────────────────────────────
 
 function normalizeTitle(raw: string | null | undefined): string {
   if (!raw) return "";
