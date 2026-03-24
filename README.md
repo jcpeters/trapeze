@@ -31,6 +31,7 @@ A self-contained data platform for tracking test results, coverage, flakes, and 
 | **GCS Drop Zone (CI → Trapeze bridge)** | ✅ Complete — `upload-to-drop-zone.ts` (Jenkins step, DB-free), `ingest-from-gcs.ts` (drainer), `simulate-build.sh` (local test harness), `jenkins/Jenkinsfile.trapeze-ingest` (reusable Groovy). Jenkins uploads result files to GCS; drainer runs on any host with `DATABASE_URL`. |
 | **Local Jenkins (dev/test)** | ✅ Complete — `docker compose --profile jenkins up` starts Jenkins LTS + Node.js 20 on the Docker network; reaches `postgres:5432` and `fake-gcs:4443` directly. |
 | **Scheduled / cron job wiring** | ❌ Not done — all ETL scripts exist but nothing runs them automatically |
+| **Production deployment** | 📋 Planned — see [`docs/production-deployment.md`](docs/production-deployment.md) — Cloud SQL, Cloud Run (Metabase + ETL jobs), GCS, Secret Manager, IAM |
 
 **Next task for a new agent:** Wire up a scheduler so that `etl:sync:jira`, `etl:sync:testrail`, `etl:snapshot:coverage`, `analyze:flakes`, and `etl:ingest:from-gcs` run on a recurring schedule (e.g. daily cron, Jenkins "drain" pipeline, or a node-cron wrapper).
 
