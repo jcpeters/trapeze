@@ -62,7 +62,11 @@ pipeline {
           def extraFlags = ''
           if (params.FORCE)   extraFlags += ' --force'
           if (params.DRY_RUN) extraFlags += ' --dry-run'
-          sh "npm run etl:snapshot:coverage --${extraFlags}"
+          if (extraFlags) {
+            sh "npm run etl:snapshot:coverage --${extraFlags}"
+          } else {
+            sh "npm run etl:snapshot:coverage"
+          }
         }
       }
     }
