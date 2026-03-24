@@ -88,9 +88,18 @@ Each Jenkinsfile has a commented-out `slackSend` block in the `post { failure }`
 
 Trapeze captures results from two job types: **legacy freestyle jobs** (shell script) and **modern pipeline jobs** (Groovy DSL). Both use the same `trapeze-push.sh` script — the difference is only in how it is called.
 
-### Agent Setup (both job types)
+There are **two distinct agent roles** in Trapeze. Make sure you are configuring the right one:
 
-Each Jenkins agent that runs tests needs:
+| Role | Which agents | Needs DB? | Needs Jira/TestRail? | Needs GCS? |
+|------|-------------|-----------|----------------------|------------|
+| **Test execution** | Your existing Selenium / Playwright nodes | ❌ No | ❌ No | ✅ Write only |
+| **Trapeze ETL** | The `trapeze`-labelled node (see One-Time Setup above) | ✅ Yes | ✅ Yes | ✅ Read + Write |
+
+The `TRAPEZE_HOME` setup below applies **only to your test execution agents** — the machines that already run your Selenium and Playwright jobs. The `trapeze`-labelled ETL agent is configured separately via Jenkins credentials (see One-Time Setup).
+
+### Test Execution Agent Setup
+
+Each Jenkins agent that runs Selenium or Playwright tests needs:
 
 1. **Node.js 20+** on `PATH`
 2. **Trapeze repo** cloned to a fixed location and dependencies installed:
@@ -102,10 +111,12 @@ Each Jenkins agent that runs tests needs:
    ```
    TRAPEZE_HOME = /opt/trapeze
    ```
-4. **GCS credentials** — either a service account JSON file referenced by `GOOGLE_APPLICATION_CREDENTIALS`, or Workload Identity if running on GCP. The `GCS_BUCKET` value must be set in `/opt/trapeze/.env` on each agent:
+4. **GCS write credentials** — the agent only needs permission to upload files to the drop zone bucket. Set `GCS_BUCKET` in `/opt/trapeze/.env` on each agent:
    ```
    GCS_BUCKET=your-trapeze-drop-zone-bucket
+   GOOGLE_APPLICATION_CREDENTIALS=/path/to/gcs-uploader-service-account.json
    ```
+   This service account only needs the `Storage Object Creator` role on the bucket — it does not need DB, Jira, or TestRail access.
 
 ---
 
