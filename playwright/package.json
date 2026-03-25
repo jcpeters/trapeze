@@ -1,0 +1,8 @@
+{
+  "name": "trapeze-playwright-smoke",
+  "private": true,
+  "description": "Self-contained Playwright smoke tests for the Trapeze pipeline demo",
+  "devDependencies": {
+    "@playwright/test": "^1.50"
+  }
+}

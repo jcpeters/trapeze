@@ -23,12 +23,15 @@
  *   trapeze-snapshot-coverage   jenkins/Jenkinsfile.snapshot-coverage   H 7 * * *
  *   trapeze-analyze-flakes      jenkins/Jenkinsfile.analyze-flakes      H 8 * * 1
  *   trapeze-ingest-from-gcs     jenkins/Jenkinsfile.ingest-from-gcs     H/15 * * * *
- *   playwright-acceptance       scripts/playwright_pipeline.groovy      (on-demand)
+ *   playwright-acceptance            scripts/playwright_pipeline.groovy      (on-demand)
+ *   selenium-acceptance-pipeline    jenkins/Jenkinsfile.selenium-acceptance (on-demand)
+ *   selenium-acceptance-freestyle   (FreeStyleProject — shell step)         (on-demand)
  */
 
 import jenkins.model.*
 import org.jenkinsci.plugins.workflow.job.*
 import org.jenkinsci.plugins.workflow.cps.*
+import hudson.model.FreeStyleProject
 import hudson.plugins.git.*
 import hudson.plugins.git.extensions.*
 import hudson.triggers.*
@@ -111,6 +114,25 @@ def jobs = [
         concurrent: false,
         description: 'Playwright acceptance tests → Trapeze GCS drop zone. Trigger manually or via upstream pipeline.',
     ],
+    [
+        name:       'selenium-acceptance-pipeline',
+        scriptPath: 'jenkins/Jenkinsfile.selenium-acceptance',
+        cron:       '',           // on-demand only
+        concurrent: false,
+        description: 'Selenium smoke tests → Trapeze GCS drop zone (declarative pipeline / shared library path). ' +
+                     'Runs pytest against a Selenium Grid (selenium:4444). ' +
+                     'Set base_url param to target environment (e.g. https://version.evite.com).',
+    ],
+    [
+        name:       'playwright-e2e-demo',
+        scriptPath: 'jenkins/Jenkinsfile.playwright-e2e-demo',
+        cron:       '',           // on-demand only
+        concurrent: false,
+        description: 'Playwright smoke tests (2 shards) → merged JSON → Trapeze GCS drop zone. ' +
+                     'Demonstrates shard parallelism without Selenium Grid: ' +
+                     '2 blob files → merge-reports → 1 CiRun in Postgres (not 2). ' +
+                     'Set base_url param to target environment (e.g. https://version.evite.com).',
+    ],
 ]
 
 jobs.each { cfg ->
@@ -155,6 +177,49 @@ jobs.each { cfg ->
     job.save()
     def cronNote = cfg.cron ? "(cron: '${cfg.cron}')" : "(on-demand)"
     println "[03-create-jobs] Created job: '${cfg.name}' ${cronNote}"
+}
+
+// ── Freestyle job: selenium-acceptance-freestyle ─────────────────────────────
+// Demonstrates the legacy shell-script CI integration path via trapeze-push.sh.
+// GCS env vars (GCS_BUCKET, GCS_EMULATOR_HOST) are injected by docker-compose.
+// TRAPEZE_HOME is hardcoded to /workspace/trapeze (the read-only volume mount).
+// SELENIUM_HUB_URL defaults to http://selenium:4444/wd/hub (Docker service name).
+//
+// In production: replace the pytest command with your actual test runner invocation.
+if (!jenkins.getItem('selenium-acceptance-freestyle')) {
+    def fsJob = jenkins.createProject(FreeStyleProject, 'selenium-acceptance-freestyle')
+    fsJob.setDescription(
+        'Selenium smoke tests → Trapeze GCS drop zone via trapeze-push.sh (legacy freestyle / shell script path). ' +
+        'Runs pytest against a Selenium Grid (selenium:4444). ' +
+        'Set BASE_URL and TRAPEZE_ENV as build parameters or Jenkins global env vars.'
+    )
+    fsJob.getBuildersList().add(new Shell(
+        '#!/bin/bash\n' +
+        'set -uo pipefail\n' +
+        'export TRAPEZE_HOME=/workspace/trapeze\n' +
+        'export BASE_URL="${BASE_URL:-https://www.evite.com}"\n' +
+        'export SELENIUM_HUB_URL="${SELENIUM_HUB_URL:-http://selenium:4444/wd/hub}"\n' +
+        '\n' +
+        '# ── Run Selenium smoke tests ──────────────────────────────────────────────────\n' +
+        '# pytest exits non-zero on test failures; "|| true" ensures failures are\n' +
+        '# recorded in the JUnit XML but do not abort the shell step before the upload.\n' +
+        '/opt/selenium-env/bin/pytest "${TRAPEZE_HOME}/selenium/tests/" \\\n' +
+        '  --hub="${SELENIUM_HUB_URL}" \\\n' +
+        '  --junitxml="${WORKSPACE}/test-results.xml" \\\n' +
+        '  -v --tb=short || true\n' +
+        '\n' +
+        '# ── Upload to Trapeze drop zone (exits 0 always) ─────────────────────────────\n' +
+        'bash "${TRAPEZE_HOME}/scripts/trapeze-push.sh" \\\n' +
+        '  --framework pytest \\\n' +
+        '  --result-file "${WORKSPACE}/test-results.xml" \\\n' +
+        '  --environment "${TRAPEZE_ENV:-version}"\n'
+    ))
+    fsJob.setConcurrentBuild(false)
+    fsJob.setBuildDiscarder(new LogRotator(-1, 30, -1, -1))
+    fsJob.save()
+    println "[03-create-jobs] Created freestyle job: 'selenium-acceptance-freestyle'"
+} else {
+    println "[03-create-jobs] Job 'selenium-acceptance-freestyle' already exists — skipping"
 }
 
 jenkins.save()

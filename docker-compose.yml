@@ -39,11 +39,28 @@ services:
   fake-gcs:
     image: fsouza/fake-gcs-server:latest
     container_name: test-intel-fake-gcs
-    command: ["-scheme", "http", "-port", "4443", "-public-host", "localhost:4443"]
+    command:
+      ["-scheme", "http", "-port", "4443", "-public-host", "localhost:4443"]
     ports:
       - "4443:4443"
     volumes:
       - gcsdata_test_intel:/data
+
+  # ── Selenium Grid (optional — only starts with: docker compose --profile jenkins up) ──
+  # Provides a headless Chrome browser for the selenium-acceptance-* Jenkins jobs.
+  # The Jenkins container connects to it via http://selenium:4444/wd/hub.
+  #
+  # Debug: add port 7900:7900 and open http://localhost:7900 to watch the browser live (no password).
+  selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: test-intel-selenium
+    profiles: ["jenkins"]
+    shm_size: 2g
+    ports:
+      - "4444:4444" # Selenium Grid UI + WebDriver endpoint
+    environment:
+      SE_NODE_MAX_SESSIONS: 4
+      SE_SESSION_REQUEST_TIMEOUT: 300
 
   # ── Local Jenkins (optional — only starts with: docker compose --profile jenkins up) ──
   # Provides a self-contained Jenkins instance for testing the Trapeze ingest
@@ -71,16 +88,16 @@ services:
     container_name: test-intel-jenkins
     profiles: ["jenkins"]
     ports:
-      - "8080:8080"     # Jenkins UI
-      - "50000:50000"   # Jenkins agent JNLP port
+      - "8080:8080" # Jenkins UI
+      - "50000:50000" # Jenkins agent JNLP port
     environment:
       # ── Trapeze env vars — inherited by pipeline steps ──────────────────
       # Postgres is reachable via the service name on the Docker network
       DATABASE_URL: "postgresql://test_intel:test_intel@postgres:5432/test_intel?schema=public"
       # GCS emulator: use service name, not localhost, inside Docker
-      GCS_EMULATOR_HOST:  "fake-gcs:4443"
-      GCS_BUCKET:         "test-intel-artifacts"
-      GCS_PROJECT:        "test-intel-local"
+      GCS_EMULATOR_HOST: "fake-gcs:4443"
+      GCS_BUCKET: "test-intel-artifacts"
+      GCS_PROJECT: "test-intel-local"
       # ── Shared library + credential seeding ─────────────────────────────
       # TRAPEZE_REPO_URL: used by 03-create-jobs.groovy and 04-register-shared-library.groovy
       #   Default: file:///workspace/trapeze (the volume mount below) — works without SSH.
@@ -95,7 +112,7 @@ services:
       #   container path.  02-seed-credentials.groovy reads the file at this path.
       #   In dev with fake-gcs, leave GCS_SA_KEY_PATH_HOST unset — the seeder skips
       #   trapeze-gcs-credentials gracefully when the file is missing.
-      GCS_SA_KEY_PATH:    "/run/secrets/gcs-sa-key.json"
+      GCS_SA_KEY_PATH: "/run/secrets/gcs-sa-key.json"
       # Jira / TestRail — loaded from host .env at container start via env_file
       # ── Jenkins initial admin password shortcut ──────────────────────────
       JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"

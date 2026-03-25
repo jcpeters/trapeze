@@ -34,6 +34,16 @@ RUN apt-get update -qq && \
 # Verify
 RUN node --version && npm --version
 
+# ── Python 3 + pytest + Selenium (for Selenium acceptance test pipeline) ─────
+# Uses an isolated venv at /opt/selenium-env so pip doesn't conflict with the
+# Debian system packages (avoids "externally managed environment" errors).
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends python3 python3-pip python3-venv && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    python3 -m venv /opt/selenium-env && \
+    /opt/selenium-env/bin/pip install --quiet --upgrade pip && \
+    /opt/selenium-env/bin/pip install --quiet pytest selenium
+
 # ── Pre-install Playwright Chromium OS dependencies ──────────────────────────
 # Installs the OS-level packages that Chromium needs (libnss3, libatk, etc.)
 # so that pipeline steps can run "npx playwright install chromium" without

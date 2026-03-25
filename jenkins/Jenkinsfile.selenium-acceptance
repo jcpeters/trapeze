@@ -1,0 +1,90 @@
+/**
+ * Jenkinsfile.selenium-acceptance
+ *
+ * Declarative pipeline for Selenium E2E smoke tests → Trapeze GCS drop zone.
+ *
+ * Uses the trapezePushResults() shared library step (database-free).
+ * Results flow: pytest → JUnit XML → GCS drop zone → trapeze-ingest-from-gcs → Postgres → Metabase.
+ *
+ * Required Jenkins credentials:
+ *   trapeze-gcs-bucket        — GCS bucket name (secret text)
+ *   trapeze-gcs-project       — GCP project ID (secret text)
+ *   trapeze-gcs-credentials   — GCP service account JSON key (secret file)
+ *                               (not needed for local dev with fake-gcs)
+ *
+ * Required services (docker compose --profile jenkins up):
+ *   selenium  — selenium/standalone-chrome (http://selenium:4444/wd/hub)
+ *   fake-gcs  — local GCS emulator for the drop zone
+ *   postgres  — local Postgres for ingest (via trapeze-ingest-from-gcs job)
+ */
+
+@Library('trapeze') _
+
+pipeline {
+    agent { label 'trapeze' }
+
+    parameters {
+        string(
+            name: 'base_url',
+            defaultValue: 'https://www.evite.com',
+            description: 'Target URL for the Selenium smoke tests (e.g. https://version.evite.com)'
+        )
+        string(
+            name: 'environment',
+            defaultValue: 'version',
+            description: 'Environment label stored in Trapeze (e.g. version, staging, prod)'
+        )
+        string(
+            name: 'suite_name',
+            defaultValue: 'selenium-acceptance',
+            description: 'Suite name override stored in Trapeze'
+        )
+        booleanParam(
+            name: 'ingest',
+            defaultValue: true,
+            description: 'Upload JUnit XML to the Trapeze GCS drop zone after tests complete'
+        )
+    }
+
+    stages {
+        stage('Run Selenium Tests') {
+            steps {
+                // pytest writes test-results.xml; exit code is non-zero if tests fail.
+                // catchError lets the pipeline continue into the Push stage so results
+                // are always uploaded even when tests fail.
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    sh """
+                        export BASE_URL="${params.base_url}"
+                        export SELENIUM_HUB_URL="\${SELENIUM_HUB_URL:-http://selenium:4444/wd/hub}"
+                        /opt/selenium-env/bin/pytest /workspace/trapeze/selenium/tests/ \\
+                            --hub="\${SELENIUM_HUB_URL}" \\
+                            --junitxml="\${WORKSPACE}/test-results.xml" \\
+                            -v --tb=short
+                    """
+                }
+            }
+        }
+
+        stage('Push to Trapeze Drop Zone') {
+            when {
+                expression { return params.ingest }
+            }
+            steps {
+                trapezePushResults(
+                    framework:   'pytest',
+                    resultFile:  "${WORKSPACE}/test-results.xml",
+                    environment: params.environment,
+                    suiteName:   params.suite_name,
+                )
+            }
+        }
+    }
+
+    post {
+        always {
+            // Publish JUnit results in the Jenkins UI (requires 'junit' plugin)
+            junit allowEmptyResults: true, testResults: 'test-results.xml'
+            archiveArtifacts artifacts: 'test-results.xml', allowEmptyArchive: true
+        }
+    }
+}

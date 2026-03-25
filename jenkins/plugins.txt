@@ -18,6 +18,11 @@ plain-credentials            # Username/password and secret-text credential type
 # ── Shared Libraries ──────────────────────────────────────────────────────────
 workflow-cps-global-lib      # Global shared libraries (@Library support)
 
+# ── Test result publishing ─────────────────────────────────────────────────────
+junit                        # Publish JUnit XML test results in the Jenkins build UI
+                             # Enables: junit testResults: '*.xml' in pipelines and
+                             # "Publish JUnit test result report" in freestyle jobs
+
 # ── Utilities ─────────────────────────────────────────────────────────────────
 timestamper                  # Timestamps in console output
 ansicolor                    # Coloured console output from Node/npm scripts
