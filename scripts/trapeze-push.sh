@@ -150,12 +150,19 @@ fi
 echo "[trapeze] Uploading $FRAMEWORK results → drop zone (job=$JOB build=$BUILD)"
 
 # Load .env from TRAPEZE_HOME if present (picks up GCS_BUCKET, GCS_EMULATOR_HOST, etc.)
+# Uses default-only semantics: variables already set in the environment (e.g. Docker
+# container env vars injected by docker-compose) are NOT overridden. This ensures that
+# GCS_EMULATOR_HOST=fake-gcs:4443 set by docker-compose is preserved even when the
+# host-side .env file contains GCS_EMULATOR_HOST=localhost:4443.
 ENV_FILE="$TRAPEZE_HOME/.env"
 if [[ -f "$ENV_FILE" ]]; then
-  set -a
-  # shellcheck disable=SC1090
-  source "$ENV_FILE"
-  set +a
+  while IFS='=' read -r key value || [[ -n "$key" ]]; do
+    # Skip comments and blank lines
+    [[ "$key" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "${key// }" ]] && continue
+    # Only export the value if the variable is not already set
+    [[ -z "${!key+x}" ]] && export "$key=$value"
+  done < "$ENV_FILE"
 fi
 
 "$TSX_BIN" "$UPLOAD_SCRIPT" "${UPLOAD_ARGS[@]}" || {

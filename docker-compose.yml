@@ -130,6 +130,13 @@ services:
       # Mount the repo read-only so pipeline steps can call npm scripts and
       # the init scripts can use file:///workspace/trapeze as the SCM URL.
       - .:/workspace/trapeze:ro
+      # Shadow the host's node_modules (macOS darwin-arm64 binaries) with a
+      # named volume seeded from the image layer (linux-arm64 binaries built
+      # by `npm ci` in Dockerfile.jenkins). Without this, esbuild/tsx crash
+      # with "no matching manifest for linux/arm64" when the host repo was
+      # installed on macOS. The named volume is populated from the image on
+      # first `docker compose up` and persists across container restarts.
+      - trapeze_node_modules:/workspace/trapeze/node_modules
       # GCS service account key (optional — only needed for real GCS, not fake-gcs).
       # Set GCS_SA_KEY_PATH_HOST=/path/to/sa-key.json in .env to enable.
       # Leave unset (or set to /dev/null) for local dev with fake-gcs.
@@ -147,3 +154,4 @@ volumes:
   pgdata_test_intel:
   gcsdata_test_intel:
   jenkins_home:
+  trapeze_node_modules: # linux-arm64 node_modules; seeded from Dockerfile.jenkins image layer
