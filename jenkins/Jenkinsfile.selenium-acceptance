@@ -56,7 +56,7 @@ pipeline {
                     sh """
                         export BASE_URL="${params.base_url}"
                         export SELENIUM_HUB_URL="\${SELENIUM_HUB_URL:-http://selenium:4444/wd/hub}"
-                        /opt/selenium-env/bin/pytest /workspace/trapeze/selenium/tests/ \\
+                        /opt/selenium-env/bin/pytest /workspace/trapeze/selenium/ \\
                             --hub="\${SELENIUM_HUB_URL}" \\
                             --junitxml="\${WORKSPACE}/test-results.xml" \\
                             -v --tb=short

@@ -195,7 +195,7 @@ if (!jenkins.getItem('selenium-acceptance-freestyle')) {
         '# ── Run Selenium smoke tests ──────────────────────────────────────────────────\n' +
         '# pytest exits non-zero on test failures; "|| true" ensures failures are\n' +
         '# recorded in the JUnit XML but do not abort the shell step before the upload.\n' +
-        '/opt/selenium-env/bin/pytest "${TRAPEZE_HOME}/selenium/tests/" \\\n' +
+        '/opt/selenium-env/bin/pytest "${TRAPEZE_HOME}/selenium/" \\\n' +
         '  --hub="${SELENIUM_HUB_URL}" \\\n' +
         '  --junitxml="${WORKSPACE}/test-results.xml" \\\n' +
         '  -v --tb=short || true\n' +
