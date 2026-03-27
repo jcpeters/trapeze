@@ -1,7 +1,7 @@
 """
 conftest.py — pytest fixtures for Selenium remote WebDriver tests.
 
-Connects to a Selenium Grid hub (selenium/standalone-chrome in docker-compose).
+Connects to a Selenium Grid hub (seleniarm/standalone-chromium in docker-compose).
 The hub URL is resolved in this order:
   1. --hub CLI flag  (e.g. pytest --hub=http://localhost:4444/wd/hub)
   2. SELENIUM_HUB_URL env var
@@ -29,7 +29,7 @@ def base_url():
 @pytest.fixture
 def driver(request):
     """
-    Remote Chrome WebDriver connected to the Selenium Grid.
+    Remote Chromium WebDriver connected to the Selenium Grid.
 
     Yields the driver for use in tests and quits it after the test completes.
     Each test gets a fresh browser session.

@@ -47,12 +47,17 @@ services:
       - gcsdata_test_intel:/data
 
   # ── Selenium Grid (optional — only starts with: docker compose --profile jenkins up) ──
-  # Provides a headless Chrome browser for the selenium-acceptance-* Jenkins jobs.
+  # Provides a headless Chromium browser for the selenium-acceptance-* Jenkins jobs.
   # The Jenkins container connects to it via http://selenium:4444/wd/hub.
+  #
+  # Image note: selenium/standalone-chrome has no ARM64 manifest (Apple Silicon).
+  # seleniarm/standalone-chromium is the official ARM64-compatible equivalent,
+  # maintained by the Selenium project. It uses Chromium instead of Chrome —
+  # no functional difference for headless WebDriver testing.
   #
   # Debug: add port 7900:7900 and open http://localhost:7900 to watch the browser live (no password).
   selenium:
-    image: selenium/standalone-chrome:latest
+    image: seleniarm/standalone-chromium:latest
     container_name: test-intel-selenium
     profiles: ["jenkins"]
     shm_size: 2g
