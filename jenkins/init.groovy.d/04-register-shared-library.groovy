@@ -26,15 +26,7 @@ import org.jenkinsci.plugins.workflow.libs.*
 import jenkins.plugins.git.GitSCMSource
 import jenkins.plugins.git.traits.BranchDiscoveryTrait
 
-// Wait for Jenkins to be fully started
-def jenkins = Jenkins.instanceOrNull
-int waited = 0
-while (jenkins == null || !jenkins.isFullyStarted()) {
-    if (waited > 60) { println "[04-shared-lib] ERROR: Jenkins did not start within 60 s"; return }
-    Thread.sleep(1000)
-    waited++
-    jenkins = Jenkins.instanceOrNull
-}
+def jenkins = Jenkins.instance
 
 def libName  = 'trapeze'
 def repoUrl  = System.getenv('TRAPEZE_REPO_URL') ?: 'file:///workspace/trapeze'

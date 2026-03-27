@@ -37,15 +37,7 @@ import hudson.plugins.git.extensions.*
 import hudson.triggers.*
 import hudson.tasks.*
 
-// Wait for Jenkins to be fully started
-def jenkins = Jenkins.instanceOrNull
-int waited = 0
-while (jenkins == null || !jenkins.isFullyStarted()) {
-    if (waited > 60) { println "[03-create-jobs] ERROR: Jenkins did not start within 60 s"; return }
-    Thread.sleep(1000)
-    waited++
-    jenkins = Jenkins.instanceOrNull
-}
+def jenkins = Jenkins.instance
 
 // ── Label the built-in node as 'trapeze automation' for local dev ─────────────
 // 'trapeze'    — used by the scheduled ETL jobs (agent { label 'trapeze' })

@@ -4,13 +4,13 @@ Scheduled pipeline definitions for the Trapeze Test Intelligence Platform.
 
 ## Jobs Overview
 
-| Jenkinsfile | Jenkins Job Name | Schedule | Purpose |
-|---|---|---|---|
-| `Jenkinsfile.sync-jira` | `trapeze-sync-jira` | Nightly ~6 AM | Upsert Jira issues → `jira_issue` |
-| `Jenkinsfile.sync-testrail` | `trapeze-sync-testrail` | Nightly ~6 AM | Upsert TestRail cases + results |
-| `Jenkinsfile.snapshot-coverage` | `trapeze-snapshot-coverage` | Nightly ~7 AM | Write daily `coverage_snapshot` row |
-| `Jenkinsfile.analyze-flakes` | `trapeze-analyze-flakes` | Weekly Mon ~8 AM | Write `FlakeDecision` rows |
-| `Jenkinsfile.ingest-from-gcs` | `trapeze-ingest-from-gcs` | Every 15 min | Drain GCS drop zone → Postgres |
+| Jenkinsfile                     | Jenkins Job Name            | Schedule         | Purpose                             |
+| ------------------------------- | --------------------------- | ---------------- | ----------------------------------- |
+| `Jenkinsfile.sync-jira`         | `trapeze-sync-jira`         | Nightly ~6 AM    | Upsert Jira issues → `jira_issue`   |
+| `Jenkinsfile.sync-testrail`     | `trapeze-sync-testrail`     | Nightly ~6 AM    | Upsert TestRail cases + results     |
+| `Jenkinsfile.snapshot-coverage` | `trapeze-snapshot-coverage` | Nightly ~7 AM    | Write daily `coverage_snapshot` row |
+| `Jenkinsfile.analyze-flakes`    | `trapeze-analyze-flakes`    | Weekly Mon ~8 AM | Write `FlakeDecision` rows          |
+| `Jenkinsfile.ingest-from-gcs`   | `trapeze-ingest-from-gcs`   | Every 15 min     | Drain GCS drop zone → Postgres      |
 
 ---
 
@@ -20,25 +20,27 @@ Scheduled pipeline definitions for the Trapeze Test Intelligence Platform.
 
 In **Manage Jenkins → Credentials → System → Global credentials**, add:
 
-| ID | Type | Value |
-|---|---|---|
-| `trapeze-db-url` | Secret text | Full `DATABASE_URL` (e.g. `postgresql://user:pass@host:5432/trapeze`) |
-| `trapeze-jira-base-url` | Secret text | `https://yourorg.atlassian.net` |
-| `trapeze-jira-email` | Secret text | Jira service account email |
-| `trapeze-jira-api-token` | Secret text | Atlassian API token |
-| `trapeze-testrail-base-url` | Secret text | `https://yourorg.testrail.io` |
-| `trapeze-testrail-email` | Secret text | TestRail service account email |
-| `trapeze-testrail-api-token` | Secret text | TestRail API key |
-| `trapeze-gcs-bucket` | Secret text | GCS bucket name (no `gs://` prefix) |
-| `trapeze-gcs-credentials` | Secret file | GCP service account JSON key |
+| ID                           | Type        | Value                                                                 |
+| ---------------------------- | ----------- | --------------------------------------------------------------------- |
+| `trapeze-db-url`             | Secret text | Full `DATABASE_URL` (e.g. `postgresql://user:pass@host:5432/trapeze`) |
+| `trapeze-jira-base-url`      | Secret text | `https://yourorg.atlassian.net`                                       |
+| `trapeze-jira-email`         | Secret text | Jira service account email                                            |
+| `trapeze-jira-api-token`     | Secret text | Atlassian API token                                                   |
+| `trapeze-testrail-base-url`  | Secret text | `https://yourorg.testrail.io`                                         |
+| `trapeze-testrail-email`     | Secret text | TestRail service account email                                        |
+| `trapeze-testrail-api-token` | Secret text | TestRail API key                                                      |
+| `trapeze-gcs-bucket`         | Secret text | GCS bucket name (no `gs://` prefix)                                   |
+| `trapeze-gcs-credentials`    | Secret file | GCP service account JSON key                                          |
 
 ### 2. Add a `trapeze` Agent Label
 
 These pipelines use `agent { label 'trapeze' }`. Either:
+
 - Add the label `trapeze` to an existing node in **Manage Jenkins → Nodes**, or
 - Change the label to match your environment (e.g. `any` for testing).
 
 The agent needs:
+
 - Node.js 20+ on `PATH`
 - `npm` available
 - Network access to Postgres, Jira, TestRail, and GCS
@@ -59,6 +61,40 @@ For each job:
 ### 4. First Run
 
 Run each job manually once to verify credentials and confirm it completes cleanly before relying on the scheduled trigger.
+
+---
+
+## Local Docker Dev — Init Script Volume Notes
+
+Jenkins init scripts (`init.groovy.d/`) are baked into the Docker image and seeded into the
+`jenkins_home` Docker volume **on first boot only**. Because Docker volume seeding is a
+one-time operation, editing the scripts in the repo and restarting the container is **not
+enough** — the volume copy takes precedence over the image copy on subsequent boots.
+
+**When you change an init script**, update the live volume copy explicitly:
+
+```bash
+# Copy one or all updated scripts into the running container
+docker cp jenkins/init.groovy.d/03-create-jobs.groovy          test-intel-jenkins:/var/jenkins_home/init.groovy.d/
+docker cp jenkins/init.groovy.d/04-register-shared-library.groovy test-intel-jenkins:/var/jenkins_home/init.groovy.d/
+
+# Restart Jenkins to re-run the init scripts
+docker compose --profile jenkins restart jenkins
+
+# Verify jobs were created / updated
+curl -s -u admin:trapeze-local http://localhost:8080/api/json | jq '[.jobs[].name] | sort'
+```
+
+**To do a full reset** (wipes all Jenkins config, jobs, and build history):
+
+```bash
+docker compose --profile jenkins down
+docker volume rm results_jenkins_home
+docker compose --profile jenkins up -d
+```
+
+After a full reset the volume is re-seeded from the image, so the latest scripts run
+automatically without `docker cp`.
 
 ---
 
@@ -90,10 +126,10 @@ Trapeze captures results from two job types: **legacy freestyle jobs** (shell sc
 
 There are **two distinct agent roles** in Trapeze. Make sure you are configuring the right one:
 
-| Role | Which agents | Needs DB? | Needs Jira/TestRail? | Needs GCS? |
-|------|-------------|-----------|----------------------|------------|
-| **Test execution** | Your existing Selenium / Playwright nodes | ❌ No | ❌ No | ✅ Write only |
-| **Trapeze ETL** | The `trapeze`-labelled node (see One-Time Setup above) | ✅ Yes | ✅ Yes | ✅ Read + Write |
+| Role               | Which agents                                           | Needs DB? | Needs Jira/TestRail? | Needs GCS?      |
+| ------------------ | ------------------------------------------------------ | --------- | -------------------- | --------------- |
+| **Test execution** | Your existing Selenium / Playwright nodes              | ❌ No     | ❌ No                | ✅ Write only   |
+| **Trapeze ETL**    | The `trapeze`-labelled node (see One-Time Setup above) | ✅ Yes    | ✅ Yes               | ✅ Read + Write |
 
 The `TRAPEZE_HOME` setup below applies **only to your test execution agents** — the machines that already run your Selenium and Playwright jobs. The `trapeze`-labelled ETL agent is configured separately via Jenkins credentials (see One-Time Setup).
 
