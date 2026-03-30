@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "input=$(cat); fp=$(echo \"$input\" | jq -r '.tool_input.file_path'); base=$(basename \"$fp\"); if [ \"$base\" = \".env\" ]; then echo 'Blocked: editing .env directly is not allowed. Use .env.local or Secret Manager.' >&2; exit 1; fi"
+            "command": ".claude/hooks/block-env-edit.sh"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=$(jq -r '.tool_input.file_path'); npx prettier --write \"$f\" 2>/dev/null || true"
+            "command": "f=$(jq -r '.tool_input.file_path'); if ! npx prettier --write \"$f\"; then echo \"Prettier failed to format $f\" >&2; fi"
           }
         ]
       }

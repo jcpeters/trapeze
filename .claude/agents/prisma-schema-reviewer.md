@@ -29,7 +29,7 @@ Flag any FK field on a table with >100 expected rows that lacks an index.
 ### 3. Relation Integrity
 
 - Every `@relation` must have a matching inverse field on the other model
-- Check `onDelete` / `onUpdate` cascade settings — child records on soft-delete models should use `Cascade` or `SetNull`, not the default `Restrict`
+- Check `onDelete` / `onUpdate` cascade settings — for models that implement soft deletes (e.g. have a nullable `deletedAt`/`archivedAt` field and are not hard-deleted), child records should use `Cascade` or `SetNull`, not the default `Restrict`
 - Verify `fields: [...]` and `references: [...]` match the actual field names
 
 ### 4. Unique Constraints
