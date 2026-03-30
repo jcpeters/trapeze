@@ -120,7 +120,7 @@ services:
       GCS_SA_KEY_PATH: "/run/secrets/gcs-sa-key.json"
       # Jira / TestRail — loaded from host .env at container start via env_file
       # ── Jenkins initial admin password shortcut ──────────────────────────
-      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true"
     env_file:
       # Loads JIRA_*, TESTRAIL_*, and any TRAPEZE_REPO_URL override from the host .env.
       # The DATABASE_URL and GCS_* above take precedence over values in .env.

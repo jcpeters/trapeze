@@ -37,14 +37,7 @@ import org.jenkinsci.plugins.plaincredentials.impl.*
 import hudson.util.Secret
 
 // Wait for Jenkins to be fully started before touching credential APIs
-def jenkins = Jenkins.instanceOrNull
-int waited = 0
-while (jenkins == null || !jenkins.isFullyStarted()) {
-    if (waited > 60) { println "[02-seed] ERROR: Jenkins did not start within 60 s"; return }
-    Thread.sleep(1000)
-    waited++
-    jenkins = Jenkins.instanceOrNull
-}
+def jenkins = Jenkins.instance
 
 def store  = jenkins.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
 def domain = Domain.global()
