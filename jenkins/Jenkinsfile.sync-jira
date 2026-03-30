@@ -61,7 +61,7 @@ pipeline {
   stages {
     stage('Install') {
       steps {
-        sh 'npm ci --prefer-offline'
+        sh 'npm ci --prefer-offline 2>/dev/null || npm install'
       }
     }
 

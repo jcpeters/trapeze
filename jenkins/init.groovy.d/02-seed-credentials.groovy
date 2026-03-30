@@ -73,7 +73,15 @@ def addSecretFile = { id, filePath, desc ->
     }
     def f = new File(filePath)
     if (!f.exists() || f.length() == 0) {
-        println "[02-seed] WARNING: file not found or empty at '${filePath}' — skipping '${id}'"
+        // No real SA key present (local dev with fake-gcs emulator).
+        // Seed a placeholder JSON so pipeline withCredentials() blocks don't
+        // fail credential lookup. fake-gcs ignores credentials entirely.
+        def placeholder = '{"type":"service_account","project_id":"local-dev-placeholder"}'.bytes
+        store.addCredentials(domain,
+            new FileCredentialsImpl(CredentialsScope.GLOBAL, id, desc + ' [DEV PLACEHOLDER]',
+                'gcs-sa-key.json',
+                com.cloudbees.plugins.credentials.SecretBytes.fromBytes(placeholder)))
+        println "[02-seed] Created placeholder secret-file credential: ${id} (no SA key file found at ${filePath})"
         return
     }
     def bytes    = f.bytes
