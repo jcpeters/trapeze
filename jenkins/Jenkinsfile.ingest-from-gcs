@@ -65,7 +65,9 @@ pipeline {
   stages {
     stage('Install') {
       steps {
-        sh 'npm ci --prefer-offline 2>/dev/null || npm install'
+        // NODE_ENV=production (set in environment{}) skips devDependencies;
+        // override here so tsx and other dev tools are installed.
+        sh 'NODE_ENV=development npm ci --prefer-offline 2>/dev/null || NODE_ENV=development npm install'
       }
     }
 
