@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); fp=$(echo \"$input\" | jq -r '.tool_input.file_path'); base=$(basename \"$fp\"); if [ \"$base\" = \".env\" ]; then echo 'Blocked: editing .env directly is not allowed. Use .env.local or Secret Manager.' >&2; exit 1; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path'); npx prettier --write \"$f\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": false,
+    "prisma@claude-plugins-official": true
+  }
+}
