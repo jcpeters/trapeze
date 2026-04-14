@@ -177,5 +177,11 @@ pipeline {
                 allowEmptyArchive: true
             )
         }
+        failure {
+            trapezeSlackNotify(status: 'FAILURE')
+        }
+        success {
+            trapezeSlackNotify(status: 'SUCCESS')
+        }
     }
 }

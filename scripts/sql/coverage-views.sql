@@ -310,37 +310,73 @@ ORDER BY
 -- inflating executed-coverage numbers with unreviewed inferred links.
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE VIEW v_auto_executed_30d AS
+-- Covers both ingestion layers:
+--   JUnit-era:      TestCase → TestCaseResult → Build.startedAt
+--   Playwright-era: TestCase → TestExecution  → CiRun.createdAt
+-- Window filter is in the JOIN condition so LEFT JOIN semantics work correctly
+-- (a test case with runs outside the window still appears but is not counted).
 SELECT
     a.issue_key,
-    COUNT(DISTINCT a.test_case_id)                                     AS linked_test_count,
+    COUNT(DISTINCT a.test_case_id)                                        AS linked_test_count,
     COUNT(DISTINCT a.test_case_id)
-        FILTER (WHERE tcr.status IN ('PASSED', 'FAILED', 'ERROR'))     AS executed_test_count,
-    MAX(b."startedAt")                                                 AS last_run_at,
-    BOOL_OR(tcr.status = 'PASSED')                                     AS any_passed,
-    BOOL_OR(tcr.status = 'FAILED')                                     AS any_failed
+        FILTER (WHERE
+            (tcr.status IN ('PASSED', 'FAILED', 'ERROR') AND b."startedAt" IS NOT NULL)
+            OR (te.status IN ('PASSED', 'FAILED', 'FLAKY', 'ERROR')      AND cr."createdAt" IS NOT NULL)
+        )                                                                 AS executed_test_count,
+    GREATEST(MAX(b."startedAt"), MAX(cr."createdAt"))                     AS last_run_at,
+    BOOL_OR(
+        (tcr.status = 'PASSED'  AND b."startedAt"  IS NOT NULL) OR
+        (te.status  IN ('PASSED', 'FLAKY') AND cr."createdAt" IS NOT NULL)
+    )                                                                     AS any_passed,
+    BOOL_OR(
+        (tcr.status = 'FAILED'  AND b."startedAt"  IS NOT NULL) OR
+        (te.status  = 'FAILED'  AND cr."createdAt" IS NOT NULL)
+    )                                                                     AS any_failed
 FROM v_best_auto_link a
-JOIN "TestCase"       tc  ON tc.id          = a.test_case_id
-JOIN "TestCaseResult" tcr ON tcr."testCaseId" = tc.id
-JOIN "Build"          b   ON b.id           = tcr."buildId"
+JOIN "TestCase"       tc  ON tc.id = a.test_case_id
+-- JUnit-era path: window filter in JOIN so out-of-window builds yield NULL (not excluded)
+LEFT JOIN "TestCaseResult" tcr ON tcr."testCaseId" = tc.id
+LEFT JOIN "Build"          b   ON b.id = tcr."buildId"
+                               AND b."startedAt" >= NOW() - INTERVAL '30 days'
+-- Playwright-era path
+LEFT JOIN "TestExecution"  te  ON te."testCaseId" = tc.id
+LEFT JOIN "CiRun"          cr  ON cr.id = te."runId"
+                               AND cr."createdAt" >= NOW() - INTERVAL '30 days'
 WHERE a.confidence IN ('HIGH', 'MED')
-  AND b."startedAt" >= NOW() - INTERVAL '30 days'
+  AND (b."startedAt" IS NOT NULL OR cr."createdAt" IS NOT NULL)
 GROUP BY a.issue_key;
 
 CREATE OR REPLACE VIEW v_auto_executed_7d AS
+-- Mirrors v_auto_executed_30d with a 7-day window.
 SELECT
     a.issue_key,
-    COUNT(DISTINCT a.test_case_id)                                     AS linked_test_count,
+    COUNT(DISTINCT a.test_case_id)                                        AS linked_test_count,
     COUNT(DISTINCT a.test_case_id)
-        FILTER (WHERE tcr.status IN ('PASSED', 'FAILED', 'ERROR'))     AS executed_test_count,
-    MAX(b."startedAt")                                                 AS last_run_at,
-    BOOL_OR(tcr.status = 'PASSED')                                     AS any_passed,
-    BOOL_OR(tcr.status = 'FAILED')                                     AS any_failed
+        FILTER (WHERE
+            (tcr.status IN ('PASSED', 'FAILED', 'ERROR') AND b."startedAt" IS NOT NULL)
+            OR (te.status IN ('PASSED', 'FAILED', 'FLAKY', 'ERROR')      AND cr."createdAt" IS NOT NULL)
+        )                                                                 AS executed_test_count,
+    GREATEST(MAX(b."startedAt"), MAX(cr."createdAt"))                     AS last_run_at,
+    BOOL_OR(
+        (tcr.status = 'PASSED'  AND b."startedAt"  IS NOT NULL) OR
+        (te.status  IN ('PASSED', 'FLAKY') AND cr."createdAt" IS NOT NULL)
+    )                                                                     AS any_passed,
+    BOOL_OR(
+        (tcr.status = 'FAILED'  AND b."startedAt"  IS NOT NULL) OR
+        (te.status  = 'FAILED'  AND cr."createdAt" IS NOT NULL)
+    )                                                                     AS any_failed
 FROM v_best_auto_link a
-JOIN "TestCase"       tc  ON tc.id            = a.test_case_id
-JOIN "TestCaseResult" tcr ON tcr."testCaseId" = tc.id
-JOIN "Build"          b   ON b.id             = tcr."buildId"
+JOIN "TestCase"       tc  ON tc.id = a.test_case_id
+-- JUnit-era path
+LEFT JOIN "TestCaseResult" tcr ON tcr."testCaseId" = tc.id
+LEFT JOIN "Build"          b   ON b.id = tcr."buildId"
+                               AND b."startedAt" >= NOW() - INTERVAL '7 days'
+-- Playwright-era path
+LEFT JOIN "TestExecution"  te  ON te."testCaseId" = tc.id
+LEFT JOIN "CiRun"          cr  ON cr.id = te."runId"
+                               AND cr."createdAt" >= NOW() - INTERVAL '7 days'
 WHERE a.confidence IN ('HIGH', 'MED')
-  AND b."startedAt" >= NOW() - INTERVAL '7 days'
+  AND (b."startedAt" IS NOT NULL OR cr."createdAt" IS NOT NULL)
 GROUP BY a.issue_key;
 
 -- ---------------------------------------------------------------------------

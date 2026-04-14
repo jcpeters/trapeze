@@ -2,30 +2,38 @@
 /**
  * infer-jira-links.ts
  *
- * Scans TestCase.identityKey, TestCase.title, and TestCase.suiteName for
- * embedded Jira issue keys (e.g. QAA-123) and writes jira_automation_link
- * rows with:
+ * Two inference modes:
  *
- *   provenance = INFERRED
- *   confidence = LOW
- *   source     = "name-inference"
+ * 1. KEY mode (default)
+ *    Scans TestCase.identityKey, TestCase.title, and TestCase.suiteName for
+ *    embedded Jira issue keys (e.g. QAA-123) and writes jira_automation_link
+ *    rows with provenance=INFERRED, confidence=LOW.
  *
- * This is intentionally conservative:
- *  - Never touches existing EXPLICIT or MANUAL links (different provenance row).
- *  - Only links to keys that already exist in jira_issue (FK safety).
- *  - Confidence is LOW because name-matching is purely heuristic.
- *  - Safe to re-run — upserts on (issueKey, testCaseId, provenance=INFERRED).
+ * 2. SIMILARITY mode  (--similarity)
+ *    Normalises TestCase.title and JiraIssue.summary to word bags, computes
+ *    Jaccard similarity, and creates INFERRED links for pairs that score above
+ *    --min-score (default 0.20).  Confidence is set by score:
+ *      score >= 0.40  →  MED   (strong overlap)
+ *      score >= 0.20  →  LOW   (moderate overlap)
+ *    Only Stories, Bugs, and Tasks are candidates (Epics are excluded so that
+ *    links land on the same issue types counted by v_req_universe).
+ *
+ * Both modes:
+ *  - Never touch existing EXPLICIT or MANUAL links.
+ *  - Only link to keys already in jira_issue (FK safety).
+ *  - Safe to re-run — upsert on (issueKey, testCaseId, provenance=INFERRED).
  *
  * Typical workflow:
- *   1. npm run etl:sync:jira          # populate jira_issue first
- *   2. npm run etl:ingest:junit       # populate test_case rows
- *   3. npm run etl:infer:jira         # write inferred links
+ *   1. npm run etl:sync:jira                     # populate jira_issue first
+ *   2. npm run etl:ingest:junit / etl:ingest:playwright
+ *   3. npm run etl:infer:jira                    # key-embedding pass
+ *   4. npm run etl:infer:jira -- --similarity    # title-similarity pass
  *
  * Usage:
  *   npm run etl:infer:jira
- *   npm run etl:infer:jira -- --dry-run
- *   npm run etl:infer:jira -- --explain
- *   npm run etl:infer:jira -- --batch-size 200 --explain
+ *   npm run etl:infer:jira -- --similarity --min-score 0.25 --explain
+ *   npm run etl:infer:jira -- --similarity --dry-run --explain
+ *   npm run etl:infer:jira -- --reset --explain
  */
 
 import "dotenv/config";
@@ -88,6 +96,61 @@ function buildSnippet(value: string, index: number, keyLen: number): string {
   const prefix = start > 0 ? "…" : "";
   const suffix = end < value.length ? "…" : "";
   return `${prefix}${value.slice(start, end)}${suffix}`;
+}
+
+// ── Title-similarity helpers ──────────────────────────────────────────────────
+
+/**
+ * English stop words to strip before scoring.  Kept small — only
+ * function words that carry no domain signal.
+ */
+const STOP_WORDS = new Set([
+  // Grammatical function words
+  "a", "an", "the", "and", "or", "but", "for", "nor", "so", "yet",
+  "at", "by", "from", "in", "into", "of", "off", "on", "onto", "out",
+  "over", "to", "up", "with", "as", "is", "are", "was", "were", "be",
+  "been", "being", "have", "has", "had", "do", "does", "did", "will",
+  "would", "could", "should", "may", "might", "can", "that", "this",
+  "it", "its", "not", "no", "if", "then", "when", "where", "which",
+  // Domain-generic test/action words that would cause false-positive matches
+  "test", "tests", "testing", "verify", "verifies", "check", "checks",
+  "validate", "validates", "ensure", "ensures", "complete", "completes",
+  "update", "updates", "create", "creates", "new", "get", "set",
+  "user", "users", "page", "pages", "flow", "flows", "step", "steps",
+  "event", "events", "ui", "fix", "fixes",
+]);
+
+/**
+ * Splits a string into a lower-cased word bag suitable for Jaccard scoring.
+ * Handles camelCase, PascalCase, snake_case, kebab-case, dots, and spaces.
+ * Strips digits-only tokens and stop words.
+ */
+function tokenize(text: string): Set<string> {
+  // Insert spaces before uppercase letters that follow lowercase (camelCase split)
+  const spaced = text
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+
+  // Split on any non-alphanumeric sequence
+  const tokens = spaced
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length >= 2 && !/^\d+$/.test(t) && !STOP_WORDS.has(t));
+
+  return new Set(tokens);
+}
+
+/**
+ * Jaccard similarity: |A ∩ B| / |A ∪ B|.
+ * Returns 0 if either set is empty.
+ */
+function jaccard(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0;
+  let intersection = 0;
+  for (const t of a) {
+    if (b.has(t)) intersection++;
+  }
+  return intersection / (a.size + b.size - intersection);
 }
 
 // ── Core scanner ──────────────────────────────────────────────────────────────
@@ -158,13 +221,28 @@ async function main() {
         "Delete all existing INFERRED links written by name-inference before re-scanning " +
         "(use after bulk jira_issue import to promote earlier skipped keys)",
     })
+    .option("similarity", {
+      type: "boolean",
+      default: false,
+      describe:
+        "Also run a title-similarity pass: match TestCase.title against JiraIssue.summary " +
+        "using Jaccard word-overlap (Stories/Bugs/Tasks only).  Pairs scoring >= --min-score " +
+        "are linked with provenance=INFERRED; MED confidence >= 0.40, LOW otherwise.",
+    })
+    .option("min-score", {
+      type: "number",
+      default: 0.20,
+      describe: "Minimum Jaccard score (0–1) for a similarity link to be created",
+    })
     .help()
     .parse();
 
-  const batchSize  = argv["batch-size"]  as number;
-  const dryRun     = argv["dry-run"]     as boolean;
-  const explain    = argv["explain"]     as boolean;
-  const doReset    = argv["reset"]       as boolean;
+  const batchSize   = argv["batch-size"]  as number;
+  const dryRun      = argv["dry-run"]     as boolean;
+  const explain     = argv["explain"]     as boolean;
+  const doReset     = argv["reset"]       as boolean;
+  const doSimilarity = argv["similarity"] as boolean;
+  const minScore    = argv["min-score"]   as number;
 
   // ── Step 1: Load all known Jira issue keys ──────────────────────────────
 
@@ -309,6 +387,105 @@ async function main() {
       `run etl:sync:jira then re-run with --reset to pick them up)`
     );
   }
+
+  // ── Similarity pass ─────────────────────────────────────────────────────────
+  if (!doSimilarity) return;
+
+  console.log(
+    `\nRunning title-similarity pass (minScore=${minScore})…`
+  );
+
+  // Load all TestCase rows with a non-empty title
+  const allTestCases = await prisma.testCase.findMany({
+    select: { id: true, identityKey: true, title: true },
+    where: { title: { not: "" } },
+    orderBy: { id: "asc" },
+  });
+
+  // Load Story/Bug/Task Jira issues with a non-empty summary
+  const candidateIssues = await prisma.jiraIssue.findMany({
+    select: { issueKey: true, summary: true },
+    where: {
+      issueType: { in: ["Story", "Bug", "Task"] },
+      summary:   { not: null },
+    },
+  });
+
+  if (explain) {
+    console.log(
+      `[explain] ${allTestCases.length} test cases × ${candidateIssues.length} Jira issues`
+    );
+  }
+
+  // Pre-tokenise Jira summaries
+  const issueTokens = candidateIssues.map((ji) => ({
+    issueKey: ji.issueKey,
+    tokens:   tokenize(ji.summary ?? ""),
+    summary:  ji.summary ?? "",
+  }));
+
+  let simLinksUpserted = 0;
+  let simLinksSkipped  = 0; // score below threshold
+
+  for (const tc of allTestCases) {
+    const tcTokens = tokenize(tc.title);
+    if (tcTokens.size === 0) continue;
+
+    // Score against every candidate Jira issue; keep only best match per issue
+    const scored = issueTokens
+      .map((ji) => ({ ...ji, score: jaccard(tcTokens, ji.tokens) }))
+      .filter((ji) => ji.score >= minScore)
+      .sort((a, b) => b.score - a.score);
+
+    if (scored.length === 0) {
+      simLinksSkipped++;
+      continue;
+    }
+
+    for (const match of scored) {
+      const confidence = match.score >= 0.40 ? "MED" : "LOW";
+      const evidence = `title-similarity score=${match.score.toFixed(3)}: ` +
+        `"${tc.title}" ~ "${match.summary}"`;
+
+      if (explain) {
+        console.log(
+          `  SIM  score=${match.score.toFixed(3)} conf=${confidence}  ` +
+          `"${tc.title}" → ${match.issueKey} "${match.summary}"`
+        );
+      }
+
+      if (!dryRun) {
+        await prisma.jiraAutomationLink.upsert({
+          where: {
+            issueKey_testCaseId_provenance: {
+              issueKey:   match.issueKey,
+              testCaseId: tc.id,
+              provenance: "INFERRED",
+            },
+          },
+          create: {
+            issueKey:   match.issueKey,
+            testCaseId: tc.id,
+            provenance: "INFERRED",
+            confidence,
+            evidence,
+            source: "title-similarity",
+          },
+          update: { confidence, evidence, source: "title-similarity" },
+        });
+      }
+
+      simLinksUpserted++;
+    }
+  }
+
+  console.log(
+    `Similarity pass complete:` +
+    `  testCasesEvaluated=${allTestCases.length}` +
+    `  linksUpserted=${simLinksUpserted}` +
+    `  belowThreshold=${simLinksSkipped}` +
+    dryTag
+  );
 }
 
 main()

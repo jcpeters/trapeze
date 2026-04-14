@@ -112,6 +112,10 @@ services:
       #   Default: file:///workspace/evite-playwright (volume mount below) — works without SSH.
       #   Override in .env to point at a remote Git URL.
       EVITE_PLAYWRIGHT_REPO_URL: "${EVITE_PLAYWRIGHT_REPO_URL:-file:///workspace/evite-playwright}"
+      # RESULTS_REPO_URL: used by playwright_pipeline.groovy (prod) to check out the results repo
+      #   and run etl:ingest:playwright. Points at the Trapeze repo (which IS the results repo).
+      #   Default: file:///workspace/trapeze — no SSH credential needed for local dev.
+      RESULTS_REPO_URL: "${RESULTS_REPO_URL:-file:///workspace/trapeze}"
       # GCS_SA_KEY_PATH: path *inside the container* to the GCP service account JSON key.
       #   The volume mount below maps GCS_SA_KEY_PATH_HOST (host path from .env) to this
       #   container path.  02-seed-credentials.groovy reads the file at this path.

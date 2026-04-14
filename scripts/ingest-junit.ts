@@ -43,6 +43,8 @@ type ParsedRun = {
   skipCount: number;
   errorCount: number;
   durationMs?: number | null;
+  /** Parsed from <testsuite timestamp="..."> — used as startedAt fallback. */
+  xmlTimestamp?: Date;
   cases: ParsedCase[];
 };
 
@@ -232,7 +234,8 @@ function parseJUnitXml(
     failCount = 0,
     skipCount = 0,
     errorCount = 0,
-    durationMs: number | null = null;
+    durationMs: number | null = null,
+    xmlTimestamp: Date | undefined = undefined;
 
   if (testsuiteMatch) {
     const tag = testsuiteMatch[0];
@@ -245,6 +248,11 @@ function parseJUnitXml(
     skipCount = Number(getAttr("skipped") ?? "0") || 0;
     errorCount = Number(getAttr("errors") ?? "0") || 0;
     durationMs = toMs(getAttr("time"));
+    const tsRaw = getAttr("timestamp");
+    if (tsRaw) {
+      const d = new Date(tsRaw);
+      if (!isNaN(d.getTime())) xmlTimestamp = d;
+    }
   }
 
   // Parse testcases (regex-based)
@@ -325,6 +333,7 @@ function parseJUnitXml(
     skipCount,
     errorCount,
     durationMs,
+    xmlTimestamp,
     cases,
   };
 }
@@ -434,6 +443,11 @@ async function main() {
         );
 
   const parsed = parseJUnitXml(xmlText, args.suiteName, propertyNameSet);
+
+  // Fall back to the timestamp embedded in the XML if --startedAt was not provided.
+  if (!args.startedAt && parsed.xmlTimestamp) {
+    args.startedAt = parsed.xmlTimestamp;
+  }
 
   if (args.explain) {
     console.log(`[explain] junitPath=${absPath}`);

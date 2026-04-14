@@ -1,5 +1,21 @@
 # Trapeze — Test Intelligence Platform
 
+## Git & PR Conventions
+
+- Always target the `prod` branch for PRs unless explicitly told otherwise
+- Before creating a PR, confirm the target branch with the user
+- Use `gh` CLI for PR creation but be prepared to provide a manual URL if auth fails
+
+## MCP & Tooling
+
+- MCP server configs are fragile — when debugging MCP issues, check PATH, cwd, and duplicate instances first
+- Do NOT spend more than 5 minutes on MCP configuration issues without summarizing the state to the user
+
+## File Access
+
+- Always check for files on disk before asking the user to paste contents
+- Use Read, Glob, and Grep tools to find files rather than asking the user to provide them
+
 ## Key Commands
 
 ```bash
@@ -19,13 +35,15 @@ npm run etl:upload:drop-zone        # Upload result file to GCS drop zone (CI ag
 
 # ETL — Sync & Infer
 npm run etl:sync:jira               # Sync Jira Cloud issues → jira_issue table
-npm run etl:sync:testrail           # Sync TestRail cases + results → DB
+npm run etl:sync:testrail           # Sync TestRail cases + results → DB (read-only)
+npm run etl:push:testrail           # Push Playwright results from DB → TestRail (write)
 npm run etl:infer:jira              # Text-match test titles → jira_automation_link rows
 npm run etl:infer:testrail          # Title-match → automation_testrail_link rows
 npm run etl:infer:jira-testrail     # Infer jira_testrail_link via bridge + similarity
 
 # ETL — Analytics
 npm run etl:seed:coverage-epics     # Create 14 feature-area Jira epics (idempotent)
+npm run etl:seed:sync-demo          # Seed demo Jira+TestRail fixture data (--teardown to remove)
 npm run etl:snapshot:coverage       # Write one coverage_snapshot row (daily KPI)
 npm run analyze:flakes              # Detect & classify flakes → flake_decision rows
 
@@ -84,7 +102,9 @@ Copy `.env` from a teammate or Secret Manager. Never commit it.
 | Test execution agents        | No        | Write only   |
 | `trapeze`-labelled ETL agent | Yes       | Read + Write |
 
-**Jenkins pipelines:** `jenkins/Jenkinsfile.*` — local dev via `docker compose --profile jenkins up`.
+**Jenkins pipelines:** `jenkins/Jenkinsfile.*` — local dev via `docker compose --profile jenkins up`. All ETL pipelines have cron triggers; Slack failure alerts use `vars/trapezeSlackNotify.groovy` (requires `trapeze-slack-webhook-url` credential, optional).
+
+**Claude Code automation:** `.claude/settings.json` hooks block direct `.env` edits and run Prettier + tsc after file edits. The `prisma-schema-reviewer` subagent reviews schema changes for indexes, naming, and cascade settings before migrations. Skills available: `create-migration` (Prisma migration + client regen), `etl-run` (interactive ETL script runner), `test` (Playwright test runner).
 
 **Sample data:** `junit_xml/`, `junit_json/`, `sample/` hold fixture XML/JSON for local ingest testing. `incoming/` is a local drop zone for manual GCS drain testing.
 
@@ -100,6 +120,45 @@ Both layers share `TestCase.identityKey` for cross-reference. JUnit identity key
 **`ingest-from-gcs` spawns ingest scripts as child processes** (not imports) for isolation — a crash in one batch doesn't abort the drain loop. Failed batches move to `failed/YYYY-MM-DD/`.
 
 **Sync scripts use watermark tracking** — `MAX(updatedAt/tested_at)` from the previous run. Use `--full-sync` for backfill/recovery. Ranges are inclusive so re-running is safe (upserts).
+
+## Playwright Testing
+
+- This project uses Playwright for acceptance testing (migrating from Selenium)
+- Test files live alongside page objects; check existing patterns before creating new files
+- After fixing tests, always run the full relevant suite to verify no regressions
+- Global setup handles login flow — be careful modifying it
+
+## SQL Conventions
+
+- Use exact table/column casing as defined in the schema — check before writing DELETE/UPDATE statements
+- When working with SQL views, verify column names against the actual database schema
+
+## Jira Tickets
+
+When creating or updating Jira issues via the REST API, always use **Action Item checkboxes** (not plain bullet lists) for any checklist-style content in descriptions or comments.
+
+Use `taskList` / `taskItem` ADF nodes. Both require a `localId` UUID — without it the API silently discards the nodes and falls back to plain text.
+
+```python
+import uuid
+def uid(): return str(uuid.uuid4())
+
+def action_list(items):
+    return {
+        "type": "taskList",
+        "attrs": {"localId": uid()},
+        "content": [
+            {
+                "type": "taskItem",
+                "attrs": {"localId": uid(), "state": "TODO"},
+                "content": [{"type": "text", "text": item}]
+            }
+            for item in items
+        ]
+    }
+```
+
+Always write the full JSON payload to a temp file via Python and POST/PUT from that file — do not embed large JSON in bash heredocs (shell escaping silently corrupts it).
 
 ## DO NOT
 

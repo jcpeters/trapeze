@@ -40,3 +40,4 @@ To propose a new ADR, copy an existing file, increment the number, and open a PR
 | [0013](./0013-two-distinct-jenkins-agent-roles.md)                  | Two Distinct Jenkins Agent Roles                            | CI / Security        |
 | [0014](./0014-playwright-blob-reporter-and-merge-reports.md)        | Playwright Blob Reporter + `merge-reports` for Sharded Runs | CI                   |
 | [0015](./0015-metabase-over-custom-dashboard-ui.md)                 | Metabase for Stakeholder Dashboards (No Custom UI)          | Frontend             |
+| [0016](./0016-testrail-push-direction.md)                           | TestRail Push Direction: DB → TestRail Write-Direction Sync | ETL                  |

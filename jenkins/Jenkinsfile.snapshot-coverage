@@ -74,12 +74,10 @@ pipeline {
 
   post {
     failure {
-      echo "trapeze-snapshot-coverage FAILED — check logs above"
-      // slackSend channel: '#qa-alerts', color: 'danger',
-      //   message: "trapeze-snapshot-coverage failed — ${env.BUILD_URL}"
+      trapezeSlackNotify(status: 'FAILURE')
     }
     success {
-      echo "trapeze-snapshot-coverage completed successfully"
+      trapezeSlackNotify(status: 'SUCCESS')
     }
   }
 }

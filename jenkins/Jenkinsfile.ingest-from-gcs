@@ -86,10 +86,8 @@ pipeline {
 
   post {
     failure {
-      echo "trapeze-ingest-from-gcs FAILED — check logs above"
-      // slackSend channel: '#qa-alerts', color: 'danger',
-      //   message: "trapeze-ingest-from-gcs failed — ${env.BUILD_URL}"
+      // Failure only — this job runs 96×/day so success notifications would be noise.
+      trapezeSlackNotify(status: 'FAILURE')
     }
-    // Don't notify on every success — this runs 96x/day.
   }
 }

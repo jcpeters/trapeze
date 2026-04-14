@@ -83,12 +83,10 @@ pipeline {
 
   post {
     failure {
-      echo "trapeze-analyze-flakes FAILED — check logs above"
-      // slackSend channel: '#qa-alerts', color: 'danger',
-      //   message: "trapeze-analyze-flakes failed — ${env.BUILD_URL}"
+      trapezeSlackNotify(status: 'FAILURE')
     }
     success {
-      echo "trapeze-analyze-flakes completed successfully"
+      trapezeSlackNotify(status: 'SUCCESS')
     }
   }
 }

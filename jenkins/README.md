@@ -114,9 +114,37 @@ The `H` token in cron expressions spreads load across the hour. If you need stri
 
 ---
 
-## Notification Setup
+## GitHub Credentials (HTTPS checkout)
 
-Each Jenkinsfile has a commented-out `slackSend` block in the `post { failure }` section. Uncomment and configure with your Slack workspace credentials and channel name once the Jenkins Slack plugin is installed.
+All pipeline jobs check out their Jenkinsfile from SCM. When `TRAPEZE_REPO_URL` / `EVITE_PLAYWRIGHT_REPO_URL` are set to GitHub HTTPS URLs, Jenkins uses the `github-token` credential (username + PAT). Add to `.env`:
+
+```dotenv
+GITHUB_USERNAME=jcpeters
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx   # PAT with repo scope
+TRAPEZE_REPO_URL=https://github.com/jcpeters/trapeze.git
+EVITE_PLAYWRIGHT_REPO_URL=https://github.com/evite/qa.git
+```
+
+`02-seed-credentials.groovy` reads these on first boot and creates the `github-token` credential automatically. Without them, jobs fall back to `file:///workspace/trapeze` (the volume mount) which works for local dev with no auth required.
+
+---
+
+## Slack Notifications
+
+All Jenkinsfiles call `trapezeSlackNotify()` (the `vars/trapezeSlackNotify.groovy` shared library step) in their `post` blocks. The step posts to a Slack Incoming Webhook URL stored in the `trapeze-slack-webhook-url` credential.
+
+**To enable:** add to `.env`:
+
+```dotenv
+SLACK_TRAPEZE_WEBHOOK_URL=https://hooks.slack.com/services/T.../B.../xxxxx
+SLACK_TRAPEZE_CHANNEL=#qa-alerts    # optional, defaults to #qa-alerts
+```
+
+Create the webhook at [api.slack.com/apps](https://api.slack.com/apps) → your app → **Incoming Webhooks** → Add New Webhook.
+
+`02-seed-credentials.groovy` reads `SLACK_TRAPEZE_WEBHOOK_URL` on first boot and seeds the credential. If the var is not set, the step logs a warning and skips silently — it **never fails the build**.
+
+**`trapeze-ingest-from-gcs`** only notifies on failure (runs 96×/day — success pings would be noise). All other jobs notify on both failure and success.
 
 ---
 

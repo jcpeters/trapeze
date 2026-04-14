@@ -86,5 +86,11 @@ pipeline {
             junit allowEmptyResults: true, testResults: 'test-results.xml'
             archiveArtifacts artifacts: 'test-results.xml', allowEmptyArchive: true
         }
+        failure {
+            trapezeSlackNotify(status: 'FAILURE')
+        }
+        success {
+            trapezeSlackNotify(status: 'SUCCESS')
+        }
     }
 }

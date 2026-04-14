@@ -164,11 +164,13 @@ def repoUrl = '${TRAPEZE_REPO_URL}'
 def credId  = 'github-ssh-key'
 
 def jobs = [
-    [name: 'trapeze-sync-jira',         scriptPath: 'jenkins/Jenkinsfile.sync-jira',         cron: 'H 6 * * *',       concurrent: false],
-    [name: 'trapeze-sync-testrail',     scriptPath: 'jenkins/Jenkinsfile.sync-testrail',     cron: 'H 6 * * *',       concurrent: false],
-    [name: 'trapeze-snapshot-coverage', scriptPath: 'jenkins/Jenkinsfile.snapshot-coverage', cron: 'H 7 * * *',       concurrent: false],
-    [name: 'trapeze-analyze-flakes',    scriptPath: 'jenkins/Jenkinsfile.analyze-flakes',    cron: 'H 8 * * 1',       concurrent: false],
-    [name: 'trapeze-ingest-from-gcs',   scriptPath: 'jenkins/Jenkinsfile.ingest-from-gcs',   cron: 'H/15 * * * *',   concurrent: true ],
+    [name: 'trapeze-sync-jira',         scriptPath: 'jenkins/Jenkinsfile.sync-jira',         cron: 'H 6 * * *',     concurrent: false],
+    [name: 'trapeze-sync-testrail',     scriptPath: 'jenkins/Jenkinsfile.sync-testrail',     cron: 'H 6 * * *',     concurrent: false],
+    [name: 'trapeze-snapshot-coverage', scriptPath: 'jenkins/Jenkinsfile.snapshot-coverage', cron: 'H 7 * * *',     concurrent: false],
+    [name: 'trapeze-analyze-flakes',    scriptPath: 'jenkins/Jenkinsfile.analyze-flakes',    cron: 'H 8 * * 1',     concurrent: false],
+    [name: 'trapeze-ingest-from-gcs',   scriptPath: 'jenkins/Jenkinsfile.ingest-from-gcs',   cron: 'H/15 * * * *', concurrent: true ],
+    // push-testrail has no cron — triggered downstream by ingest-from-gcs or manually
+    [name: 'trapeze-push-testrail',     scriptPath: 'jenkins/Jenkinsfile.push-testrail',     cron: '',              concurrent: false],
 ]
 
 jobs.each { cfg ->
@@ -181,7 +183,7 @@ jobs.each { cfg ->
     def def_ = new CpsScmFlowDefinition(scm, cfg.scriptPath)
     def_.setLightweight(true)
     job.setDefinition(def_)
-    job.addTrigger(new TimerTrigger(cfg.cron))
+    if (cfg.cron) { job.addTrigger(new TimerTrigger(cfg.cron)) }
     job.setConcurrentBuild(cfg.concurrent)
     job.setBuildDiscarder(new LogRotator(-1, 30, -1, -1))
     job.save()

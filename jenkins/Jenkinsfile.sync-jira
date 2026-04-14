@@ -79,13 +79,10 @@ pipeline {
 
   post {
     failure {
-      echo "trapeze-sync-jira FAILED — check logs above"
-      // Replace with your notification step, e.g.:
-      // slackSend channel: '#qa-alerts', color: 'danger',
-      //   message: "trapeze-sync-jira failed on ${env.BRANCH_NAME} — ${env.BUILD_URL}"
+      trapezeSlackNotify(status: 'FAILURE')
     }
     success {
-      echo "trapeze-sync-jira completed successfully"
+      trapezeSlackNotify(status: 'SUCCESS')
     }
   }
 }

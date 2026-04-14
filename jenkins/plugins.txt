@@ -1,6 +1,13 @@
 # Trapeze local Jenkins — required plugins
 # Managed by: Dockerfile.jenkins → jenkins-plugin-cli --plugin-file plugins.txt
 # Format: pluginId[:version]  (omit version to get latest compatible)
+#
+# PRINCIPLE: Before adding a plugin, check what is actually installed:
+#   curl -s -u admin:trapeze-local http://localhost:8080/pluginManager/api/json?depth=1 \
+#     | python3 -c "import sys,json; [print(p['shortName'],p['version']) for p in json.load(sys.stdin)['plugins']]"
+# If a non-plugin workaround exists (e.g. curl instead of httpRequest), prefer it.
+# Plugins listed here are baked into the image at build time (docker compose build jenkins).
+# Adding a plugin here has NO effect on an already-running container.
 
 # ── Pipeline ─────────────────────────────────────────────────────────────────
 workflow-aggregator          # "Pipeline" meta-plugin (includes all pipeline steps)
@@ -22,6 +29,12 @@ workflow-cps-global-lib      # Global shared libraries (@Library support)
 junit                        # Publish JUnit XML test results in the Jenkins build UI
                              # Enables: junit testResults: '*.xml' in pipelines and
                              # "Publish JUnit test result report" in freestyle jobs
+
+# ── Notifications ─────────────────────────────────────────────────────────────
+# http_request omitted — all webhook calls use `sh "curl ..."` (no plugin needed).
+
+# ── Reporting ─────────────────────────────────────────────────────────────────
+htmlpublisher                # publishHTML() step — confirmed installed, used by playwright_pipeline.groovy
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
 timestamper                  # Timestamps in console output

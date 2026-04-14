@@ -90,12 +90,10 @@ pipeline {
 
   post {
     failure {
-      echo "trapeze-sync-testrail FAILED — check logs above"
-      // slackSend channel: '#qa-alerts', color: 'danger',
-      //   message: "trapeze-sync-testrail failed — ${env.BUILD_URL}"
+      trapezeSlackNotify(status: 'FAILURE')
     }
     success {
-      echo "trapeze-sync-testrail completed successfully"
+      trapezeSlackNotify(status: 'SUCCESS')
     }
   }
 }

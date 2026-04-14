@@ -102,9 +102,11 @@ def jobs = [
         name:       'playwright-acceptance',
         scriptPath: 'scripts/playwright_pipeline.groovy',
         repoUrl:    evitePlaywrightRepoUrl,
+        branch:     '*/prod',
         cron:       '',           // on-demand only — triggered manually or by other pipelines
         concurrent: false,
-        description: 'Playwright acceptance tests → Trapeze GCS drop zone. Trigger manually or via upstream pipeline.',
+        description: 'Playwright E2E acceptance tests from evite/qa prod branch → results ingested into Trapeze DB. ' +
+                     'Pipeline: scripts/playwright_pipeline.groovy. Trigger manually.',
     ],
     [
         name:       'selenium-acceptance-pipeline',
@@ -138,13 +140,14 @@ jobs.each { cfg ->
 
     // Resolve repo URL for this job (per-job override or fall back to Trapeze repo)
     def jobRepoUrl = cfg.repoUrl ?: trapezeRepoUrl
-    def credId     = jobRepoUrl.startsWith('file://') ? '' : 'github-ssh-key'
+    def credId     = jobRepoUrl.startsWith('file://') ? '' : 'github-token'
 
     // Pipeline from SCM
     def userRemoteConfig = new UserRemoteConfig(jobRepoUrl, null, null, credId ?: null)
+    def branch = cfg.branch ?: '*/main'
     def scm = new GitSCM(
         [userRemoteConfig],
-        [new BranchSpec('*/main')],
+        [new BranchSpec(branch)],
         false,
         [],
         null,
