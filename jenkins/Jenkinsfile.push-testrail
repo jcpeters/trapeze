@@ -1,0 +1,133 @@
+/**
+ * trapeze-push-testrail
+ *
+ * Pushes Playwright test run results from the Trapeze DB into TestRail as a
+ * new Test Run with Results.  Runs automatically after every successful
+ * trapeze-ingest-from-gcs drain that produced Playwright results, or can be
+ * triggered manually for a specific job + build number.
+ *
+ * This is the write-direction counterpart to trapeze-sync-testrail (which only
+ * reads FROM TestRail).
+ *
+ * Jenkins configuration:
+ *   Pipeline → "Pipeline script from SCM"
+ *   Script Path: jenkins/Jenkinsfile.push-testrail
+ *
+ * Required Jenkins credentials:
+ *   trapeze-db-url              Secret text  — full DATABASE_URL
+ *   trapeze-testrail-base-url   Secret text  — https://yourorg.testrail.io
+ *   trapeze-testrail-email      Secret text  — service account email
+ *   trapeze-testrail-api-token  Secret text  — TestRail API key
+ *
+ * Required parameters (for manual / downstream trigger):
+ *   PLAYWRIGHT_JOB   — Jenkins job name that produced the results
+ *   BUILD_NUMBER_REF — Build number of that job
+ *
+ * Scheduling:
+ *   Intended to be called as a downstream job from trapeze-ingest-from-gcs
+ *   once ingest confirms Playwright results were written.  Can also be
+ *   triggered manually or via a nightly --since sweep.
+ */
+
+pipeline {
+  agent { label 'trapeze' }
+
+  parameters {
+    string(
+      name: 'PLAYWRIGHT_JOB',
+      defaultValue: '',
+      description: 'Jenkins job name to push results for (leave blank to use --since mode)'
+    )
+    string(
+      name: 'BUILD_NUMBER_REF',
+      defaultValue: '',
+      description: 'Build number of PLAYWRIGHT_JOB (required when PLAYWRIGHT_JOB is set)'
+    )
+    string(
+      name: 'SINCE_DATE',
+      defaultValue: '',
+      description: 'Push all CiRuns created on or after this date (ISO-8601, e.g. 2026-04-07). Used when PLAYWRIGHT_JOB is blank.'
+    )
+    string(
+      name: 'TESTRAIL_PROJECT_ID',
+      defaultValue: '1',
+      description: 'TestRail project ID to create runs in'
+    )
+    string(
+      name: 'TESTRAIL_SUITE_ID',
+      defaultValue: '',
+      description: 'TestRail suite ID (required for multi-suite projects; leave blank for single-suite)'
+    )
+    booleanParam(
+      name: 'CLOSE_RUN',
+      defaultValue: false,
+      description: 'Close the TestRail run after pushing results (makes results immutable in TestRail)'
+    )
+    booleanParam(
+      name: 'DRY_RUN',
+      defaultValue: false,
+      description: 'Preview results that would be pushed without writing to TestRail'
+    )
+  }
+
+  environment {
+    DATABASE_URL               = credentials('trapeze-db-url')
+    TESTRAIL_BASE_URL          = credentials('trapeze-testrail-base-url')
+    TESTRAIL_EMAIL             = credentials('trapeze-testrail-email')
+    TESTRAIL_API_TOKEN         = credentials('trapeze-testrail-api-token')
+    TESTRAIL_PROJECT_ID        = "${params.TESTRAIL_PROJECT_ID}"
+    NODE_ENV                   = 'production'
+  }
+
+  options {
+    timeout(time: 15, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '50'))
+    disableConcurrentBuilds()
+    timestamps()
+  }
+
+  stages {
+    stage('Install') {
+      steps {
+        sh 'NODE_ENV=development npm ci --prefer-offline 2>/dev/null || NODE_ENV=development npm install'
+      }
+    }
+
+    stage('Push to TestRail') {
+      steps {
+        script {
+          def cmd = 'npm run etl:push:testrail --'
+
+          // ── Targeting ──────────────────────────────────────────────────────
+          if (params.PLAYWRIGHT_JOB?.trim() && params.BUILD_NUMBER_REF?.trim()) {
+            cmd += " --job '${params.PLAYWRIGHT_JOB}' --build ${params.BUILD_NUMBER_REF}"
+          } else if (params.SINCE_DATE?.trim()) {
+            cmd += " --since ${params.SINCE_DATE}"
+          } else {
+            // Default: push everything from today (nightly sweep)
+            def today = new Date().format('yyyy-MM-dd')
+            cmd += " --since ${today}"
+          }
+
+          // ── TestRail targeting ─────────────────────────────────────────────
+          cmd += " --project-id ${params.TESTRAIL_PROJECT_ID}"
+          if (params.TESTRAIL_SUITE_ID?.trim()) {
+            cmd += " --suite-id ${params.TESTRAIL_SUITE_ID}"
+          }
+
+          // ── Options ────────────────────────────────────────────────────────
+          if (params.CLOSE_RUN)  cmd += ' --close-run'
+          if (params.DRY_RUN)    cmd += ' --dry-run'
+
+          sh cmd
+        }
+      }
+    }
+  }
+
+  post {
+    failure {
+      trapezeSlackNotify(status: 'FAILURE')
+    }
+  }
+}
